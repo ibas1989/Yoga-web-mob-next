@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  ScrollView, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
   TextInput,
   TouchableOpacity,
   Alert,
-  Platform
+  Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from 'expo-router';
 import { getSettings, saveSettings } from '../../src/lib/storage';
 import { AppSettings } from '@shared/types';
-import {  
-  exportBackupToFile, 
-  importBackupFromFile, 
-  restoreBackup
+import {
+  exportBackupToFile,
+  importBackupFromFile,
+  restoreBackup,
 } from '../../src/lib/backup';
 
 export default function SettingsScreen() {
@@ -50,7 +50,9 @@ export default function SettingsScreen() {
     try {
       const settings = await getSettings();
       setDefaultTeamCharge((settings.defaultTeamSessionCharge ?? 1).toString());
-      setDefaultIndividualCharge((settings.defaultIndividualSessionCharge ?? 2).toString());
+      setDefaultIndividualCharge(
+        (settings.defaultIndividualSessionCharge ?? 2).toString()
+      );
       setGoals(settings.availableGoals || []);
       setHasUnsavedChanges(false);
     } catch (error) {
@@ -63,12 +65,12 @@ export default function SettingsScreen() {
       const settings = await getSettings();
       const currentTeamCharge = parseInt(defaultTeamCharge);
       const currentIndividualCharge = parseInt(defaultIndividualCharge);
-      
-      const hasChanges = 
+
+      const hasChanges =
         currentTeamCharge !== settings.defaultTeamSessionCharge ||
         currentIndividualCharge !== settings.defaultIndividualSessionCharge ||
         JSON.stringify(goals) !== JSON.stringify(settings.availableGoals);
-      
+
       setHasUnsavedChanges(hasChanges);
     } catch (error) {
       console.error('Error checking changes:', error);
@@ -79,15 +81,12 @@ export default function SettingsScreen() {
     try {
       const teamCharge = parseInt(defaultTeamCharge);
       const individualCharge = parseInt(defaultIndividualCharge);
-      
+
       if (isNaN(teamCharge) || teamCharge < 1) {
-        Alert.alert(
-          t('common.error'),
-          t('settings.teamChargeValidation')
-        );
+        Alert.alert(t('common.error'), t('settings.teamChargeValidation'));
         return;
       }
-      
+
       if (isNaN(individualCharge) || individualCharge < 1) {
         Alert.alert(
           t('common.error'),
@@ -95,63 +94,47 @@ export default function SettingsScreen() {
         );
         return;
       }
-      
+
       const settings: AppSettings = {
         defaultTeamSessionCharge: teamCharge,
         defaultIndividualSessionCharge: individualCharge,
         availableGoals: goals,
       };
-      
+
       await saveSettings(settings);
       setHasUnsavedChanges(false);
-      
-      Alert.alert(
-        t('common.success'),
-        t('settings.settingsSaved')
-      );
+
+      Alert.alert(t('common.success'), t('settings.settingsSaved'));
     } catch (error) {
       console.error('Error saving settings:', error);
-      Alert.alert(
-        t('common.error'),
-        'Failed to save settings'
-      );
+      Alert.alert(t('common.error'), 'Failed to save settings');
     }
   };
 
   const handleAddGoal = () => {
     if (!newGoal.trim()) {
-      Alert.alert(
-        t('common.error'),
-        t('settings.enterGoalName')
-      );
+      Alert.alert(t('common.error'), t('settings.enterGoalName'));
       return;
     }
-    
+
     if (goals.includes(newGoal.trim())) {
-      Alert.alert(
-        t('common.error'),
-        t('settings.goalExists')
-      );
+      Alert.alert(t('common.error'), t('settings.goalExists'));
       return;
     }
-    
+
     setGoals([...goals, newGoal.trim()]);
     setNewGoal('');
   };
 
   const handleRemoveGoal = (goalToRemove: string) => {
-    Alert.alert(
-      t('settings.removeGoal'),
-      `Remove "${goalToRemove}"?`,
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        { 
-          text: t('common.remove'), 
-          style: 'destructive',
-          onPress: () => setGoals(goals.filter(g => g !== goalToRemove))
-        }
-      ]
-    );
+    Alert.alert(t('settings.removeGoal'), `Remove "${goalToRemove}"?`, [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('common.remove'),
+        style: 'destructive',
+        onPress: () => setGoals(goals.filter((g) => g !== goalToRemove)),
+      },
+    ]);
   };
 
   const changeLanguage = async (lng: string) => {
@@ -181,7 +164,7 @@ export default function SettingsScreen() {
   const handleImportBackup = async () => {
     try {
       const result = await importBackupFromFile();
-      
+
       if (!result.success) {
         if (result.message !== 'File selection cancelled') {
           Alert.alert(t('common.error'), result.message);
@@ -207,8 +190,8 @@ export default function SettingsScreen() {
                 } else {
                   Alert.alert(t('common.error'), restoreResult.message);
                 }
-              }
-            }
+              },
+            },
           ]
         );
       }
@@ -236,7 +219,12 @@ export default function SettingsScreen() {
           style={[styles.tab, activeTab === 'settings' && styles.tabActive]}
           onPress={() => setActiveTab('settings')}
         >
-          <Text style={[styles.tabText, activeTab === 'settings' && styles.tabTextActive]}>
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === 'settings' && styles.tabTextActive,
+            ]}
+          >
             ⚙️ {t('settings.title')}
           </Text>
         </TouchableOpacity>
@@ -244,194 +232,239 @@ export default function SettingsScreen() {
           style={[styles.tab, activeTab === 'backup' && styles.tabActive]}
           onPress={() => setActiveTab('backup')}
         >
-          <Text style={[styles.tabText, activeTab === 'backup' && styles.tabTextActive]}>
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === 'backup' && styles.tabTextActive,
+            ]}
+          >
             💾 {t('settings.backup')}
           </Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        
         {activeTab === 'settings' && (
           <>
-        {/* Language Selection */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionIcon}>🌍</Text>
-            <Text style={styles.sectionTitle}>Language / Язык</Text>
-          </View>
-          <Text style={styles.sectionDescription}>Choose your preferred language</Text>
-          
-          <View style={styles.languageButtons}>
-            <TouchableOpacity
-              style={[
-                styles.languageButton,
-                currentLanguage === 'en' && styles.languageButtonActive
-              ]}
-              onPress={() => changeLanguage('en')}
-            >
-              <Text style={[
-                styles.languageButtonText,
-                currentLanguage === 'en' && styles.languageButtonTextActive
-              ]}>
-                🇺🇸 English
+            {/* Language Selection */}
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionIcon}>🌍</Text>
+                <Text style={styles.sectionTitle}>Language / Язык</Text>
+              </View>
+              <Text style={styles.sectionDescription}>
+                Choose your preferred language
               </Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={[
-                styles.languageButton,
-                currentLanguage === 'ru' && styles.languageButtonActive
-              ]}
-              onPress={() => changeLanguage('ru')}
-            >
-              <Text style={[
-                styles.languageButtonText,
-                currentLanguage === 'ru' && styles.languageButtonTextActive
-              ]}>
-                🇷🇺 Русский
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
 
-        {/* Session Pricing */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionIcon}>💵</Text>
-            <Text style={styles.sectionTitle}>{t('settings.defaultSessionCharges')}</Text>
-          </View>
-          
-          {/* Team Sessions */}
-          <View style={[styles.card, styles.teamCard]}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardIcon}>👥</Text>
-              <Text style={styles.cardTitle}>{t('settings.teamSessions')}</Text>
-            </View>
-            <Text style={styles.cardDescription}>
-              {t('settings.defaultSessionChargeTeam')}
-            </Text>
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>{t('settings.sessionCharge')}</Text>
-              <TextInput
-                style={styles.input}
-                value={defaultTeamCharge}
-                onChangeText={setDefaultTeamCharge}
-                keyboardType="numeric"
-                placeholder="1"
-                placeholderTextColor="#999"
-              />
-            </View>
-            <View style={[styles.infoBox, styles.teamInfoBox]}>
-              <Text style={styles.infoIcon}>ℹ️</Text>
-              <Text style={styles.infoText}>
-                Each student in a group session will be charged {defaultTeamCharge || '1'} {defaultTeamCharge === '1' ? 'session' : 'sessions'}.
-              </Text>
-            </View>
-          </View>
+              <View style={styles.languageButtons}>
+                <TouchableOpacity
+                  style={[
+                    styles.languageButton,
+                    currentLanguage === 'en' && styles.languageButtonActive,
+                  ]}
+                  onPress={() => changeLanguage('en')}
+                >
+                  <Text
+                    style={[
+                      styles.languageButtonText,
+                      currentLanguage === 'en' &&
+                        styles.languageButtonTextActive,
+                    ]}
+                  >
+                    🇺🇸 English
+                  </Text>
+                </TouchableOpacity>
 
-          {/* Individual Sessions */}
-          <View style={[styles.card, styles.individualCard]}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardIcon}>👤</Text>
-              <Text style={styles.cardTitle}>{t('settings.individualSessions')}</Text>
-            </View>
-            <Text style={styles.cardDescription}>
-              {t('settings.defaultSessionChargeIndividual')}
-            </Text>
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>{t('settings.sessionCharge')}</Text>
-              <TextInput
-                style={styles.input}
-                value={defaultIndividualCharge}
-                onChangeText={setDefaultIndividualCharge}
-                keyboardType="numeric"
-                placeholder="2"
-                placeholderTextColor="#999"
-              />
-            </View>
-            <View style={[styles.infoBox, styles.individualInfoBox]}>
-              <Text style={styles.infoIcon}>ℹ️</Text>
-              <Text style={styles.infoText}>
-                One-on-one sessions will deduct {defaultIndividualCharge || '2'} {defaultIndividualCharge === '1' ? 'session' : 'sessions'}.
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Goals Management */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionIcon}>🎯</Text>
-            <Text style={styles.sectionTitle}>{t('settings.sessionGoalsTags')}</Text>
-          </View>
-          
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Goals & Focus Areas</Text>
-            <Text style={styles.cardDescription}>{t('settings.manageGoalsDescription')}</Text>
-            
-            {/* Add Goal Input */}
-            <View style={styles.addGoalContainer}>
-              <TextInput
-                style={styles.goalInput}
-                value={newGoal}
-                onChangeText={setNewGoal}
-                placeholder={t('settings.enterNewGoal')}
-                placeholderTextColor="#999"
-                returnKeyType="done"
-                onSubmitEditing={handleAddGoal}
-              />
-              <TouchableOpacity style={styles.addButton} onPress={handleAddGoal}>
-                <Text style={styles.addButtonText}>➕ Add</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.languageButton,
+                    currentLanguage === 'ru' && styles.languageButtonActive,
+                  ]}
+                  onPress={() => changeLanguage('ru')}
+                >
+                  <Text
+                    style={[
+                      styles.languageButtonText,
+                      currentLanguage === 'ru' &&
+                        styles.languageButtonTextActive,
+                    ]}
+                  >
+                    🇷🇺 Русский
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
-            {/* Goals List */}
-            {goals.length > 0 ? (
-              <View style={styles.goalsContainer}>
-                <View style={styles.goalsHeader}>
-                  <Text style={styles.goalsLabel}>{t('settings.availableGoals')}</Text>
-                  <View style={styles.goalsBadge}>
-                    <Text style={styles.goalsBadgeText}>{goals.length} {goals.length === 1 ? 'goal' : 'goals'}</Text>
+            {/* Session Pricing */}
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionIcon}>💵</Text>
+                <Text style={styles.sectionTitle}>
+                  {t('settings.defaultSessionCharges')}
+                </Text>
+              </View>
+
+              {/* Team Sessions */}
+              <View style={[styles.card, styles.teamCard]}>
+                <View style={styles.cardHeader}>
+                  <Text style={styles.cardIcon}>👥</Text>
+                  <Text style={styles.cardTitle}>
+                    {t('settings.teamSessions')}
+                  </Text>
+                </View>
+                <Text style={styles.cardDescription}>
+                  {t('settings.defaultSessionChargeTeam')}
+                </Text>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputLabel}>
+                    {t('settings.sessionCharge')}
+                  </Text>
+                  <TextInput
+                    style={styles.input}
+                    value={defaultTeamCharge}
+                    onChangeText={setDefaultTeamCharge}
+                    keyboardType="numeric"
+                    placeholder="1"
+                    placeholderTextColor="#999"
+                  />
+                </View>
+                <View style={[styles.infoBox, styles.teamInfoBox]}>
+                  <Text style={styles.infoIcon}>ℹ️</Text>
+                  <Text style={styles.infoText}>
+                    Each student in a group session will be charged{' '}
+                    {defaultTeamCharge || '1'}{' '}
+                    {defaultTeamCharge === '1' ? 'session' : 'sessions'}.
+                  </Text>
+                </View>
+              </View>
+
+              {/* Individual Sessions */}
+              <View style={[styles.card, styles.individualCard]}>
+                <View style={styles.cardHeader}>
+                  <Text style={styles.cardIcon}>👤</Text>
+                  <Text style={styles.cardTitle}>
+                    {t('settings.individualSessions')}
+                  </Text>
+                </View>
+                <Text style={styles.cardDescription}>
+                  {t('settings.defaultSessionChargeIndividual')}
+                </Text>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.inputLabel}>
+                    {t('settings.sessionCharge')}
+                  </Text>
+                  <TextInput
+                    style={styles.input}
+                    value={defaultIndividualCharge}
+                    onChangeText={setDefaultIndividualCharge}
+                    keyboardType="numeric"
+                    placeholder="2"
+                    placeholderTextColor="#999"
+                  />
+                </View>
+                <View style={[styles.infoBox, styles.individualInfoBox]}>
+                  <Text style={styles.infoIcon}>ℹ️</Text>
+                  <Text style={styles.infoText}>
+                    One-on-one sessions will deduct{' '}
+                    {defaultIndividualCharge || '2'}{' '}
+                    {defaultIndividualCharge === '1' ? 'session' : 'sessions'}.
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Goals Management */}
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionIcon}>🎯</Text>
+                <Text style={styles.sectionTitle}>
+                  {t('settings.sessionGoalsTags')}
+                </Text>
+              </View>
+
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>Goals & Focus Areas</Text>
+                <Text style={styles.cardDescription}>
+                  {t('settings.manageGoalsDescription')}
+                </Text>
+
+                {/* Add Goal Input */}
+                <View style={styles.addGoalContainer}>
+                  <TextInput
+                    style={styles.goalInput}
+                    value={newGoal}
+                    onChangeText={setNewGoal}
+                    placeholder={t('settings.enterNewGoal')}
+                    placeholderTextColor="#999"
+                    returnKeyType="done"
+                    onSubmitEditing={handleAddGoal}
+                  />
+                  <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={handleAddGoal}
+                  >
+                    <Text style={styles.addButtonText}>➕ Add</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Goals List */}
+                {goals.length > 0 ? (
+                  <View style={styles.goalsContainer}>
+                    <View style={styles.goalsHeader}>
+                      <Text style={styles.goalsLabel}>
+                        {t('settings.availableGoals')}
+                      </Text>
+                      <View style={styles.goalsBadge}>
+                        <Text style={styles.goalsBadgeText}>
+                          {goals.length} {goals.length === 1 ? 'goal' : 'goals'}
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={styles.goalsList}>
+                      {goals.map((goal, index) => (
+                        <TouchableOpacity
+                          key={index}
+                          style={styles.goalTag}
+                          onPress={() => handleRemoveGoal(goal)}
+                        >
+                          <Text style={styles.goalTagIcon}>🎯</Text>
+                          <Text style={styles.goalTagText}>{goal}</Text>
+                          <Text style={styles.goalTagRemove}>❌</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </View>
+                ) : (
+                  <View style={styles.emptyState}>
+                    <Text style={styles.emptyIcon}>🎯</Text>
+                    <Text style={styles.emptyTitle}>No goals added yet</Text>
+                    <Text style={styles.emptySubtext}>
+                      Add your first goal above to get started
+                    </Text>
+                  </View>
+                )}
+
+                {/* Info Box */}
+                <View style={[styles.infoBox, styles.goalsInfoBox]}>
+                  <Text style={styles.infoIcon}>ℹ️</Text>
+                  <View style={styles.infoTextContainer}>
+                    <Text style={styles.infoTextBold}>How goals work:</Text>
+                    <Text style={styles.infoTextSmall}>
+                      • Assign to students in their profile
+                    </Text>
+                    <Text style={styles.infoTextSmall}>
+                      • Track specific focus areas
+                    </Text>
+                    <Text style={styles.infoTextSmall}>
+                      • Tag sessions and monitor progress
+                    </Text>
                   </View>
                 </View>
-                <View style={styles.goalsList}>
-                  {goals.map((goal, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={styles.goalTag}
-                      onPress={() => handleRemoveGoal(goal)}
-                    >
-                      <Text style={styles.goalTagIcon}>🎯</Text>
-                      <Text style={styles.goalTagText}>{goal}</Text>
-                      <Text style={styles.goalTagRemove}>❌</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </View>
-            ) : (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyIcon}>🎯</Text>
-                <Text style={styles.emptyTitle}>No goals added yet</Text>
-                <Text style={styles.emptySubtext}>Add your first goal above to get started</Text>
-              </View>
-            )}
-
-            {/* Info Box */}
-            <View style={[styles.infoBox, styles.goalsInfoBox]}>
-              <Text style={styles.infoIcon}>ℹ️</Text>
-              <View style={styles.infoTextContainer}>
-                <Text style={styles.infoTextBold}>How goals work:</Text>
-                <Text style={styles.infoTextSmall}>• Assign to students in their profile</Text>
-                <Text style={styles.infoTextSmall}>• Track specific focus areas</Text>
-                <Text style={styles.infoTextSmall}>• Tag sessions and monitor progress</Text>
               </View>
             </View>
-          </View>
-        </View>
 
-        {/* Bottom Spacer */}
-        <View style={styles.bottomSpacer} />
+            {/* Bottom Spacer */}
+            <View style={styles.bottomSpacer} />
           </>
         )}
 
@@ -446,7 +479,7 @@ export default function SettingsScreen() {
               <Text style={styles.sectionDescription}>
                 Save your data to a file on your device
               </Text>
-              
+
               <TouchableOpacity
                 style={[styles.card, { borderColor: '#4CAF50' }]}
                 onPress={handleExportBackup}
@@ -456,7 +489,8 @@ export default function SettingsScreen() {
                   <Text style={styles.cardTitle}>Export to File</Text>
                 </View>
                 <Text style={styles.cardDescription}>
-                  Creates a backup file and lets you save it to your preferred location (Files, iCloud, Downloads, etc.)
+                  Creates a backup file and lets you save it to your preferred
+                  location (Files, iCloud, Downloads, etc.)
                 </Text>
               </TouchableOpacity>
             </View>
@@ -470,7 +504,7 @@ export default function SettingsScreen() {
               <Text style={styles.sectionDescription}>
                 Restore your data from a backup file
               </Text>
-              
+
               <TouchableOpacity
                 style={[styles.card, { borderColor: '#2196F3' }]}
                 onPress={handleImportBackup}
@@ -480,14 +514,26 @@ export default function SettingsScreen() {
                   <Text style={styles.cardTitle}>Select Backup File</Text>
                 </View>
                 <Text style={styles.cardDescription}>
-                  Opens file picker to select your backup JSON file. After selection, you'll confirm before restoring.
+                  Opens file picker to select your backup JSON file. After
+                  selection, you'll confirm before restoring.
                 </Text>
               </TouchableOpacity>
 
-              <View style={[styles.infoBox, { backgroundColor: '#FFF3CD', borderColor: '#FFD54F', marginTop: 16 }]}>
+              <View
+                style={[
+                  styles.infoBox,
+                  {
+                    backgroundColor: '#FFF3CD',
+                    borderColor: '#FFD54F',
+                    marginTop: 16,
+                  },
+                ]}
+              >
                 <Text style={styles.infoIcon}>⚠️</Text>
                 <Text style={styles.infoText}>
-                  Warning: Restoring will replace ALL current data with the backup data. Make sure to export your current data first if you want to keep it.
+                  Warning: Restoring will replace ALL current data with the
+                  backup data. Make sure to export your current data first if
+                  you want to keep it.
                 </Text>
               </View>
             </View>
@@ -501,16 +547,34 @@ export default function SettingsScreen() {
                 </View>
                 <View style={styles.infoTextContainer}>
                   <Text style={styles.infoTextBold}>To Export:</Text>
-                  <Text style={styles.infoTextSmall}>• Tap "Export to File" button</Text>
-                  <Text style={styles.infoTextSmall}>• Choose where to save (Files app, iCloud Drive, etc.)</Text>
-                  <Text style={styles.infoTextSmall}>• Backup saved as JSON file with timestamp</Text>
-                  <Text style={styles.infoTextSmall}>• Remember the location for later restore</Text>
-                  
-                  <Text style={[styles.infoTextBold, { marginTop: 12 }]}>To Import:</Text>
-                  <Text style={styles.infoTextSmall}>• Tap "Select Backup File" button</Text>
-                  <Text style={styles.infoTextSmall}>• Browse to your saved backup file</Text>
-                  <Text style={styles.infoTextSmall}>• Select the JSON file</Text>
-                  <Text style={styles.infoTextSmall}>• Confirm restoration in the dialog</Text>
+                  <Text style={styles.infoTextSmall}>
+                    • Tap "Export to File" button
+                  </Text>
+                  <Text style={styles.infoTextSmall}>
+                    • Choose where to save (Files app, iCloud Drive, etc.)
+                  </Text>
+                  <Text style={styles.infoTextSmall}>
+                    • Backup saved as JSON file with timestamp
+                  </Text>
+                  <Text style={styles.infoTextSmall}>
+                    • Remember the location for later restore
+                  </Text>
+
+                  <Text style={[styles.infoTextBold, { marginTop: 12 }]}>
+                    To Import:
+                  </Text>
+                  <Text style={styles.infoTextSmall}>
+                    • Tap "Select Backup File" button
+                  </Text>
+                  <Text style={styles.infoTextSmall}>
+                    • Browse to your saved backup file
+                  </Text>
+                  <Text style={styles.infoTextSmall}>
+                    • Select the JSON file
+                  </Text>
+                  <Text style={styles.infoTextSmall}>
+                    • Confirm restoration in the dialog
+                  </Text>
                 </View>
               </View>
             </View>
@@ -524,7 +588,9 @@ export default function SettingsScreen() {
       {hasUnsavedChanges && activeTab === 'settings' && (
         <View style={styles.saveButtonContainer}>
           <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.saveButtonText}>💾 {t('settings.saveSettings')}</Text>
+            <Text style={styles.saveButtonText}>
+              💾 {t('settings.saveSettings')}
+            </Text>
           </TouchableOpacity>
         </View>
       )}
@@ -977,4 +1043,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-

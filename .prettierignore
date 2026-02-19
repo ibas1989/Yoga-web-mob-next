@@ -1,0 +1,29 @@
+# Dependencies
+node_modules
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+.next
+dist
+build
+out
+.expo
+
+# Generated files
+*.log
+*.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode
+.idea
+
+# Other
+coverage
+*.min.js
+*.min.css

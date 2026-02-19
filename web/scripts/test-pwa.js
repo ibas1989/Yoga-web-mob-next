@@ -11,11 +11,11 @@ const requiredFiles = [
   'components/PWAInstallPrompt.tsx',
   'lib/hooks/usePWA.ts',
   'components/PWAStatus.tsx',
-  'components/OfflinePage.tsx'
+  'components/OfflinePage.tsx',
 ];
 
 console.log('📁 Checking required files:');
-requiredFiles.forEach(file => {
+requiredFiles.forEach((file) => {
   const filePath = path.join(__dirname, '..', file);
   const exists = fs.existsSync(filePath);
   console.log(`  ${exists ? '✅' : '❌'} ${file}`);
@@ -26,13 +26,19 @@ console.log('\n📋 Checking manifest.json:');
 try {
   const manifestPath = path.join(__dirname, '..', 'public/manifest.json');
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  
-  const requiredFields = ['name', 'short_name', 'start_url', 'display', 'icons'];
-  requiredFields.forEach(field => {
+
+  const requiredFields = [
+    'name',
+    'short_name',
+    'start_url',
+    'display',
+    'icons',
+  ];
+  requiredFields.forEach((field) => {
     const exists = manifest[field] !== undefined;
     console.log(`  ${exists ? '✅' : '❌'} ${field}`);
   });
-  
+
   // Check icons
   if (manifest.icons && manifest.icons.length > 0) {
     console.log(`  ✅ ${manifest.icons.length} icons defined`);
@@ -48,9 +54,9 @@ console.log('\n🔧 Checking service worker:');
 try {
   const swPath = path.join(__dirname, '..', 'public/sw.js');
   const swContent = fs.readFileSync(swPath, 'utf8');
-  
+
   const requiredFeatures = ['install', 'fetch', 'activate'];
-  requiredFeatures.forEach(feature => {
+  requiredFeatures.forEach((feature) => {
     const exists = swContent.includes(`addEventListener('${feature}'`);
     console.log(`  ${exists ? '✅' : '❌'} ${feature} event listener`);
   });
@@ -62,12 +68,12 @@ try {
 console.log('\n🎨 Checking PWA icons:');
 const iconFiles = [
   'icon-192.svg',
-  'icon-192-maskable.svg', 
+  'icon-192-maskable.svg',
   'icon-512.svg',
-  'icon-512-maskable.svg'
+  'icon-512-maskable.svg',
 ];
 
-iconFiles.forEach(icon => {
+iconFiles.forEach((icon) => {
   const iconPath = path.join(__dirname, '..', 'public', icon);
   const exists = fs.existsSync(iconPath);
   console.log(`  ${exists ? '✅' : '❌'} ${icon}`);
@@ -88,4 +94,6 @@ console.log('  3. Test installation on mobile devices');
 console.log('  4. Add PWAStatus component to your settings page');
 console.log('  5. Test offline functionality');
 
-console.log('\n✅ PWA setup is ready! Your app can now be installed on mobile devices.');
+console.log(
+  '\n✅ PWA setup is ready! Your app can now be installed on mobile devices.'
+);

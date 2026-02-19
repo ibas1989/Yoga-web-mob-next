@@ -113,8 +113,8 @@ export function AddStudentModal({
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <SafeAreaView style={styles.container} edges={['top']}>
-        <KeyboardAvoidingView 
-          style={styles.flex} 
+        <KeyboardAvoidingView
+          style={styles.flex}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           {/* Header */}
@@ -123,7 +123,9 @@ export function AddStudentModal({
               <TouchableOpacity onPress={onClose} style={styles.backButton}>
                 <Ionicons name="close" size={24} color="#666" />
               </TouchableOpacity>
-              <Text style={styles.headerTitle}>{t('studentForm.addStudentToSession')}</Text>
+              <Text style={styles.headerTitle}>
+                {t('studentForm.addStudentToSession')}
+              </Text>
               <View style={styles.headerSpacer} />
             </View>
           </View>
@@ -136,7 +138,10 @@ export function AddStudentModal({
                 onPress={() => setMode('select')}
               >
                 <Text
-                  style={[styles.tabText, mode === 'select' && styles.tabTextActive]}
+                  style={[
+                    styles.tabText,
+                    mode === 'select' && styles.tabTextActive,
+                  ]}
                 >
                   {t('studentForm.selectExisting')}
                 </Text>
@@ -146,7 +151,10 @@ export function AddStudentModal({
                 onPress={() => setMode('create')}
               >
                 <Text
-                  style={[styles.tabText, mode === 'create' && styles.tabTextActive]}
+                  style={[
+                    styles.tabText,
+                    mode === 'create' && styles.tabTextActive,
+                  ]}
                 >
                   {t('studentForm.createNew')}
                 </Text>
@@ -157,8 +165,8 @@ export function AddStudentModal({
           {/* Create Mode Action Button */}
           {mode === 'create' && (
             <View style={styles.actionBar}>
-              <TouchableOpacity 
-                onPress={handleCreateStudent} 
+              <TouchableOpacity
+                onPress={handleCreateStudent}
                 style={styles.createButton}
               >
                 <Text style={styles.createButtonText}>
@@ -168,122 +176,136 @@ export function AddStudentModal({
             </View>
           )}
 
-        {/* Content */}
-        <ScrollView 
-          style={styles.content}
-          contentContainerStyle={styles.contentContainer}
-        >
-          {mode === 'select' ? (
-            <>
-              {/* Search */}
-              <TextInput
-                style={styles.searchInput}
-                placeholder={t('studentForm.searchByName')}
-                value={searchTerm}
-                onChangeText={setSearchTerm}
-                placeholderTextColor="#999"
-              />
-
-              {/* Student List */}
-              {filteredStudents.length === 0 ? (
-                <View style={styles.emptyState}>
-                  <Text style={styles.emptyStateText}>
-                    {searchTerm
-                      ? t('studentForm.noStudentsFound')
-                      : t('studentForm.noAvailableStudents')}
-                  </Text>
-                </View>
-              ) : (
-                filteredStudents.map((student) => (
-                  <TouchableOpacity
-                    key={student.id}
-                    style={styles.studentCard}
-                    onPress={() => handleSelectExisting(student.id)}
-                  >
-                    <View style={styles.studentInfo}>
-                      <Text style={styles.studentName}>{student.name}</Text>
-                      <Text style={styles.studentBalance}>
-                        {t('studentForm.currentBalance')}: {student.balance} {Math.abs(student.balance) === 1 ? t('common.session') : t('common.sessions')}
-                      </Text>
-                    </View>
-                    <View style={styles.addButton}>
-                      <Text style={styles.addButtonText}>{t('studentForm.add')}</Text>
-                    </View>
-                  </TouchableOpacity>
-                ))
-              )}
-            </>
-          ) : (
-            <>
-              {/* Create Form */}
-              <View style={styles.form}>
-                <Text style={styles.label}>{t('studentForm.nameRequired')}</Text>
+          {/* Content */}
+          <ScrollView
+            style={styles.content}
+            contentContainerStyle={styles.contentContainer}
+          >
+            {mode === 'select' ? (
+              <>
+                {/* Search */}
                 <TextInput
-                  style={styles.input}
-                  value={name}
-                  onChangeText={setName}
-                  placeholder={t('studentForm.namePlaceholder')}
+                  style={styles.searchInput}
+                  placeholder={t('studentForm.searchByName')}
+                  value={searchTerm}
+                  onChangeText={setSearchTerm}
                   placeholderTextColor="#999"
                 />
 
-                <Text style={styles.label}>{t('studentForm.phone')}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={phone}
-                  onChangeText={setPhone}
-                  placeholder={t('studentForm.phonePlaceholder')}
-                  keyboardType="phone-pad"
-                  placeholderTextColor="#999"
-                />
-
-                <Text style={styles.label}>{t('studentForm.initialBalance')}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={initialBalance}
-                  onChangeText={setInitialBalance}
-                  placeholder="0"
-                  keyboardType="numeric"
-                  placeholderTextColor="#999"
-                />
-
-                <Text style={styles.label}>{t('studentForm.studentGoals')}</Text>
-                <View style={styles.goalsContainer}>
-                  {availableGoals.map((goal) => (
+                {/* Student List */}
+                {filteredStudents.length === 0 ? (
+                  <View style={styles.emptyState}>
+                    <Text style={styles.emptyStateText}>
+                      {searchTerm
+                        ? t('studentForm.noStudentsFound')
+                        : t('studentForm.noAvailableStudents')}
+                    </Text>
+                  </View>
+                ) : (
+                  filteredStudents.map((student) => (
                     <TouchableOpacity
-                      key={goal}
-                      style={[
-                        styles.goalChip,
-                        selectedGoals.includes(goal) && styles.goalChipSelected,
-                      ]}
-                      onPress={() => toggleGoal(goal)}
+                      key={student.id}
+                      style={styles.studentCard}
+                      onPress={() => handleSelectExisting(student.id)}
                     >
-                      <Text
-                        style={[
-                          styles.goalChipText,
-                          selectedGoals.includes(goal) &&
-                            styles.goalChipTextSelected,
-                        ]}
-                      >
-                        {goal}
-                      </Text>
+                      <View style={styles.studentInfo}>
+                        <Text style={styles.studentName}>{student.name}</Text>
+                        <Text style={styles.studentBalance}>
+                          {t('studentForm.currentBalance')}: {student.balance}{' '}
+                          {Math.abs(student.balance) === 1
+                            ? t('common.session')
+                            : t('common.sessions')}
+                        </Text>
+                      </View>
+                      <View style={styles.addButton}>
+                        <Text style={styles.addButtonText}>
+                          {t('studentForm.add')}
+                        </Text>
+                      </View>
                     </TouchableOpacity>
-                  ))}
-                </View>
+                  ))
+                )}
+              </>
+            ) : (
+              <>
+                {/* Create Form */}
+                <View style={styles.form}>
+                  <Text style={styles.label}>
+                    {t('studentForm.nameRequired')}
+                  </Text>
+                  <TextInput
+                    style={styles.input}
+                    value={name}
+                    onChangeText={setName}
+                    placeholder={t('studentForm.namePlaceholder')}
+                    placeholderTextColor="#999"
+                  />
 
-                <Text style={styles.label}>{t('studentForm.description')}</Text>
-                <TextInput
-                  style={styles.textArea}
-                  value={description}
-                  onChangeText={setDescription}
-                  placeholder={t('studentForm.descriptionPlaceholder')}
-                  multiline
-                  numberOfLines={3}
-                  placeholderTextColor="#999"
-                />
-              </View>
-            </>
-          )}
-        </ScrollView>
+                  <Text style={styles.label}>{t('studentForm.phone')}</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={phone}
+                    onChangeText={setPhone}
+                    placeholder={t('studentForm.phonePlaceholder')}
+                    keyboardType="phone-pad"
+                    placeholderTextColor="#999"
+                  />
+
+                  <Text style={styles.label}>
+                    {t('studentForm.initialBalance')}
+                  </Text>
+                  <TextInput
+                    style={styles.input}
+                    value={initialBalance}
+                    onChangeText={setInitialBalance}
+                    placeholder="0"
+                    keyboardType="numeric"
+                    placeholderTextColor="#999"
+                  />
+
+                  <Text style={styles.label}>
+                    {t('studentForm.studentGoals')}
+                  </Text>
+                  <View style={styles.goalsContainer}>
+                    {availableGoals.map((goal) => (
+                      <TouchableOpacity
+                        key={goal}
+                        style={[
+                          styles.goalChip,
+                          selectedGoals.includes(goal) &&
+                            styles.goalChipSelected,
+                        ]}
+                        onPress={() => toggleGoal(goal)}
+                      >
+                        <Text
+                          style={[
+                            styles.goalChipText,
+                            selectedGoals.includes(goal) &&
+                              styles.goalChipTextSelected,
+                          ]}
+                        >
+                          {goal}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+
+                  <Text style={styles.label}>
+                    {t('studentForm.description')}
+                  </Text>
+                  <TextInput
+                    style={styles.textArea}
+                    value={description}
+                    onChangeText={setDescription}
+                    placeholder={t('studentForm.descriptionPlaceholder')}
+                    multiline
+                    numberOfLines={3}
+                    placeholderTextColor="#999"
+                  />
+                </View>
+              </>
+            )}
+          </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </Modal>
@@ -528,4 +550,3 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
-

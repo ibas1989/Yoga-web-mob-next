@@ -12,13 +12,16 @@ import {
 import { useRouter, useFocusEffect, useNavigation } from 'expo-router';
 import { Session, Student } from '@shared/types';
 import { getSessions, getStudents } from '../../src/lib/storage';
-import { 
-  formatDateLocalized, 
-  formatTimeString, 
-  isSessionEndTimePassed 
+import {
+  formatDateLocalized,
+  formatTimeString,
+  isSessionEndTimePassed,
 } from '@shared/utils/dateUtils';
 import { useTranslation } from 'react-i18next';
-import { addSessionEventListener, SessionEventDetail } from '../../src/lib/eventSystem';
+import {
+  addSessionEventListener,
+  SessionEventDetail,
+} from '../../src/lib/eventSystem';
 
 interface Task {
   id: string;
@@ -48,7 +51,7 @@ export default function TasksScreen() {
     try {
       const sessions = await getSessions();
       const students = await getStudents();
-      
+
       // Filter sessions that are scheduled and whose end time has passed
       const overdueSessions = sessions.filter(
         (session) =>
@@ -124,8 +127,14 @@ export default function TasksScreen() {
     };
 
     // Listen to both sessionChanged and taskListUpdate events
-    const cleanup1 = addSessionEventListener('sessionChanged', handleSessionEvent);
-    const cleanup2 = addSessionEventListener('taskListUpdate', handleSessionEvent);
+    const cleanup1 = addSessionEventListener(
+      'sessionChanged',
+      handleSessionEvent
+    );
+    const cleanup2 = addSessionEventListener(
+      'taskListUpdate',
+      handleSessionEvent
+    );
 
     // Cleanup listeners on unmount
     return () => {
@@ -298,7 +307,9 @@ export default function TasksScreen() {
                   )}
                 </View>
 
-                <View style={[styles.modalSection, styles.modalSectionBordered]}>
+                <View
+                  style={[styles.modalSection, styles.modalSectionBordered]}
+                >
                   <Text style={styles.modalSectionTitle}>
                     {t('tasks.whatToDo')}
                   </Text>

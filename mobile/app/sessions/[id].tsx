@@ -8,7 +8,10 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Session, Student } from '@shared/types';
 import {
@@ -22,7 +25,10 @@ import i18n from '../../src/lib/i18n';
 
 export default function SessionDetailsScreen() {
   const insets = useSafeAreaInsets();
-  const { id, returnTo } = useLocalSearchParams<{ id: string; returnTo?: string }>();
+  const { id, returnTo } = useLocalSearchParams<{
+    id: string;
+    returnTo?: string;
+  }>();
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -61,7 +67,9 @@ export default function SessionDetailsScreen() {
   };
 
   const handleEdit = () => {
-    router.push(`/sessions/${id}/edit?returnTo=${returnTo || '/(tabs)'}` as any);
+    router.push(
+      `/sessions/${id}/edit?returnTo=${returnTo || '/(tabs)'}` as any
+    );
   };
 
   const handleCancel = () => {
@@ -86,7 +94,9 @@ export default function SessionDetailsScreen() {
 
   const handleComplete = () => {
     // Navigate to complete session screen
-    router.push(`/sessions/${id}/complete?returnTo=${returnTo || '/(tabs)'}` as any);
+    router.push(
+      `/sessions/${id}/complete?returnTo=${returnTo || '/(tabs)'}` as any
+    );
   };
 
   const handleDelete = () => {
@@ -112,14 +122,18 @@ export default function SessionDetailsScreen() {
   const handleStudentPress = (studentId: string) => {
     // Navigate to student details page with returnTo parameter to come back to this session
     const currentPath = `/sessions/${id}${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ''}`;
-    router.push(`/student/${studentId}?returnTo=${encodeURIComponent(currentPath)}` as any);
+    router.push(
+      `/student/${studentId}?returnTo=${encodeURIComponent(currentPath)}` as any
+    );
   };
 
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#4f46e5" />
-        <Text style={styles.loadingText}>{t('sessions.loadingSessionDetails')}</Text>
+        <Text style={styles.loadingText}>
+          {t('sessions.loadingSessionDetails')}
+        </Text>
       </View>
     );
   }
@@ -142,7 +156,9 @@ export default function SessionDetailsScreen() {
     );
   }
 
-  const sessionStudents = students.filter((s) => session.studentIds.includes(s.id));
+  const sessionStudents = students.filter((s) =>
+    session.studentIds.includes(s.id)
+  );
 
   const getStatusBadge = () => {
     const statusStyles = {
@@ -162,8 +178,13 @@ export default function SessionDetailsScreen() {
         </TouchableOpacity>
         <View style={styles.headerActions}>
           {session.status !== 'completed' && (
-            <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-              <Text style={styles.deleteButtonText}>{t('sessions.delete')}</Text>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={handleDelete}
+            >
+              <Text style={styles.deleteButtonText}>
+                {t('sessions.delete')}
+              </Text>
             </TouchableOpacity>
           )}
           {session.status === 'scheduled' && (
@@ -175,22 +196,28 @@ export default function SessionDetailsScreen() {
       </View>
 
       {/* Scrollable Content */}
-      <ScrollView 
+      <ScrollView
         style={styles.content}
         contentContainerStyle={[
           styles.contentContainer,
-          { paddingBottom: session.status === 'scheduled' ? 88 : 16 }
+          { paddingBottom: session.status === 'scheduled' ? 88 : 16 },
         ]}
       >
         {/* Header with status */}
         <View style={styles.titleSection}>
           <Text style={styles.title}>{t('sessionDetails.title')}</Text>
           <View style={[styles.statusBadge, getStatusBadge()]}>
-            <Text style={[
-              styles.statusBadgeText,
-              session.status === 'cancelled' && styles.statusBadgeTextCancelled,
-              session.status === 'scheduled' && styles.statusBadgeTextScheduled
-            ]}>{t(`sessionDetails.${session.status}`)}</Text>
+            <Text
+              style={[
+                styles.statusBadgeText,
+                session.status === 'cancelled' &&
+                  styles.statusBadgeTextCancelled,
+                session.status === 'scheduled' &&
+                  styles.statusBadgeTextScheduled,
+              ]}
+            >
+              {t(`sessionDetails.${session.status}`)}
+            </Text>
           </View>
         </View>
 
@@ -198,12 +225,15 @@ export default function SessionDetailsScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>{t('sessionDetails.date')}</Text>
           <Text style={styles.sectionValue}>
-            {new Date(session.date).toLocaleDateString(i18n.language === 'ru' ? 'ru-RU' : 'en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
+            {new Date(session.date).toLocaleDateString(
+              i18n.language === 'ru' ? 'ru-RU' : 'en-US',
+              {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              }
+            )}
           </Text>
         </View>
 
@@ -215,9 +245,13 @@ export default function SessionDetailsScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>{t('sessionDetails.sessionType')}</Text>
+          <Text style={styles.sectionLabel}>
+            {t('sessionDetails.sessionType')}
+          </Text>
           <Text style={styles.sectionValue}>
-            {session.sessionType === 'team' ? t('sessionDetails.team') : t('sessionDetails.individual')}
+            {session.sessionType === 'team'
+              ? t('sessionDetails.team')
+              : t('sessionDetails.individual')}
           </Text>
         </View>
 
@@ -242,7 +276,10 @@ export default function SessionDetailsScreen() {
                 ]}
               >
                 {t('sessions.currentBalance')}: {student.balance > 0 ? '+' : ''}
-                {student.balance} {Math.abs(student.balance) === 1 ? t('calendar.sessions.session') : t('calendar.sessions.sessions')}
+                {student.balance}{' '}
+                {Math.abs(student.balance) === 1
+                  ? t('calendar.sessions.session')
+                  : t('calendar.sessions.sessions')}
               </Text>
             </TouchableOpacity>
           ))}
@@ -250,7 +287,9 @@ export default function SessionDetailsScreen() {
 
         {/* Goals */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>{t('sessions.sessionGoalsLabel')}</Text>
+          <Text style={styles.sectionLabel}>
+            {t('sessions.sessionGoalsLabel')}
+          </Text>
           <View style={styles.goalsContainer}>
             {session.goals && session.goals.length > 0 ? (
               session.goals.map((goal) => (
@@ -259,7 +298,9 @@ export default function SessionDetailsScreen() {
                 </View>
               ))
             ) : (
-              <Text style={styles.emptyGoalsText}>{t('studentDetails.noGoalsSet')}</Text>
+              <Text style={styles.emptyGoalsText}>
+                {t('studentDetails.noGoalsSet')}
+              </Text>
             )}
           </View>
         </View>
@@ -276,11 +317,14 @@ export default function SessionDetailsScreen() {
         <View style={styles.section}>
           <Text style={styles.metadataText}>
             {t('sessions.createdOn')}{' '}
-            {new Date(session.createdAt).toLocaleDateString(i18n.language === 'ru' ? 'ru-RU' : 'en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-            })}
+            {new Date(session.createdAt).toLocaleDateString(
+              i18n.language === 'ru' ? 'ru-RU' : 'en-US',
+              {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+              }
+            )}
           </Text>
         </View>
       </ScrollView>
@@ -292,13 +336,17 @@ export default function SessionDetailsScreen() {
             style={[styles.actionButton, styles.cancelButton]}
             onPress={handleCancel}
           >
-            <Text style={styles.actionButtonText}>{t('sessions.cancelSession')}</Text>
+            <Text style={styles.actionButtonText}>
+              {t('sessions.cancelSession')}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.actionButton, styles.completeButton]}
             onPress={handleComplete}
           >
-            <Text style={styles.actionButtonText}>{t('sessions.completeSession')}</Text>
+            <Text style={styles.actionButtonText}>
+              {t('sessions.completeSession')}
+            </Text>
           </TouchableOpacity>
         </View>
       )}
@@ -540,4 +588,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-

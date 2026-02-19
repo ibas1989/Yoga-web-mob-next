@@ -2,7 +2,13 @@
 
 import React from 'react';
 import { Button } from './button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './select';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { Globe } from 'lucide-react';
 
@@ -11,7 +17,10 @@ interface LanguageSwitcherProps {
   className?: string;
 }
 
-export function LanguageSwitcher({ variant = 'select', className }: LanguageSwitcherProps) {
+export function LanguageSwitcher({
+  variant = 'select',
+  className,
+}: LanguageSwitcherProps) {
   const { getCurrentLanguage, changeLanguage } = useTranslation();
 
   const languages = [

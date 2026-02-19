@@ -30,6 +30,7 @@ npm start -- --clear
 When the app loads, you should immediately see:
 
 ✅ **Calendar View** (default tab)
+
 - Blue header with month/year selectors
 - Current month displayed
 - Today's date highlighted in blue
@@ -39,6 +40,7 @@ When the app loads, you should immediately see:
 ### 4. Test All Features
 
 #### Navigation
+
 - [ ] Tap **›** button → moves to next month
 - [ ] Tap **‹** button → moves to previous month
 - [ ] **Swipe left** on calendar → moves to next month
@@ -49,6 +51,7 @@ When the app loads, you should immediately see:
 - [ ] Select a different month → calendar updates
 
 #### Visual Indicators
+
 - [ ] Today's date has blue background and border
 - [ ] Dates with sessions have green circles
 - [ ] Session status badges show below green circles:
@@ -59,12 +62,14 @@ When the app loads, you should immediately see:
 - [ ] Current month dates are bright, other month dates are faded
 
 #### Interactions
+
 - [ ] Tap any date → logs date selection (check console)
 - [ ] Tap session indicator → logs session click (check console)
 - [ ] Smooth transitions when changing months
 - [ ] Pickers close when selecting an option
 
 #### Translations
+
 - [ ] All text is translated (default: device language)
 - [ ] Week days show correctly (Mon, Tue, Wed...)
 - [ ] Month names display in selected language
@@ -73,20 +78,24 @@ When the app loads, you should immediately see:
 ## Troubleshooting
 
 ### Calendar Doesn't Show
+
 **Problem:** Still seeing "Calendar view coming soon"
 
 **Solution:**
+
 1. Stop the dev server (Ctrl+C)
 2. Clear cache: `npm start -- --clear`
 3. In Expo Go, shake device → Reload
 4. If still not working, close Expo Go completely and reopen
 
 ### No Sessions Visible
+
 **Problem:** Calendar shows but no session indicators
 
 **Expected:** This is normal if you haven't added any sessions yet!
 
 **To add test data:**
+
 1. Navigate to Students tab
 2. Add a student
 3. Create a session for that student
@@ -94,27 +103,33 @@ When the app loads, you should immediately see:
 5. Session indicators should now appear
 
 ### Translations Not Working
+
 **Problem:** Everything is in English even though device is set to Russian
 
 **Solution:**
+
 1. Check device language settings
 2. Restart Expo Go app
 3. Clear AsyncStorage (in Settings if available)
 4. Reload the app
 
 ### Touch Gestures Not Responding
+
 **Problem:** Swipe gestures don't change months
 
 **Solution:**
+
 1. Make sure you're swiping **on the calendar grid** (not the header)
 2. Swipe at least 50px (about 1-2 cm)
 3. Swipe horizontally, not vertically
 4. Try testing on a physical device (simulators may be less responsive)
 
 ### Year/Month Pickers Don't Show
+
 **Problem:** Tapping selectors doesn't open picker
 
 **Solution:**
+
 1. Check console for errors
 2. Make sure you're tapping the white selector boxes (not the space around them)
 3. Reload the app
@@ -125,10 +140,12 @@ When the app loads, you should immediately see:
 ### Side-by-Side Test
 
 1. **Open Web Version:**
+
    ```bash
    cd /Users/ivanbasyj/Yoga
    npm run dev
    ```
+
    Open in browser: http://localhost:3000
 
 2. **Open Mobile Version:**
@@ -143,29 +160,31 @@ When the app loads, you should immediately see:
 
 ### Feature Checklist
 
-| Feature | Web | Mobile |
-|---------|-----|--------|
-| Month navigation | ✓ | ✓ |
-| Year selection | ✓ | ✓ |
-| Swipe gestures | ✓ | ✓ |
-| Today highlight | ✓ | ✓ |
-| Session indicators | ✓ | ✓ |
-| Status badges | ✓ | ✓ |
-| Color coding | ✓ | ✓ |
-| Translations | ✓ | ✓ |
-| Week starts Monday | ✓ | ✓ |
+| Feature            | Web | Mobile |
+| ------------------ | --- | ------ |
+| Month navigation   | ✓   | ✓      |
+| Year selection     | ✓   | ✓      |
+| Swipe gestures     | ✓   | ✓      |
+| Today highlight    | ✓   | ✓      |
+| Session indicators | ✓   | ✓      |
+| Status badges      | ✓   | ✓      |
+| Color coding       | ✓   | ✓      |
+| Translations       | ✓   | ✓      |
+| Week starts Monday | ✓   | ✓      |
 
 ## Adding Test Data
 
 To fully test the calendar, add some sessions:
 
 ### 1. Add a Student
+
 1. Tap **Students** tab
 2. Tap **+** or "Add Student" button
 3. Fill in student details
 4. Save
 
 ### 2. Add Sessions
+
 1. Go back to **Calendar** tab
 2. Tap a date (future date works best)
 3. Tap **+** to add session (if available)
@@ -174,6 +193,7 @@ To fully test the calendar, add some sessions:
 6. Save
 
 ### 3. View in Calendar
+
 1. Return to **Calendar** tab
 2. Navigate to the month with sessions
 3. You should see:
@@ -185,6 +205,7 @@ To fully test the calendar, add some sessions:
 ## Performance Testing
 
 ### Smooth Operation
+
 - [ ] Month transitions are smooth (no lag)
 - [ ] Swipe gestures respond immediately
 - [ ] Picker opens/closes quickly
@@ -192,6 +213,7 @@ To fully test the calendar, add some sessions:
 - [ ] Memory usage stays stable
 
 ### Stress Test
+
 1. Add 20+ sessions across different dates
 2. Navigate between months quickly
 3. Open/close pickers multiple times
@@ -201,18 +223,21 @@ To fully test the calendar, add some sessions:
 ## Expected Behavior Summary
 
 ### On First Load
+
 - Shows current month and year
 - Today's date is highlighted in blue
 - No session indicators (if no data)
 - Calendar is interactive immediately
 
 ### After Adding Sessions
+
 - Green circles appear on dates with sessions
 - Status badges show below green circles
 - Badge counts match number of sessions
 - Colors match session statuses
 
 ### On Navigation
+
 - Smooth 300ms transition
 - No flickering or jumps
 - Pickers open smoothly
@@ -281,4 +306,3 @@ If you encounter any issues:
 ## Conclusion
 
 The mobile Calendar is now **fully functional** and **feature-complete**. It matches the web version in every aspect while providing a native mobile experience. Enjoy testing! 🎉
-

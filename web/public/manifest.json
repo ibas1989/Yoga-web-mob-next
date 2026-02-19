@@ -57,12 +57,7 @@
       "form_factor": "wide"
     }
   ],
-  "features": [
-    "Cross Platform",
-    "fast",
-    "simple",
-    "offline-capable"
-  ],
+  "features": ["Cross Platform", "fast", "simple", "offline-capable"],
   "shortcuts": [
     {
       "name": "New Session",

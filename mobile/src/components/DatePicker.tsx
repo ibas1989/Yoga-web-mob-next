@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -38,7 +44,7 @@ export default function DatePickerInput({
     if (Platform.OS === 'android') {
       setIsOpen(false);
     }
-    
+
     if (event.type === 'set' && selectedDate) {
       setTempDate(selectedDate);
       if (Platform.OS === 'android') {
@@ -72,23 +78,20 @@ export default function DatePickerInput({
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      
-      <TouchableOpacity 
+
+      <TouchableOpacity
         style={styles.input}
         onPress={handleOpen}
         activeOpacity={0.7}
       >
         <View style={styles.inputContent}>
-          <Ionicons 
-            name="calendar-outline" 
-            size={20} 
-            color={value ? '#374151' : '#9ca3af'} 
+          <Ionicons
+            name="calendar-outline"
+            size={20}
+            color={value ? '#374151' : '#9ca3af'}
             style={styles.icon}
           />
-          <Text style={[
-            styles.inputText,
-            !value && styles.placeholderText
-          ]}>
+          <Text style={[styles.inputText, !value && styles.placeholderText]}>
             {value ? formatDate(value) : defaultPlaceholder}
           </Text>
         </View>
@@ -100,14 +103,29 @@ export default function DatePickerInput({
             // iOS: Show picker with action buttons
             <View style={styles.iosPickerContainer}>
               <View style={styles.iosPickerHeader}>
-                <TouchableOpacity onPress={handleClear} style={styles.iosButton}>
-                  <Text style={styles.iosClearButtonText}>{t('datePicker.clear')}</Text>
+                <TouchableOpacity
+                  onPress={handleClear}
+                  style={styles.iosButton}
+                >
+                  <Text style={styles.iosClearButtonText}>
+                    {t('datePicker.clear')}
+                  </Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleCancel} style={styles.iosButton}>
-                  <Text style={styles.iosCancelButtonText}>{t('datePicker.cancel')}</Text>
+                <TouchableOpacity
+                  onPress={handleCancel}
+                  style={styles.iosButton}
+                >
+                  <Text style={styles.iosCancelButtonText}>
+                    {t('datePicker.cancel')}
+                  </Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleConfirm} style={styles.iosButton}>
-                  <Text style={styles.iosConfirmButtonText}>{t('datePicker.done')}</Text>
+                <TouchableOpacity
+                  onPress={handleConfirm}
+                  style={styles.iosButton}
+                >
+                  <Text style={styles.iosConfirmButtonText}>
+                    {t('datePicker.done')}
+                  </Text>
                 </TouchableOpacity>
               </View>
               <DateTimePicker

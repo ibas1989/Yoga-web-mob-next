@@ -4,7 +4,7 @@
  */
 
 // Event types for type safety
-export type SessionEventType = 
+export type SessionEventType =
   | 'sessionCreated'
   | 'sessionUpdated'
   | 'sessionCompleted'
@@ -26,7 +26,7 @@ export interface SessionEventDetail {
  * Enhanced event dispatcher with error handling and logging
  */
 export function dispatchSessionEvent(
-  eventType: SessionEventType, 
+  eventType: SessionEventType,
   detail: SessionEventDetail
 ): void {
   if (typeof window === 'undefined') {
@@ -37,7 +37,7 @@ export function dispatchSessionEvent(
   try {
     const event = new CustomEvent(eventType, { detail });
     window.dispatchEvent(event);
-    
+
     // Log in development mode
     if (process.env.NODE_ENV === 'development') {
       console.log(`📡 Dispatched ${eventType} event:`, detail);
@@ -69,7 +69,11 @@ export function addSessionEventListener(
       }
     };
 
-    window.addEventListener(eventType, wrappedHandler as EventListener, options);
+    window.addEventListener(
+      eventType,
+      wrappedHandler as EventListener,
+      options
+    );
   } catch (error) {
     console.error(`Failed to add ${eventType} listener:`, error);
   }
@@ -101,9 +105,12 @@ export function addBatchSessionEventListeners(
   handler: (event: CustomEvent) => void,
   options?: AddEventListenerOptions
 ): () => void {
-  const listeners: Array<{ eventType: SessionEventType; handler: (event: CustomEvent) => void }> = [];
+  const listeners: Array<{
+    eventType: SessionEventType;
+    handler: (event: CustomEvent) => void;
+  }> = [];
 
-  eventTypes.forEach(eventType => {
+  eventTypes.forEach((eventType) => {
     addSessionEventListener(eventType, handler, options);
     listeners.push({ eventType, handler });
   });
@@ -121,7 +128,7 @@ export function addBatchSessionEventListeners(
  */
 export function testEventSystem(): void {
   console.log('🧪 Testing Event System...');
-  
+
   const testEvents: SessionEventType[] = [
     'sessionCreated',
     'sessionUpdated',
@@ -129,7 +136,7 @@ export function testEventSystem(): void {
     'sessionCancelled',
     'sessionDeleted',
     'sessionChanged',
-    'taskListUpdate'
+    'taskListUpdate',
   ];
 
   const receivedEvents = new Set<SessionEventType>();
@@ -141,25 +148,29 @@ export function testEventSystem(): void {
   });
 
   // Dispatch test events
-  testEvents.forEach(eventType => {
-    dispatchSessionEvent(eventType, { 
+  testEvents.forEach((eventType) => {
+    dispatchSessionEvent(eventType, {
       sessionId: 'test-session',
       message: `Test ${eventType} event`,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   });
 
   // Check results after a delay
   setTimeout(() => {
-    console.log(`📊 Event Test Results: ${receivedEvents.size}/${testEvents.length} events received`);
-    
-    const missingEvents = testEvents.filter(event => !receivedEvents.has(event));
+    console.log(
+      `📊 Event Test Results: ${receivedEvents.size}/${testEvents.length} events received`
+    );
+
+    const missingEvents = testEvents.filter(
+      (event) => !receivedEvents.has(event)
+    );
     if (missingEvents.length > 0) {
       console.warn('⚠️ Missing events:', missingEvents);
     } else {
       console.log('✅ All events working correctly!');
     }
-    
+
     // Cleanup test listeners
     cleanup();
   }, 1000);
@@ -177,12 +188,12 @@ export function getEventSystemStatus(): {
     windowAvailable: typeof window !== 'undefined',
     eventTypes: [
       'sessionCreated',
-      'sessionUpdated', 
+      'sessionUpdated',
       'sessionCompleted',
       'sessionCancelled',
       'sessionDeleted',
       'sessionChanged',
-      'taskListUpdate'
-    ]
+      'taskListUpdate',
+    ],
   };
 }

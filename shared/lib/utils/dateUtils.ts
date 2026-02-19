@@ -10,21 +10,25 @@ import { TranslationKeys, TranslationParams } from '../i18n/types';
  * @returns Age in years or null if birthDate is invalid
  */
 export function calculateAge(birthDate: Date | undefined): number | null {
-  if (!birthDate || !(birthDate instanceof Date) || isNaN(birthDate.getTime())) {
+  if (
+    !birthDate ||
+    !(birthDate instanceof Date) ||
+    isNaN(birthDate.getTime())
+  ) {
     return null;
   }
 
   const today = new Date();
   const birth = new Date(birthDate);
-  
+
   let age = today.getFullYear() - birth.getFullYear();
   const monthDiff = today.getMonth() - birth.getMonth();
-  
+
   // If birthday hasn't occurred this year, subtract 1
   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
     age--;
   }
-  
+
   return age;
 }
 
@@ -53,27 +57,31 @@ export function getAgeFromBirthDate(birthDate: Date | undefined): string {
  * @returns Formatted age string in "X years and Y months" format
  */
 export function getAgeInYearsAndMonths(birthDate: Date | undefined): string {
-  if (!birthDate || !(birthDate instanceof Date) || isNaN(birthDate.getTime())) {
+  if (
+    !birthDate ||
+    !(birthDate instanceof Date) ||
+    isNaN(birthDate.getTime())
+  ) {
     return 'Not specified';
   }
 
   const today = new Date();
   const birth = new Date(birthDate);
-  
+
   let years = today.getFullYear() - birth.getFullYear();
   let months = today.getMonth() - birth.getMonth();
-  
+
   // If birthday hasn't occurred this year, subtract 1 year and add 12 months
   if (months < 0 || (months === 0 && today.getDate() < birth.getDate())) {
     years--;
     months += 12;
   }
-  
+
   // If the day hasn't occurred this month, subtract 1 month
   if (today.getDate() < birth.getDate()) {
     months--;
   }
-  
+
   if (years === 0 && months === 0) {
     return 'Less than 1 month';
   } else if (years === 0) {
@@ -91,28 +99,35 @@ export function getAgeInYearsAndMonths(birthDate: Date | undefined): string {
  * @param t - Translation function
  * @returns Formatted age string with translations
  */
-export function getAgeInYearsAndMonthsTranslated(birthDate: Date | undefined, t: (key: TranslationKeys, params?: TranslationParams) => string): string {
-  if (!birthDate || !(birthDate instanceof Date) || isNaN(birthDate.getTime())) {
+export function getAgeInYearsAndMonthsTranslated(
+  birthDate: Date | undefined,
+  t: (key: TranslationKeys, params?: TranslationParams) => string
+): string {
+  if (
+    !birthDate ||
+    !(birthDate instanceof Date) ||
+    isNaN(birthDate.getTime())
+  ) {
     return t('studentDetails.notSpecified');
   }
 
   const today = new Date();
   const birth = new Date(birthDate);
-  
+
   let years = today.getFullYear() - birth.getFullYear();
   let months = today.getMonth() - birth.getMonth();
-  
+
   // If birthday hasn't occurred this year, subtract 1 year and add 12 months
   if (months < 0 || (months === 0 && today.getDate() < birth.getDate())) {
     years--;
     months += 12;
   }
-  
+
   // If the day hasn't occurred this month, subtract 1 month
   if (today.getDate() < birth.getDate()) {
     months--;
   }
-  
+
   if (years === 0 && months === 0) {
     return t('common.lessThanMonth');
   } else if (years === 0) {
@@ -130,27 +145,31 @@ export function getAgeInYearsAndMonthsTranslated(birthDate: Date | undefined, t:
  * @returns Formatted member since age string in "X years and Y months" format
  */
 export function getMemberSinceAge(memberSinceDate: Date | undefined): string {
-  if (!memberSinceDate || !(memberSinceDate instanceof Date) || isNaN(memberSinceDate.getTime())) {
+  if (
+    !memberSinceDate ||
+    !(memberSinceDate instanceof Date) ||
+    isNaN(memberSinceDate.getTime())
+  ) {
     return 'Not specified';
   }
 
   const today = new Date();
   const memberSince = new Date(memberSinceDate);
-  
+
   let years = today.getFullYear() - memberSince.getFullYear();
   let months = today.getMonth() - memberSince.getMonth();
-  
+
   // If the date hasn't occurred this year, subtract 1 year and add 12 months
   if (months < 0 || (months === 0 && today.getDate() < memberSince.getDate())) {
     years--;
     months += 12;
   }
-  
+
   // If the day hasn't occurred this month, subtract 1 month
   if (today.getDate() < memberSince.getDate()) {
     months--;
   }
-  
+
   if (years === 0 && months === 0) {
     return 'Less than 1 month';
   } else if (years === 0) {
@@ -171,7 +190,10 @@ export function getMemberSinceAge(memberSinceDate: Date | undefined): string {
 /**
  * Get the correct Russian form for years
  */
-function getRussianYearForm(years: number, t: (key: TranslationKeys, params?: TranslationParams) => string): string {
+function getRussianYearForm(
+  years: number,
+  t: (key: TranslationKeys, params?: TranslationParams) => string
+): string {
   if (years === 1) {
     return t('common.year');
   } else if (years >= 2 && years <= 4) {
@@ -182,28 +204,35 @@ function getRussianYearForm(years: number, t: (key: TranslationKeys, params?: Tr
   }
 }
 
-export function getMemberSinceAgeTranslated(memberSinceDate: Date | undefined, t: (key: TranslationKeys, params?: TranslationParams) => string): string {
-  if (!memberSinceDate || !(memberSinceDate instanceof Date) || isNaN(memberSinceDate.getTime())) {
+export function getMemberSinceAgeTranslated(
+  memberSinceDate: Date | undefined,
+  t: (key: TranslationKeys, params?: TranslationParams) => string
+): string {
+  if (
+    !memberSinceDate ||
+    !(memberSinceDate instanceof Date) ||
+    isNaN(memberSinceDate.getTime())
+  ) {
     return t('studentDetails.notSpecified');
   }
 
   const today = new Date();
   const memberSince = new Date(memberSinceDate);
-  
+
   let years = today.getFullYear() - memberSince.getFullYear();
   let months = today.getMonth() - memberSince.getMonth();
-  
+
   // If the date hasn't occurred this year, subtract 1 year and add 12 months
   if (months < 0 || (months === 0 && today.getDate() < memberSince.getDate())) {
     years--;
     months += 12;
   }
-  
+
   // If the day hasn't occurred this month, subtract 1 month
   if (today.getDate() < memberSince.getDate()) {
     months--;
   }
-  
+
   if (years === 0 && months === 0) {
     return t('common.lessThanMonth');
   } else if (years === 0) {
@@ -240,11 +269,14 @@ export function generateTransactionReason(
   t: (key: any, params?: any) => string
 ): string {
   const formattedDate = sessionDate.toLocaleDateString();
-  const translatedSessionType = sessionType === 'team' ? t('sessionDetails.team') : t('sessionDetails.individual');
-  
+  const translatedSessionType =
+    sessionType === 'team'
+      ? t('sessionDetails.team')
+      : t('sessionDetails.individual');
+
   return t('transactionDetails.sessionCompletedReason', {
     date: formattedDate,
-    sessionType: translatedSessionType
+    sessionType: translatedSessionType,
   });
 }
 
@@ -277,12 +309,12 @@ export function getSessionCount(sessionType: 'individual' | 'team'): number {
     // Fallback for server-side rendering
     return sessionType === 'individual' ? 2 : 1;
   }
-  
+
   try {
     const { getSettings } = require('@/lib/storage');
     const settings = getSettings();
-    return sessionType === 'individual' 
-      ? settings.defaultIndividualSessionCharge 
+    return sessionType === 'individual'
+      ? settings.defaultIndividualSessionCharge
       : settings.defaultTeamSessionCharge;
   } catch (error) {
     // Fallback if settings can't be loaded
@@ -296,8 +328,13 @@ export function getSessionCount(sessionType: 'individual' | 'team'): number {
  * @param t - Translation function
  * @returns Display name for the session type
  */
-export function getSessionTypeDisplayName(sessionType: 'individual' | 'team', t: (key: any, params?: any) => string): string {
-  return sessionType === 'individual' ? t('sessions.individual') : t('sessions.team');
+export function getSessionTypeDisplayName(
+  sessionType: 'individual' | 'team',
+  t: (key: any, params?: any) => string
+): string {
+  return sessionType === 'individual'
+    ? t('sessions.individual')
+    : t('sessions.team');
 }
 
 /**
@@ -344,7 +381,10 @@ export function formatDate(date: Date | string | null | undefined): string {
  * @param locale - The locale to use (default: 'en-US')
  * @returns Formatted date string
  */
-export function formatDateLocalized(date: Date | string | null | undefined, locale: string = 'en-US'): string {
+export function formatDateLocalized(
+  date: Date | string | null | undefined,
+  locale: string = 'en-US'
+): string {
   if (!date) return 'Not specified';
   const dateObj = date instanceof Date ? date : new Date(date);
   if (isNaN(dateObj.getTime())) return 'Invalid date';
@@ -367,7 +407,7 @@ export function formatTime(date: Date | string | null | undefined): string {
   return new Intl.DateTimeFormat('en-US', {
     hour: '2-digit',
     minute: '2-digit',
-    hour12: false
+    hour12: false,
   }).format(dateObj);
 }
 
@@ -377,9 +417,12 @@ export function formatTime(date: Date | string | null | undefined): string {
  * @param locale - The locale to use (default: 'en-US')
  * @returns Formatted time string in 24-hour format
  */
-export function formatTimeString(timeString: string | null | undefined, locale: string = 'en-US'): string {
+export function formatTimeString(
+  timeString: string | null | undefined,
+  locale: string = 'en-US'
+): string {
   if (!timeString) return 'Not specified';
-  
+
   // If it's already a formatted time string, return as is
   if (timeString.includes(':')) {
     // Handle 24-hour format (e.g., "14:30")
@@ -387,13 +430,13 @@ export function formatTimeString(timeString: string | null | undefined, locale: 
       const [hours, minutes] = timeString.split(':');
       const hour = parseInt(hours, 10);
       const minute = parseInt(minutes, 10);
-      
+
       if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) {
         // Return 24-hour format as is
         return `${hours.padStart(2, '0')}:${minutes}`;
       }
     }
-    
+
     // Handle 12-hour format (e.g., "2:30 PM") - convert to 24-hour
     if (timeString.includes('AM') || timeString.includes('PM')) {
       const dateObj = new Date(`2000-01-01 ${timeString}`);
@@ -401,22 +444,22 @@ export function formatTimeString(timeString: string | null | undefined, locale: 
         return new Intl.DateTimeFormat(locale, {
           hour: '2-digit',
           minute: '2-digit',
-          hour12: false
+          hour12: false,
         }).format(dateObj);
       }
     }
   }
-  
+
   // If we can't parse it, try to create a date object
   const dateObj = new Date(timeString);
   if (!isNaN(dateObj.getTime())) {
     return new Intl.DateTimeFormat(locale, {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: false
+      hour12: false,
     }).format(dateObj);
   }
-  
+
   return 'Invalid time';
 }
 
@@ -427,16 +470,16 @@ export function formatTimeString(timeString: string | null | undefined, locale: 
  */
 export function isSessionEndTimePassed(session: any): boolean {
   if (!session || !session.date || !session.endTime) return false;
-  
+
   try {
     const now = new Date();
     const sessionDate = new Date(session.date);
-    
+
     // Create a date object for the session's end time on the session date
     const [endHours, endMinutes] = session.endTime.split(':').map(Number);
     const sessionEndDateTime = new Date(sessionDate);
     sessionEndDateTime.setHours(endHours, endMinutes, 0, 0);
-    
+
     // Check if current time is past the session's end time
     return now > sessionEndDateTime;
   } catch (error) {

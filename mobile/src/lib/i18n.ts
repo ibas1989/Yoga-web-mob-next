@@ -16,7 +16,7 @@ const languageDetector = {
         callback(savedLanguage);
         return;
       }
-      
+
       // Fall back to device language
       const deviceLanguage = Localization.locale.split('-')[0];
       callback(deviceLanguage === 'ru' ? 'ru' : 'en');
@@ -43,13 +43,12 @@ i18n
     resources: translationResources,
     fallbackLng: 'en',
     debug: __DEV__,
-    
+
     interpolation: {
       escapeValue: false, // React already does escaping
     },
-    
+
     compatibilityJSON: 'v3',
   });
 
 export default i18n;
-

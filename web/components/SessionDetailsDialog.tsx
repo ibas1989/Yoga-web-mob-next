@@ -2,7 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Clock, User, Tag, FileText, Calendar as CalendarIcon, Users } from 'lucide-react';
+import {
+  Clock,
+  User,
+  Tag,
+  FileText,
+  Calendar as CalendarIcon,
+  Users,
+} from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -46,7 +53,9 @@ export function SessionDetailsDialog({
 
   if (!session) return null;
 
-  const sessionStudents = students.filter(s => session.studentIds.includes(s.id));
+  const sessionStudents = students.filter((s) =>
+    session.studentIds.includes(s.id)
+  );
 
   const getStatusBadge = (status: Session['status']) => {
     const styles = {
@@ -64,12 +73,17 @@ export function SessionDetailsDialog({
         case 'cancelled':
           return t('sessionDetails.cancelled');
         default:
-          return (status as string).charAt(0).toUpperCase() + (status as string).slice(1);
+          return (
+            (status as string).charAt(0).toUpperCase() +
+            (status as string).slice(1)
+          );
       }
     };
 
     return (
-      <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${styles[status]}`}>
+      <span
+        className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${styles[status]}`}
+      >
         {getStatusLabel(status)}
       </span>
     );
@@ -90,14 +104,19 @@ export function SessionDetailsDialog({
             <div className="flex items-start gap-3">
               <CalendarIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium">{t('sessionDetails.date')}</p>
+                <p className="text-sm font-medium">
+                  {t('sessionDetails.date')}
+                </p>
                 <p className="text-sm text-muted-foreground">
-                  {new Date(session.date).toLocaleDateString(getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
+                  {new Date(session.date).toLocaleDateString(
+                    getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US',
+                    {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    }
+                  )}
                 </p>
               </div>
             </div>
@@ -107,7 +126,9 @@ export function SessionDetailsDialog({
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium">{t('sessionDetails.time')}</p>
+                    <p className="text-sm font-medium">
+                      {t('sessionDetails.time')}
+                    </p>
                     <p className="text-sm text-muted-foreground">
                       {session.startTime} - {session.endTime}
                     </p>
@@ -122,9 +143,13 @@ export function SessionDetailsDialog({
             <div className="flex items-start gap-3">
               <Users className="h-5 w-5 text-muted-foreground mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium">{t('sessionDetails.sessionType')}</p>
+                <p className="text-sm font-medium">
+                  {t('sessionDetails.sessionType')}
+                </p>
                 <p className="text-sm text-muted-foreground">
-                  {session.sessionType === 'team' ? t('sessionDetails.team') : t('sessionDetails.individual')}
+                  {session.sessionType === 'team'
+                    ? t('sessionDetails.team')
+                    : t('sessionDetails.individual')}
                 </p>
               </div>
             </div>
@@ -140,22 +165,38 @@ export function SessionDetailsDialog({
             </div>
             <div className="space-y-2 pl-7 max-h-[300px] overflow-y-auto">
               {sessionStudents.length === 0 ? (
-                <p className="text-sm text-muted-foreground">{t('sessionDetails.noStudentsAssigned')}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t('sessionDetails.noStudentsAssigned')}
+                </p>
               ) : (
                 sessionStudents.map((student) => (
-                  <Card key={student.id} className="hover:shadow-sm transition-shadow cursor-pointer" onClick={() => onAttendeeClick && onAttendeeClick(student.id)}>
+                  <Card
+                    key={student.id}
+                    className="hover:shadow-sm transition-shadow cursor-pointer"
+                    onClick={() =>
+                      onAttendeeClick && onAttendeeClick(student.id)
+                    }
+                  >
                     <CardContent className="p-3">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <p className="text-sm font-medium">{student.name}</p>
-                          <p className={`text-xs font-medium ${
-                            student.balance > 0 
-                              ? 'text-green-600' 
-                              : student.balance < 0 
-                              ? 'text-red-600' 
-                              : 'text-gray-600'
-                          }`}>
-                            {t('sessionDetails.currentBalance')}: {student.balance > 0 ? `+${student.balance}` : student.balance} {Math.abs(student.balance) === 1 ? t('sessionDetails.session') : t('sessionDetails.sessions')}
+                          <p
+                            className={`text-xs font-medium ${
+                              student.balance > 0
+                                ? 'text-green-600'
+                                : student.balance < 0
+                                  ? 'text-red-600'
+                                  : 'text-gray-600'
+                            }`}
+                          >
+                            {t('sessionDetails.currentBalance')}:{' '}
+                            {student.balance > 0
+                              ? `+${student.balance}`
+                              : student.balance}{' '}
+                            {Math.abs(student.balance) === 1
+                              ? t('sessionDetails.session')
+                              : t('sessionDetails.sessions')}
                           </p>
                         </div>
                       </div>
@@ -171,7 +212,9 @@ export function SessionDetailsDialog({
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Tag className="h-5 w-5 text-muted-foreground" />
-                <p className="text-sm font-medium">{t('sessionDetails.sessionGoals')}</p>
+                <p className="text-sm font-medium">
+                  {t('sessionDetails.sessionGoals')}
+                </p>
               </div>
               <div className="flex flex-wrap gap-2 pl-7">
                 {session.goals.map((goal) => (
@@ -191,9 +234,13 @@ export function SessionDetailsDialog({
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-muted-foreground" />
-                <p className="text-sm font-medium">{t('sessionDetails.notes')}</p>
+                <p className="text-sm font-medium">
+                  {t('sessionDetails.notes')}
+                </p>
               </div>
-              <p className="text-sm text-muted-foreground pl-7 break-words break-all whitespace-pre-wrap hyphens-auto overflow-x-hidden">{session.notes}</p>
+              <p className="text-sm text-muted-foreground pl-7 break-words break-all whitespace-pre-wrap hyphens-auto overflow-x-hidden">
+                {session.notes}
+              </p>
             </div>
           )}
 
@@ -202,18 +249,20 @@ export function SessionDetailsDialog({
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <CalendarIcon className="h-4 w-4" />
               <span>
-                {t('sessionDetails.createdOn')} {new Date(session.createdAt).toLocaleDateString(getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric'
-                })}
+                {t('sessionDetails.createdOn')}{' '}
+                {new Date(session.createdAt).toLocaleDateString(
+                  getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US',
+                  {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  }
+                )}
               </span>
             </div>
           </div>
         </div>
-
       </DialogContent>
     </Dialog>
   );
 }
-

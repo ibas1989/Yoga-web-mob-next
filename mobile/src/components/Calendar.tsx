@@ -36,7 +36,11 @@ interface CalendarProps {
   refreshTrigger?: number;
 }
 
-export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: CalendarProps) {
+export function Calendar({
+  onDateSelect,
+  onSessionClick,
+  refreshTrigger,
+}: CalendarProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -59,10 +63,15 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
   const monthEnd = endOfMonth(currentMonth);
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
   const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
-  const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+  const calendarDays = eachDayOfInterval({
+    start: calendarStart,
+    end: calendarEnd,
+  });
 
   const getSessionsForDate = (date: Date) => {
-    return sessions.filter((session) => isSameDay(new Date(session.date), date));
+    return sessions.filter((session) =>
+      isSameDay(new Date(session.date), date)
+    );
   };
 
   const handleDateClick = (date: Date) => {
@@ -70,7 +79,7 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
     const dateStr = formatDateForUrl(date);
     // Navigate to day view
     router.push(`/calendar/day/${dateStr}` as any);
-    
+
     if (onDateSelect) {
       onDateSelect(date);
     }
@@ -132,7 +141,7 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
     t('calendar.weekDays.thursday'),
     t('calendar.weekDays.friday'),
     t('calendar.weekDays.saturday'),
-    t('calendar.weekDays.sunday')
+    t('calendar.weekDays.sunday'),
   ];
 
   const months = [
@@ -147,7 +156,7 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
     t('calendar.months.september'),
     t('calendar.months.october'),
     t('calendar.months.november'),
-    t('calendar.months.december')
+    t('calendar.months.december'),
   ];
 
   const handleMonthChange = (monthIndex: number) => {
@@ -186,7 +195,9 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
             style={styles.selector}
             onPress={() => setShowMonthPicker(!showMonthPicker)}
           >
-            <Text style={styles.selectorText}>{months[currentMonth.getMonth()]}</Text>
+            <Text style={styles.selectorText}>
+              {months[currentMonth.getMonth()]}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -233,7 +244,8 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
               <Text
                 style={[
                   styles.pickerItemText,
-                  currentMonth.getMonth() === index && styles.pickerItemSelected,
+                  currentMonth.getMonth() === index &&
+                    styles.pickerItemSelected,
                 ]}
               >
                 {month}
@@ -266,7 +278,11 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
               const daySessions = getSessionsForDate(day)
                 .slice()
                 .sort((a, b) =>
-                  a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0
+                  a.startTime < b.startTime
+                    ? -1
+                    : a.startTime > b.startTime
+                      ? 1
+                      : 0
                 );
               const isCurrentMonth = isSameMonth(day, currentMonth);
               const isSelected = selectedDate && isSameDay(day, selectedDate);
@@ -274,9 +290,12 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
               const hasAnySessions = daySessions.length > 0;
 
               const statusCounts = {
-                scheduled: daySessions.filter((s) => s.status === 'scheduled').length,
-                completed: daySessions.filter((s) => s.status === 'completed').length,
-                cancelled: daySessions.filter((s) => s.status === 'cancelled').length,
+                scheduled: daySessions.filter((s) => s.status === 'scheduled')
+                  .length,
+                completed: daySessions.filter((s) => s.status === 'completed')
+                  .length,
+                cancelled: daySessions.filter((s) => s.status === 'cancelled')
+                  .length,
               };
 
               return (
@@ -304,7 +323,8 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
                         style={[
                           styles.dateText,
                           !isCurrentMonth && styles.dateTextOtherMonth,
-                          (hasAnySessions || isToday) && styles.dateTextHighlight,
+                          (hasAnySessions || isToday) &&
+                            styles.dateTextHighlight,
                         ]}
                       >
                         {format(day, 'd')}
@@ -316,18 +336,39 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
                   {hasAnySessions && (
                     <View style={styles.sessionIndicators}>
                       {statusCounts.scheduled > 0 && (
-                        <View style={[styles.sessionBadge, styles.sessionBadgeScheduled]}>
-                          <Text style={styles.sessionBadgeText}>{statusCounts.scheduled}</Text>
+                        <View
+                          style={[
+                            styles.sessionBadge,
+                            styles.sessionBadgeScheduled,
+                          ]}
+                        >
+                          <Text style={styles.sessionBadgeText}>
+                            {statusCounts.scheduled}
+                          </Text>
                         </View>
                       )}
                       {statusCounts.completed > 0 && (
-                        <View style={[styles.sessionBadge, styles.sessionBadgeCompleted]}>
-                          <Text style={styles.sessionBadgeText}>{statusCounts.completed}</Text>
+                        <View
+                          style={[
+                            styles.sessionBadge,
+                            styles.sessionBadgeCompleted,
+                          ]}
+                        >
+                          <Text style={styles.sessionBadgeText}>
+                            {statusCounts.completed}
+                          </Text>
                         </View>
                       )}
                       {statusCounts.cancelled > 0 && (
-                        <View style={[styles.sessionBadge, styles.sessionBadgeCancelled]}>
-                          <Text style={styles.sessionBadgeText}>{statusCounts.cancelled}</Text>
+                        <View
+                          style={[
+                            styles.sessionBadge,
+                            styles.sessionBadgeCancelled,
+                          ]}
+                        >
+                          <Text style={styles.sessionBadgeText}>
+                            {statusCounts.cancelled}
+                          </Text>
                         </View>
                       )}
                     </View>
@@ -526,4 +567,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-

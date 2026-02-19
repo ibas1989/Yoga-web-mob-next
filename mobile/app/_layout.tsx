@@ -6,7 +6,7 @@ import { useSessionCron } from '../src/lib/useSessionCron';
 export default function RootLayout() {
   // Start the session cron job to check for overdue sessions
   useSessionCron();
-  
+
   return (
     <SafeAreaProvider>
       <Stack screenOptions={{ headerShown: false }}>
@@ -15,4 +15,3 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
-

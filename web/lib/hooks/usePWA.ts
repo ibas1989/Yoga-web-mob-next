@@ -24,23 +24,30 @@ export function usePWA() {
   useEffect(() => {
     // Check if app is installed/standalone
     const checkInstallStatus = () => {
-      const standalone = window.matchMedia('(display-mode: standalone)').matches ||
-                        (window.navigator as any).standalone ||
-                        document.referrer.includes('android-app://');
-      
-      setPwaState(prev => ({ ...prev, isInstalled: standalone, isStandalone: standalone }));
+      const standalone =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as any).standalone ||
+        document.referrer.includes('android-app://');
+
+      setPwaState((prev) => ({
+        ...prev,
+        isInstalled: standalone,
+        isStandalone: standalone,
+      }));
     };
 
     // Check if iOS
     const checkIOS = () => {
       const userAgent = window.navigator.userAgent.toLowerCase();
       const isIOSDevice = /iphone|ipad|ipod/.test(userAgent);
-      setPwaState(prev => ({ ...prev, isIOS: isIOSDevice }));
+      setPwaState((prev) => ({ ...prev, isIOS: isIOSDevice }));
     };
 
     // Check online status
-    const handleOnline = () => setPwaState(prev => ({ ...prev, isOnline: true }));
-    const handleOffline = () => setPwaState(prev => ({ ...prev, isOnline: false }));
+    const handleOnline = () =>
+      setPwaState((prev) => ({ ...prev, isOnline: true }));
+    const handleOffline = () =>
+      setPwaState((prev) => ({ ...prev, isOnline: false }));
 
     // Register service worker
     const registerSW = async () => {
@@ -60,14 +67,17 @@ export function usePWA() {
         }
         try {
           const registration = await navigator.serviceWorker.register('/sw.js');
-          setPwaState(prev => ({ ...prev, swRegistration: registration }));
-          
+          setPwaState((prev) => ({ ...prev, swRegistration: registration }));
+
           // Check for updates
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                if (
+                  newWorker.state === 'installed' &&
+                  navigator.serviceWorker.controller
+                ) {
                   // New update available
                   console.log('New version available!');
                 }
@@ -83,7 +93,7 @@ export function usePWA() {
     // Listen for beforeinstallprompt
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      setPwaState(prev => ({ ...prev, canInstall: true }));
+      setPwaState((prev) => ({ ...prev, canInstall: true }));
     };
 
     // Initial checks
@@ -97,7 +107,10 @@ export function usePWA() {
     window.addEventListener('offline', handleOffline);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener(
+        'beforeinstallprompt',
+        handleBeforeInstallPrompt
+      );
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };

@@ -7,18 +7,21 @@ Complete guide for testing your Yoga Class Tracker application in both browser a
 ## 🌐 Part 1: Testing Web Application in Browser
 
 ### Prerequisites
+
 - Node.js 18+ installed
 - npm package manager
 
 ### Step 1: Install Dependencies
 
 From the project root:
+
 ```bash
 cd /Users/ivanbasyj/Yoga-web-mob
 npm install
 ```
 
 Or specifically for web:
+
 ```bash
 cd /Users/ivanbasyj/Yoga-web-mob/web
 npm install
@@ -27,11 +30,13 @@ npm install
 ### Step 2: Start Development Server
 
 **Option A: From project root**
+
 ```bash
 npm run dev:web
 ```
 
 **Option B: From web directory**
+
 ```bash
 cd /Users/ivanbasyj/Yoga-web-mob/web
 npm run dev
@@ -40,6 +45,7 @@ npm run dev
 ### Step 3: Access the Application
 
 Open your browser and navigate to:
+
 ```
 http://localhost:3000
 ```
@@ -62,6 +68,7 @@ Press `Ctrl+C` in the terminal where the server is running.
 ## 📱 Part 2: Testing Mobile Application in Expo Go
 
 ### Prerequisites
+
 - Node.js 18+ installed
 - Expo Go app installed on your mobile device
   - **iOS**: Download from [App Store](https://apps.apple.com/app/expo-go/id982107779)
@@ -70,12 +77,14 @@ Press `Ctrl+C` in the terminal where the server is running.
 ### Step 1: Install Dependencies
 
 From the project root:
+
 ```bash
 cd /Users/ivanbasyj/Yoga-web-mob
 npm install
 ```
 
 Or specifically for mobile:
+
 ```bash
 cd /Users/ivanbasyj/Yoga-web-mob/mobile
 npm install
@@ -84,16 +93,19 @@ npm install
 ### Step 2: Start Expo Development Server
 
 Navigate to the mobile directory:
+
 ```bash
 cd /Users/ivanbasyj/Yoga-web-mob/mobile
 ```
 
 Start the Expo server:
+
 ```bash
 npm start
 ```
 
 Or use Expo CLI directly:
+
 ```bash
 npx expo start
 ```
@@ -103,12 +115,14 @@ npx expo start
 #### Option A: Scan QR Code (Recommended)
 
 **For iOS:**
+
 1. Open the **Camera app** on your iPhone/iPad
 2. Point it at the **QR code** displayed in the terminal
 3. Tap the notification that appears
 4. The app will open in **Expo Go**
 
 **For Android:**
+
 1. Open the **Expo Go** app on your Android device
 2. Tap **"Scan QR code"** button
 3. Point the camera at the **QR code** in the terminal
@@ -119,11 +133,12 @@ npx expo start
 If QR code scanning doesn't work:
 
 1. In the terminal, you'll see a URL like:
+
    ```
    exp://192.168.1.100:8081
    ```
 
-2. **For iOS**: 
+2. **For iOS**:
    - Open Safari and type the URL
    - Or use Expo Go app's manual URL entry feature
 
@@ -143,20 +158,27 @@ If QR code scanning doesn't work:
 ### Alternative Connection Methods
 
 #### Tunnel Mode (Different Networks)
+
 If you're on different networks:
+
 ```bash
 npx expo start --tunnel
 ```
+
 This creates a tunnel through Expo's servers (may be slower).
 
 #### LAN Mode (Same Network)
+
 If you want to explicitly use LAN:
+
 ```bash
 npx expo start --lan
 ```
 
 #### Clear Cache
+
 If you encounter issues:
+
 ```bash
 npx expo start -c
 ```
@@ -176,26 +198,34 @@ npx expo start -c
 ### Troubleshooting Mobile Issues
 
 #### Issue: "Unable to connect to Expo"
+
 **Solutions:**
+
 - Check that both devices are on the same Wi-Fi network
 - Try restarting the Expo server: `npm start`
 - Check firewall settings on your computer
 - Try tunnel mode: `npx expo start --tunnel`
 
 #### Issue: QR code doesn't work
+
 **Solutions:**
+
 - Manually enter the URL shown in terminal into Expo Go app
 - The URL format is: `exp://YOUR_IP:8081`
 
 #### Issue: App loads but shows errors
+
 **Solutions:**
+
 - Check the terminal for error messages
 - Make sure all dependencies are installed: `npm install`
 - Try clearing Expo cache: `npx expo start -c`
 - Check that shared workspace is properly linked
 
 #### Issue: Port 8081 is in use
+
 **Solutions:**
+
 ```bash
 # Kill the process using port 8081
 lsof -ti:8081 | xargs kill
@@ -205,7 +235,9 @@ npx expo start --port 8082
 ```
 
 #### Issue: "Cannot find module" errors
+
 **Solutions:**
+
 - Reinstall dependencies: `cd mobile && npm install`
 - Reinstall shared workspace: `cd shared && npm install`
 - Check workspace linking in root: `npm install` from root directory
@@ -219,6 +251,7 @@ Press `Ctrl+C` in the terminal where the server is running.
 ## 🚀 Quick Start Commands Summary
 
 ### Web Application
+
 ```bash
 # From root
 npm run dev:web
@@ -230,6 +263,7 @@ cd web && npm run dev
 ```
 
 ### Mobile Application
+
 ```bash
 # Navigate to mobile directory
 cd mobile
@@ -249,6 +283,7 @@ npx expo start --tunnel
 ## 📋 Testing Checklist
 
 ### Web Testing
+
 - [ ] Application loads at http://localhost:3000
 - [ ] Navigation works correctly
 - [ ] All features function as expected
@@ -257,6 +292,7 @@ npx expo start --tunnel
 - [ ] Local storage persists data correctly
 
 ### Mobile Testing (Expo Go)
+
 - [ ] Expo Go app installed on device
 - [ ] QR code scans successfully
 - [ ] Application loads in Expo Go
@@ -273,18 +309,21 @@ npx expo start --tunnel
 You can run both web and mobile development servers at the same time:
 
 **Terminal 1 (Web):**
+
 ```bash
 cd /Users/ivanbasyj/Yoga-web-mob/web
 npm run dev
 ```
 
 **Terminal 2 (Mobile):**
+
 ```bash
 cd /Users/ivanbasyj/Yoga-web-mob/mobile
 npm start
 ```
 
 Both will run independently:
+
 - Web: http://localhost:3000
 - Mobile: Expo Go (scan QR code)
 
@@ -309,11 +348,3 @@ Both will run independently:
 ---
 
 **Ready to test?** Start with the web application, then move to mobile testing with Expo Go!
-
-
-
-
-
-
-
-

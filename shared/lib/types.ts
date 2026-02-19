@@ -54,4 +54,3 @@ export interface AppSettings {
   defaultIndividualSessionCharge: number;
   availableGoals: string[];
 }
-
