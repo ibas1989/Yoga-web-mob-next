@@ -32,6 +32,7 @@ yoga-tracker-unified/
 ### Installation
 
 1. **Install dependencies** (from root):
+
 ```bash
 npm install
 ```
@@ -39,6 +40,7 @@ npm install
 This will install dependencies for all workspaces (web, mobile, shared).
 
 2. **Install workspace dependencies**:
+
 ```bash
 # Install web dependencies
 cd web && npm install && cd ..
@@ -107,6 +109,7 @@ import { useTranslation } from '@shared/i18n';
 ## 🏗️ Architecture
 
 ### Web (`web/`)
+
 - Next.js 15 with App Router
 - TypeScript
 - Tailwind CSS
@@ -114,6 +117,7 @@ import { useTranslation } from '@shared/i18n';
 - Radix UI components
 
 ### Mobile (`mobile/`)
+
 - React Native + Expo
 - TypeScript
 - Expo Router (for navigation)
@@ -121,6 +125,7 @@ import { useTranslation } from '@shared/i18n';
 - AsyncStorage (for local data storage)
 
 ### Shared (`shared/`)
+
 - TypeScript types and interfaces
 - Business logic utilities
 - i18n translations
@@ -129,6 +134,7 @@ import { useTranslation } from '@shared/i18n';
 ## 📝 Code Organization
 
 ### Web Structure
+
 ```
 web/
 ├── app/              # Next.js app directory
@@ -141,6 +147,7 @@ web/
 ```
 
 ### Mobile Structure
+
 ```
 mobile/
 ├── App.tsx           # Main app component
@@ -154,6 +161,7 @@ mobile/
 ```
 
 ### Shared Structure
+
 ```
 shared/
 └── lib/
@@ -182,6 +190,7 @@ See `MIGRATION_NOTE.md` for details.
 ## 🛠️ Build & Deploy
 
 ### Web Build
+
 ```bash
 cd web
 npm run build
@@ -189,6 +198,7 @@ npm start
 ```
 
 ### Mobile Build
+
 ```bash
 cd mobile
 # Build for iOS

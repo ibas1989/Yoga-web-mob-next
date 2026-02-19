@@ -1,10 +1,29 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, addMonths, subMonths, startOfWeek, endOfWeek, setYear, getYear } from 'date-fns';
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameDay,
+  isSameMonth,
+  addMonths,
+  subMonths,
+  startOfWeek,
+  endOfWeek,
+  setYear,
+  getYear,
+} from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
 import { Session } from '@shared/types';
 import { getSessions } from '@/lib/storage';
 import { cn } from '@/lib/utils';
@@ -18,7 +37,11 @@ interface CalendarProps {
   refreshTrigger?: number;
 }
 
-export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: CalendarProps) {
+export function Calendar({
+  onDateSelect,
+  onSessionClick,
+  refreshTrigger,
+}: CalendarProps) {
   const { t } = useTranslation();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -37,19 +60,24 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
   const monthEnd = endOfMonth(currentMonth);
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 }); // Start week on Monday
   const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 }); // End week on Sunday
-  const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+  const calendarDays = eachDayOfInterval({
+    start: calendarStart,
+    end: calendarEnd,
+  });
 
   const getSessionsForDate = (date: Date) => {
-    return sessions.filter(session => isSameDay(new Date(session.date), date));
+    return sessions.filter((session) =>
+      isSameDay(new Date(session.date), date)
+    );
   };
 
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
-    
+
     // Navigate to Day View page - use direct navigation to avoid router issues
     const dateStr = formatDateForUrl(date);
     window.location.href = `/calendar/day/${dateStr}`;
-    
+
     // Call the optional callback if provided
     if (onDateSelect) {
       onDateSelect(date);
@@ -116,7 +144,6 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
     setCurrentMonth(updatedMonth);
   };
 
-
   const weekDays = [
     t('calendar.weekDays.monday'),
     t('calendar.weekDays.tuesday'),
@@ -124,7 +151,7 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
     t('calendar.weekDays.thursday'),
     t('calendar.weekDays.friday'),
     t('calendar.weekDays.saturday'),
-    t('calendar.weekDays.sunday')
+    t('calendar.weekDays.sunday'),
   ];
 
   // Generate months array
@@ -140,7 +167,7 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
     t('calendar.months.september'),
     t('calendar.months.october'),
     t('calendar.months.november'),
-    t('calendar.months.december')
+    t('calendar.months.december'),
   ];
 
   const handleMonthChange = (monthStr: string) => {
@@ -149,11 +176,13 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
     setCurrentMonth(updatedMonth);
   };
 
-
   return (
     <div className="w-full h-screen flex flex-col overflow-hidden">
       {/* Navigation Selectors Section */}
-      <div className="fixed top-4 left-4 right-4 z-10 border border-border rounded-lg p-2" style={{ backgroundColor: '#2563eb' }}>
+      <div
+        className="fixed top-4 left-4 right-4 z-10 border border-border rounded-lg p-2"
+        style={{ backgroundColor: '#2563eb' }}
+      >
         <div className="flex items-center justify-between">
           {/* Previous Month Button */}
           <Button
@@ -168,25 +197,31 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
 
           {/* Month/Year Selectors */}
           <div className="flex items-center gap-4">
-            <Select value={getYear(currentMonth).toString()} onValueChange={handleYearChange}>
+            <Select
+              value={getYear(currentMonth).toString()}
+              onValueChange={handleYearChange}
+            >
               <SelectTrigger className="w-[80px] sm:w-[90px] h-8 text-sm font-bold">
                 <SelectValue placeholder={t('calendar.year')} />
               </SelectTrigger>
               <SelectContent>
-                {years.map(year => (
+                {years.map((year) => (
                   <SelectItem key={year} value={year.toString()}>
                     {year}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            
-            <Select value={months[currentMonth.getMonth()]} onValueChange={handleMonthChange}>
+
+            <Select
+              value={months[currentMonth.getMonth()]}
+              onValueChange={handleMonthChange}
+            >
               <SelectTrigger className="w-[120px] sm:w-[130px] h-8 text-sm font-bold">
                 <SelectValue placeholder={t('calendar.month')} />
               </SelectTrigger>
               <SelectContent>
-                {months.map(month => (
+                {months.map((month) => (
                   <SelectItem key={month} value={month}>
                     {month}
                   </SelectItem>
@@ -209,17 +244,17 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
       </div>
 
       {/* Calendar Grid Section */}
-      <div 
+      <div
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
         className={cn(
-          "fixed top-20 left-4 right-4 bottom-4 z-10 bg-background border border-border rounded-lg p-0 transition-all duration-300 ease-in-out",
-          isTransitioning && "opacity-70 scale-98"
+          'fixed top-20 left-4 right-4 bottom-4 z-10 bg-background border border-border rounded-lg p-0 transition-all duration-300 ease-in-out',
+          isTransitioning && 'opacity-70 scale-98'
         )}
       >
         <div className="grid grid-cols-7 gap-2 mb-0">
-          {weekDays.map(day => (
+          {weekDays.map((day) => (
             <div
               key={day}
               className="text-center text-sm font-medium text-muted-foreground py-2"
@@ -230,11 +265,20 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
         </div>
 
         {/* Compact Calendar Grid - Fixed 7x5 grid with fixed height */}
-        <div className="grid grid-cols-7 grid-rows-5 border border-border rounded-lg" style={{ gridTemplateRows: 'repeat(5, 1fr)', height: '500px' }}>
+        <div
+          className="grid grid-cols-7 grid-rows-5 border border-border rounded-lg"
+          style={{ gridTemplateRows: 'repeat(5, 1fr)', height: '500px' }}
+        >
           {calendarDays.map((day, index) => {
             const daySessions = getSessionsForDate(day)
               .slice()
-              .sort((a, b) => (a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0));
+              .sort((a, b) =>
+                a.startTime < b.startTime
+                  ? -1
+                  : a.startTime > b.startTime
+                    ? 1
+                    : 0
+              );
             const isCurrentMonth = isSameMonth(day, currentMonth);
             const isSelected = selectedDate && isSameDay(day, selectedDate);
             const isToday = isSameDay(day, new Date());
@@ -242,22 +286,25 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
 
             // Calculate session indicators (max 4: 1 circle + 3 squares)
             const statusCounts = {
-              scheduled: daySessions.filter(s => s.status === 'scheduled').length,
-              completed: daySessions.filter(s => s.status === 'completed').length,
-              cancelled: daySessions.filter(s => s.status === 'cancelled').length
+              scheduled: daySessions.filter((s) => s.status === 'scheduled')
+                .length,
+              completed: daySessions.filter((s) => s.status === 'completed')
+                .length,
+              cancelled: daySessions.filter((s) => s.status === 'cancelled')
+                .length,
             };
 
             const sessionIndicators = [];
-            
+
             // Add green circle for any sessions
             if (hasAnySessions) {
               sessionIndicators.push('circle');
             }
-            
+
             // Add squares for each status (max 3 additional)
             const maxSquares = 3;
             let squareCount = 0;
-            
+
             if (statusCounts.scheduled > 0 && squareCount < maxSquares) {
               sessionIndicators.push('scheduled');
               squareCount++;
@@ -275,11 +322,11 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
               <div
                 key={index}
                 className={cn(
-                  "w-full h-full p-1 cursor-pointer transition-colors flex flex-col border-r border-b border-border",
-                  !isCurrentMonth && "bg-muted/30 text-muted-foreground",
-                  isCurrentMonth && "bg-background hover:bg-accent/50",
-                  isSelected && "bg-primary/20 border-primary",
-                  isToday && "bg-blue-100 border-blue-500 border-2 shadow-lg"
+                  'w-full h-full p-1 cursor-pointer transition-colors flex flex-col border-r border-b border-border',
+                  !isCurrentMonth && 'bg-muted/30 text-muted-foreground',
+                  isCurrentMonth && 'bg-background hover:bg-accent/50',
+                  isSelected && 'bg-primary/20 border-primary',
+                  isToday && 'bg-blue-100 border-blue-500 border-2 shadow-lg'
                 )}
                 style={{ minHeight: '100px' }}
                 onClick={() => handleDateClick(day)}
@@ -288,12 +335,16 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
                 <div className="flex justify-center mb-1 flex-shrink-0">
                   <div
                     className={cn(
-                      "text-sm font-semibold flex items-center justify-center",
-                      hasAnySessions 
-                        ? "w-7 h-7 bg-green-500 text-white rounded-full" 
-                        : "",
-                      !isCurrentMonth && !hasAnySessions && "text-muted-foreground/60",
-                      isToday && !hasAnySessions && "w-8 h-8 ring-2 ring-blue-500 bg-blue-500 text-white rounded-full font-bold"
+                      'text-sm font-semibold flex items-center justify-center',
+                      hasAnySessions
+                        ? 'w-7 h-7 bg-green-500 text-white rounded-full'
+                        : '',
+                      !isCurrentMonth &&
+                        !hasAnySessions &&
+                        'text-muted-foreground/60',
+                      isToday &&
+                        !hasAnySessions &&
+                        'w-8 h-8 ring-2 ring-blue-500 bg-blue-500 text-white rounded-full font-bold'
                     )}
                   >
                     {format(day, 'd')}
@@ -308,37 +359,52 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
                       <div
                         className="w-4 h-4 rounded-sm flex items-center justify-center text-xs font-medium text-white"
                         style={{ backgroundColor: '#B5B5BA' }}
-                        title={statusCounts.scheduled === 1 
-                          ? t('ui.scheduledSessions', { count: statusCounts.scheduled })
-                          : t('ui.scheduledSessionsPlural', { count: statusCounts.scheduled })
+                        title={
+                          statusCounts.scheduled === 1
+                            ? t('ui.scheduledSessions', {
+                                count: statusCounts.scheduled,
+                              })
+                            : t('ui.scheduledSessionsPlural', {
+                                count: statusCounts.scheduled,
+                              })
                         }
                       >
                         {statusCounts.scheduled}
                       </div>
                     )}
-                    
+
                     {/* Second: Completed sessions - Blue square */}
                     {statusCounts.completed > 0 && (
                       <div
                         className="w-4 h-4 rounded-sm flex items-center justify-center text-xs font-medium text-white"
                         style={{ backgroundColor: 'rgb(37, 99, 235)' }}
-                        title={statusCounts.completed === 1 
-                          ? t('ui.completedSessions', { count: statusCounts.completed })
-                          : t('ui.completedSessionsPlural', { count: statusCounts.completed })
+                        title={
+                          statusCounts.completed === 1
+                            ? t('ui.completedSessions', {
+                                count: statusCounts.completed,
+                              })
+                            : t('ui.completedSessionsPlural', {
+                                count: statusCounts.completed,
+                              })
                         }
                       >
                         {statusCounts.completed}
                       </div>
                     )}
-                    
+
                     {/* Third: Canceled sessions - Orange square */}
                     {statusCounts.cancelled > 0 && (
                       <div
                         className="w-4 h-4 rounded-sm flex items-center justify-center text-xs font-medium text-white"
                         style={{ backgroundColor: 'rgb(249, 115, 22)' }}
-                        title={statusCounts.cancelled === 1 
-                          ? t('ui.cancelledSessions', { count: statusCounts.cancelled })
-                          : t('ui.cancelledSessionsPlural', { count: statusCounts.cancelled })
+                        title={
+                          statusCounts.cancelled === 1
+                            ? t('ui.cancelledSessions', {
+                                count: statusCounts.cancelled,
+                              })
+                            : t('ui.cancelledSessionsPlural', {
+                                count: statusCounts.cancelled,
+                              })
                         }
                       >
                         {statusCounts.cancelled}
@@ -354,4 +420,3 @@ export function Calendar({ onDateSelect, onSessionClick, refreshTrigger }: Calen
     </div>
   );
 }
-

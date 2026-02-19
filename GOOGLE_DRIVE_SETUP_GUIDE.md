@@ -75,15 +75,18 @@ This guide will walk you through setting up Google Drive integration for automat
 ## Features
 
 ### Manual Backup
+
 - Click "Upload Backup Now" to create an immediate backup
 - Backups are uploaded directly to your Google Drive
 
 ### Auto Backup
+
 - Automatic backups every 24 hours (when app is in use)
 - Keeps the 7 most recent backups
 - Automatically deletes older backups to save space
 
 ### Backup Management
+
 - View all backup files in your Google Drive folder
 - Download backups for local storage
 - Restore data from any backup file
@@ -98,27 +101,32 @@ This guide will walk you through setting up Google Drive integration for automat
 ## Troubleshooting
 
 ### "Failed to authenticate with Google Drive"
+
 - Check that your Client ID and API Key are correct
 - Ensure your domain is added to authorized origins
 - Make sure Google Drive API is enabled in your project
 
 ### "Upload failed" errors
+
 - Check your internet connection
 - Verify you have sufficient Google Drive storage space
 - Ensure the OAuth consent screen is properly configured
 
 ### "Folder not found" errors
+
 - The app will automatically create the backup folder
 - Make sure you have permission to create folders in Google Drive
 
 ## Backup File Format
 
 Backup files are stored as JSON files with the following naming convention:
+
 ```
 yoga-tracker-backup-YYYY-MM-DD.json
 ```
 
 Each backup contains:
+
 - All student data
 - All session data
 - App settings
@@ -141,6 +149,7 @@ Each backup contains:
 ## Support
 
 If you encounter issues:
+
 1. Check the browser console for error messages
 2. Verify your Google Cloud Console configuration
 3. Ensure your API credentials are correct

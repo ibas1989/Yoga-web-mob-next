@@ -17,7 +17,14 @@ const nextConfig = {
   // Fix for Next.js 15 static file serving
   experimental: {
     externalDir: true,
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-checkbox', '@radix-ui/react-label', '@radix-ui/react-slot'],
+    optimizePackageImports: [
+      'lucide-react',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-select',
+      '@radix-ui/react-checkbox',
+      '@radix-ui/react-label',
+      '@radix-ui/react-slot',
+    ],
   },
   // Fix static asset serving issues
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
@@ -96,6 +103,6 @@ const nextConfig = {
     }
     return [];
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

@@ -1,15 +1,52 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, TextInput, Modal, Linking, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+  TextInput,
+  Modal,
+  Linking,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
-import { Student, Session, BalanceTransaction, StudentNote } from '@shared/types';
-import { getStudents, getSessionsForStudent, deleteStudent, addBalanceTransaction, addStudentNote, deleteStudentNote, updateStudentNote } from '../../src/lib/storage';
-import { formatBalanceForDisplay, formatDateLocalized, getAgeInYearsAndMonthsTranslated, getMemberSinceAgeTranslated } from '@shared/utils/dateUtils';
+import {
+  Student,
+  Session,
+  BalanceTransaction,
+  StudentNote,
+} from '@shared/types';
+import {
+  getStudents,
+  getSessionsForStudent,
+  deleteStudent,
+  addBalanceTransaction,
+  addStudentNote,
+  deleteStudentNote,
+  updateStudentNote,
+} from '../../src/lib/storage';
+import {
+  formatBalanceForDisplay,
+  formatDateLocalized,
+  getAgeInYearsAndMonthsTranslated,
+  getMemberSinceAgeTranslated,
+} from '@shared/utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function StudentDetailsScreen() {
   const router = useRouter();
-  const { id, returnTo } = useLocalSearchParams<{ id: string; returnTo?: string }>();
+  const { id, returnTo } = useLocalSearchParams<{
+    id: string;
+    returnTo?: string;
+  }>();
   const { t, i18n } = useTranslation();
   const [student, setStudent] = useState<Student | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -19,8 +56,10 @@ export default function StudentDetailsScreen() {
   const [balanceAmount, setBalanceAmount] = useState('');
   const [balanceReason, setBalanceReason] = useState('');
   const [noteContent, setNoteContent] = useState('');
-  const [selectedTransaction, setSelectedTransaction] = useState<BalanceTransaction | null>(null);
-  const [showTransactionDetailsModal, setShowTransactionDetailsModal] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<BalanceTransaction | null>(null);
+  const [showTransactionDetailsModal, setShowTransactionDetailsModal] =
+    useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const [showNoteDetailsModal, setShowNoteDetailsModal] = useState(false);
   const [selectedNote, setSelectedNote] = useState<StudentNote | null>(null);
@@ -36,12 +75,14 @@ export default function StudentDetailsScreen() {
     setIsLoading(true);
     try {
       const studentsData = await getStudents();
-      const foundStudent = studentsData.find(s => s.id === id);
-      
+      const foundStudent = studentsData.find((s) => s.id === id);
+
       if (foundStudent) {
         setStudent(foundStudent);
         const studentSessions = await getSessionsForStudent(id as string);
-        setSessions(studentSessions.sort((a, b) => b.date.getTime() - a.date.getTime()));
+        setSessions(
+          studentSessions.sort((a, b) => b.date.getTime() - a.date.getTime())
+        );
         // Reset pagination when data reloads
         setTransactionPage(1);
         setSessionPage(1);
@@ -70,26 +111,22 @@ export default function StudentDetailsScreen() {
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      t('studentDetails.delete'),
-      t('studentDetails.confirmDelete'),
-      [
-        { text: t('studentDetails.cancel'), style: 'cancel' },
-        { 
-          text: t('studentDetails.delete'), 
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteStudent(id as string);
-              router.back();
-            } catch (error) {
-              console.error('Error deleting student:', error);
-              Alert.alert(t('common.error'), t('students.errorDeleting'));
-            }
+    Alert.alert(t('studentDetails.delete'), t('studentDetails.confirmDelete'), [
+      { text: t('studentDetails.cancel'), style: 'cancel' },
+      {
+        text: t('studentDetails.delete'),
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteStudent(id as string);
+            router.back();
+          } catch (error) {
+            console.error('Error deleting student:', error);
+            Alert.alert(t('common.error'), t('students.errorDeleting'));
           }
-        }
-      ]
-    );
+        },
+      },
+    ]);
   };
 
   const handleAddBalance = async () => {
@@ -113,7 +150,10 @@ export default function StudentDetailsScreen() {
       Alert.alert(t('common.success'), t('studentDetails.transactionAdded'));
     } catch (error) {
       console.error('Error adding balance transaction:', error);
-      Alert.alert(t('common.error'), t('studentDetails.errorAddingTransaction'));
+      Alert.alert(
+        t('common.error'),
+        t('studentDetails.errorAddingTransaction')
+      );
     }
   };
 
@@ -150,10 +190,13 @@ export default function StudentDetailsScreen() {
               await loadStudentData();
             } catch (error) {
               console.error('Error deleting note:', error);
-              Alert.alert(t('common.error'), t('studentDetails.errorDeletingNote'));
+              Alert.alert(
+                t('common.error'),
+                t('studentDetails.errorDeletingNote')
+              );
             }
-          }
-        }
+          },
+        },
       ]
     );
   };
@@ -169,7 +212,7 @@ export default function StudentDetailsScreen() {
 
   const handlePhoneCall = async (phoneNumber: string) => {
     if (!phoneNumber) return;
-    
+
     const phoneUrl = `tel:${phoneNumber}`;
     try {
       const canOpen = await Linking.canOpenURL(phoneUrl);
@@ -246,18 +289,29 @@ export default function StudentDetailsScreen() {
 
   const handleSaveNote = async () => {
     if (!selectedNote || !editedNoteContent.trim()) {
-      Alert.alert(t('common.error'), t('studentDetails.pleaseEnterNoteContent'));
+      Alert.alert(
+        t('common.error'),
+        t('studentDetails.pleaseEnterNoteContent')
+      );
       return;
     }
 
     setIsSavingNote(true);
     try {
-      await updateStudentNote(id as string, selectedNote.id, editedNoteContent.trim());
+      await updateStudentNote(
+        id as string,
+        selectedNote.id,
+        editedNoteContent.trim()
+      );
       setIsEditingNote(false);
       setHasNoteChanges(false);
       await loadStudentData();
       // Update the selected note with new content
-      const updatedNote = { ...selectedNote, content: editedNoteContent.trim(), updatedAt: new Date() };
+      const updatedNote = {
+        ...selectedNote,
+        content: editedNoteContent.trim(),
+        updatedAt: new Date(),
+      };
       setSelectedNote(updatedNote);
       Alert.alert(t('common.success'), t('studentDetails.noteUpdated'));
     } catch (error) {
@@ -282,8 +336,8 @@ export default function StudentDetailsScreen() {
               setIsEditingNote(false);
               setEditedNoteContent(selectedNote?.content || '');
               setHasNoteChanges(false);
-            }
-          }
+            },
+          },
         ]
       );
     } else {
@@ -308,8 +362,8 @@ export default function StudentDetailsScreen() {
               setHasNoteChanges(false);
               setShowNoteDetailsModal(false);
               setSelectedNote(null);
-            }
-          }
+            },
+          },
         ]
       );
     } else {
@@ -322,7 +376,7 @@ export default function StudentDetailsScreen() {
 
   const handleDeleteNoteFromModal = () => {
     if (!selectedNote) return;
-    
+
     Alert.alert(
       t('studentDetails.deleteNote'),
       t('studentDetails.confirmDeleteNote'),
@@ -339,35 +393,52 @@ export default function StudentDetailsScreen() {
               await loadStudentData();
             } catch (error) {
               console.error('Error deleting note:', error);
-              Alert.alert(t('common.error'), t('studentDetails.errorDeletingNote'));
+              Alert.alert(
+                t('common.error'),
+                t('studentDetails.errorDeletingNote')
+              );
             }
-          }
-        }
+          },
+        },
       ]
     );
   };
 
   // Calculate paginated transactions
   const sortedTransactions = student?.balanceTransactions
-    ? [...student.balanceTransactions].sort((a, b) => b.date.getTime() - a.date.getTime())
+    ? [...student.balanceTransactions].sort(
+        (a, b) => b.date.getTime() - a.date.getTime()
+      )
     : [];
-  const totalTransactionPages = Math.ceil(sortedTransactions.length / ITEMS_PER_PAGE);
+  const totalTransactionPages = Math.ceil(
+    sortedTransactions.length / ITEMS_PER_PAGE
+  );
   const startTransactionIndex = (transactionPage - 1) * ITEMS_PER_PAGE;
   const endTransactionIndex = startTransactionIndex + ITEMS_PER_PAGE;
-  const paginatedTransactions = sortedTransactions.slice(startTransactionIndex, endTransactionIndex);
+  const paginatedTransactions = sortedTransactions.slice(
+    startTransactionIndex,
+    endTransactionIndex
+  );
 
   // Calculate paginated sessions
-  const sortedSessions = [...sessions].sort((a, b) => b.date.getTime() - a.date.getTime());
+  const sortedSessions = [...sessions].sort(
+    (a, b) => b.date.getTime() - a.date.getTime()
+  );
   const totalSessionPages = Math.ceil(sortedSessions.length / ITEMS_PER_PAGE);
   const startSessionIndex = (sessionPage - 1) * ITEMS_PER_PAGE;
   const endSessionIndex = startSessionIndex + ITEMS_PER_PAGE;
-  const paginatedSessions = sortedSessions.slice(startSessionIndex, endSessionIndex);
+  const paginatedSessions = sortedSessions.slice(
+    startSessionIndex,
+    endSessionIndex
+  );
 
   if (isLoading) {
     return (
       <View style={styles.centerContainer}>
         <ActivityIndicator size="large" color="#4f46e5" />
-        <Text style={styles.loadingText}>{t('studentDetails.loadingStudentDetails')}</Text>
+        <Text style={styles.loadingText}>
+          {t('studentDetails.loadingStudentDetails')}
+        </Text>
       </View>
     );
   }
@@ -376,9 +447,16 @@ export default function StudentDetailsScreen() {
     return (
       <View style={styles.centerContainer}>
         <Ionicons name="alert-circle-outline" size={64} color="#dc2626" />
-        <Text style={styles.errorText}>{t('studentDetails.studentNotFound')}</Text>
-        <TouchableOpacity style={styles.backToListButton} onPress={() => router.back()}>
-          <Text style={styles.backToListButtonText}>{t('studentDetails.returnToStudents')}</Text>
+        <Text style={styles.errorText}>
+          {t('studentDetails.studentNotFound')}
+        </Text>
+        <TouchableOpacity
+          style={styles.backToListButton}
+          onPress={() => router.back()}
+        >
+          <Text style={styles.backToListButtonText}>
+            {t('studentDetails.returnToStudents')}
+          </Text>
         </TouchableOpacity>
       </View>
     );
@@ -387,13 +465,18 @@ export default function StudentDetailsScreen() {
   const locale = i18n.language === 'ru' ? 'ru-RU' : 'en-US';
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.headerButton}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.headerButton}
+        >
           <Text style={styles.backButtonText}>← Back</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle} numberOfLines={1}>{student.name}</Text>
+        <Text style={styles.headerTitle} numberOfLines={1}>
+          {student.name}
+        </Text>
         <View style={styles.headerActions}>
           <TouchableOpacity onPress={handleEdit} style={styles.headerButton}>
             <Ionicons name="pencil" size={20} color="#4f46e5" />
@@ -407,11 +490,18 @@ export default function StudentDetailsScreen() {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Personal Information */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('studentDetails.personalInformation')}</Text>
-          
+          <Text style={styles.sectionTitle}>
+            {t('studentDetails.personalInformation')}
+          </Text>
+
           <View style={styles.infoRow}>
             <View style={styles.labelContainer}>
-              <Ionicons name="person-outline" size={16} color="#6b7280" style={styles.labelIcon} />
+              <Ionicons
+                name="person-outline"
+                size={16}
+                color="#6b7280"
+                style={styles.labelIcon}
+              />
               <Text style={styles.infoLabel}>{t('studentDetails.name')}</Text>
             </View>
             <Text style={styles.infoValue}>{student.name}</Text>
@@ -419,11 +509,16 @@ export default function StudentDetailsScreen() {
 
           <View style={styles.infoRow}>
             <View style={styles.labelContainer}>
-              <Ionicons name="call-outline" size={16} color="#6b7280" style={styles.labelIcon} />
+              <Ionicons
+                name="call-outline"
+                size={16}
+                color="#6b7280"
+                style={styles.labelIcon}
+              />
               <Text style={styles.infoLabel}>{t('studentDetails.phone')}</Text>
             </View>
             {student.phone ? (
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => handlePhoneCall(student.phone)}
                 activeOpacity={0.7}
                 style={styles.phoneContainer}
@@ -431,7 +526,12 @@ export default function StudentDetailsScreen() {
                 <Text style={[styles.infoValue, styles.phoneValue]}>
                   {student.phone}
                 </Text>
-                <Ionicons name="call-outline" size={18} color="#4f46e5" style={styles.phoneIcon} />
+                <Ionicons
+                  name="call-outline"
+                  size={18}
+                  color="#4f46e5"
+                  style={styles.phoneIcon}
+                />
               </TouchableOpacity>
             ) : (
               <Text style={[styles.infoValue, styles.emptyValue]}>
@@ -442,73 +542,151 @@ export default function StudentDetailsScreen() {
 
           <View style={styles.infoRow}>
             <View style={styles.labelContainer}>
-              <Ionicons name="scale-outline" size={16} color="#6b7280" style={styles.labelIcon} />
+              <Ionicons
+                name="scale-outline"
+                size={16}
+                color="#6b7280"
+                style={styles.labelIcon}
+              />
               <Text style={styles.infoLabel}>{t('studentDetails.weight')}</Text>
             </View>
-            <Text style={[styles.infoValue, !student.weight && styles.emptyValue]}>
-              {student.weight ? `${student.weight} ${t('common.kg')}` : t('studentDetails.notSpecified')}
+            <Text
+              style={[styles.infoValue, !student.weight && styles.emptyValue]}
+            >
+              {student.weight
+                ? `${student.weight} ${t('common.kg')}`
+                : t('studentDetails.notSpecified')}
             </Text>
           </View>
 
           <View style={styles.infoRow}>
             <View style={styles.labelContainer}>
-              <Ionicons name="resize-outline" size={16} color="#6b7280" style={styles.labelIcon} />
+              <Ionicons
+                name="resize-outline"
+                size={16}
+                color="#6b7280"
+                style={styles.labelIcon}
+              />
               <Text style={styles.infoLabel}>{t('studentDetails.height')}</Text>
             </View>
-            <Text style={[styles.infoValue, !student.height && styles.emptyValue]}>
-              {student.height ? `${student.height} ${t('common.cm')}` : t('studentDetails.notSpecified')}
+            <Text
+              style={[styles.infoValue, !student.height && styles.emptyValue]}
+            >
+              {student.height
+                ? `${student.height} ${t('common.cm')}`
+                : t('studentDetails.notSpecified')}
             </Text>
           </View>
 
           <View style={styles.infoRow}>
             <View style={styles.labelContainer}>
-              <Ionicons name="calendar-outline" size={16} color="#6b7280" style={styles.labelIcon} />
-              <Text style={styles.infoLabel}>{t('studentDetails.birthday')}</Text>
+              <Ionicons
+                name="calendar-outline"
+                size={16}
+                color="#6b7280"
+                style={styles.labelIcon}
+              />
+              <Text style={styles.infoLabel}>
+                {t('studentDetails.birthday')}
+              </Text>
             </View>
-            <Text style={[styles.infoValue, !student.birthday && styles.emptyValue]}>
-              {student.birthday ? formatDateLocalized(student.birthday, locale) : t('studentDetails.notSpecified')}
+            <Text
+              style={[styles.infoValue, !student.birthday && styles.emptyValue]}
+            >
+              {student.birthday
+                ? formatDateLocalized(student.birthday, locale)
+                : t('studentDetails.notSpecified')}
             </Text>
           </View>
 
           <View style={styles.infoRow}>
             <View style={styles.labelContainer}>
-              <Ionicons name="time-outline" size={16} color="#6b7280" style={styles.labelIcon} />
+              <Ionicons
+                name="time-outline"
+                size={16}
+                color="#6b7280"
+                style={styles.labelIcon}
+              />
               <Text style={styles.infoLabel}>{t('studentDetails.age')}</Text>
             </View>
-            <Text style={[styles.infoValue, !student.birthday && styles.emptyValue]}>
+            <Text
+              style={[styles.infoValue, !student.birthday && styles.emptyValue]}
+            >
               {getAgeInYearsAndMonthsTranslated(student.birthday, t)}
             </Text>
           </View>
 
           <View style={styles.infoRow}>
             <View style={styles.labelContainer}>
-              <Ionicons name="calendar-outline" size={16} color="#6b7280" style={styles.labelIcon} />
-              <Text style={styles.infoLabel}>{t('studentDetails.memberSince')}</Text>
+              <Ionicons
+                name="calendar-outline"
+                size={16}
+                color="#6b7280"
+                style={styles.labelIcon}
+              />
+              <Text style={styles.infoLabel}>
+                {t('studentDetails.memberSince')}
+              </Text>
             </View>
-            <Text style={[styles.infoValue, !student.memberSince && styles.emptyValue]}>
-              {student.memberSince ? formatDateLocalized(student.memberSince, locale) : t('studentDetails.notSpecified')}
+            <Text
+              style={[
+                styles.infoValue,
+                !student.memberSince && styles.emptyValue,
+              ]}
+            >
+              {student.memberSince
+                ? formatDateLocalized(student.memberSince, locale)
+                : t('studentDetails.notSpecified')}
             </Text>
           </View>
 
           <View style={styles.infoRow}>
             <View style={styles.labelContainer}>
-              <Ionicons name="time-outline" size={16} color="#6b7280" style={styles.labelIcon} />
-              <Text style={styles.infoLabel}>{t('studentDetails.memberSinceAge')}</Text>
+              <Ionicons
+                name="time-outline"
+                size={16}
+                color="#6b7280"
+                style={styles.labelIcon}
+              />
+              <Text style={styles.infoLabel}>
+                {t('studentDetails.memberSinceAge')}
+              </Text>
             </View>
-            <Text style={styles.infoValue}>{getMemberSinceAgeTranslated(student.memberSince, t)}</Text>
+            <Text style={styles.infoValue}>
+              {getMemberSinceAgeTranslated(student.memberSince, t)}
+            </Text>
           </View>
 
           <View style={styles.balanceRow}>
             <View>
               <View style={styles.labelContainer}>
-                <Ionicons name="wallet-outline" size={16} color="#6b7280" style={styles.labelIcon} />
-                <Text style={styles.infoLabel}>{t('studentDetails.currentBalance')}</Text>
+                <Ionicons
+                  name="wallet-outline"
+                  size={16}
+                  color="#6b7280"
+                  style={styles.labelIcon}
+                />
+                <Text style={styles.infoLabel}>
+                  {t('studentDetails.currentBalance')}
+                </Text>
               </View>
-              <Text style={[styles.balanceValue, { color: getBalanceColor(student.balance) }]}>
-                {student.balance > 0 ? '+' : ''}{formatBalanceForDisplay(student.balance)} {Math.abs(student.balance) === 1 ? t('calendar.sessions.session') : t('calendar.sessions.sessions')}
+              <Text
+                style={[
+                  styles.balanceValue,
+                  { color: getBalanceColor(student.balance) },
+                ]}
+              >
+                {student.balance > 0 ? '+' : ''}
+                {formatBalanceForDisplay(student.balance)}{' '}
+                {Math.abs(student.balance) === 1
+                  ? t('calendar.sessions.session')
+                  : t('calendar.sessions.sessions')}
               </Text>
             </View>
-            <TouchableOpacity style={styles.addBalanceButton} onPress={() => setShowBalanceModal(true)}>
+            <TouchableOpacity
+              style={styles.addBalanceButton}
+              onPress={() => setShowBalanceModal(true)}
+            >
               <Ionicons name="add" size={20} color="#fff" />
             </TouchableOpacity>
           </View>
@@ -517,38 +695,62 @@ export default function StudentDetailsScreen() {
         {/* Description */}
         <View style={styles.section}>
           <View style={styles.sectionTitleContainer}>
-            <Ionicons name="document-text-outline" size={20} color="#111827" style={styles.sectionTitleIcon} />
-            <Text style={styles.sectionTitleWithIcon}>{t('studentDetails.description')}</Text>
+            <Ionicons
+              name="document-text-outline"
+              size={20}
+              color="#111827"
+              style={styles.sectionTitleIcon}
+            />
+            <Text style={styles.sectionTitleWithIcon}>
+              {t('studentDetails.description')}
+            </Text>
           </View>
-          {student.description ? (() => {
-            const { truncated, hasMore } = getTruncatedDescription(student.description);
-            return (
-              <TouchableOpacity 
-                onPress={hasMore ? () => setShowDescriptionModal(true) : undefined}
-                activeOpacity={hasMore ? 0.7 : 1}
-                disabled={!hasMore}
-              >
-                <Text style={styles.descriptionText}>
-                  {truncated}
+          {student.description ? (
+            (() => {
+              const { truncated, hasMore } = getTruncatedDescription(
+                student.description
+              );
+              return (
+                <TouchableOpacity
+                  onPress={
+                    hasMore ? () => setShowDescriptionModal(true) : undefined
+                  }
+                  activeOpacity={hasMore ? 0.7 : 1}
+                  disabled={!hasMore}
+                >
+                  <Text style={styles.descriptionText}>
+                    {truncated}
+                    {hasMore && (
+                      <Text style={styles.descriptionMoreText}>...</Text>
+                    )}
+                  </Text>
                   {hasMore && (
-                    <Text style={styles.descriptionMoreText}>...</Text>
+                    <Text style={styles.descriptionTapHint}>
+                      {t('studentDetails.tapToViewFull')}
+                    </Text>
                   )}
-                </Text>
-                {hasMore && (
-                  <Text style={styles.descriptionTapHint}>{t('studentDetails.tapToViewFull')}</Text>
-                )}
-              </TouchableOpacity>
-            );
-          })() : (
-            <Text style={styles.emptyText}>{t('studentDetails.noDescriptionProvided')}</Text>
+                </TouchableOpacity>
+              );
+            })()
+          ) : (
+            <Text style={styles.emptyText}>
+              {t('studentDetails.noDescriptionProvided')}
+            </Text>
           )}
         </View>
 
         {/* Goals */}
         <View style={styles.section}>
           <View style={styles.sectionTitleContainer}>
-            <Ionicons name="flag-outline" size={20} color="#111827" style={styles.sectionTitleIcon} />
-            <Text style={styles.sectionTitleWithIcon}>{t('studentDetails.goalsFocusAreas')}</Text>
+            <Ionicons
+              name="flag-outline"
+              size={20}
+              color="#111827"
+              style={styles.sectionTitleIcon}
+            />
+            <Text style={styles.sectionTitleWithIcon}>
+              {t('studentDetails.goalsFocusAreas')}
+            </Text>
           </View>
           {student.goals && student.goals.length > 0 ? (
             <View style={styles.goalsContainer}>
@@ -559,7 +761,9 @@ export default function StudentDetailsScreen() {
               ))}
             </View>
           ) : (
-            <Text style={styles.emptyText}>{t('studentDetails.noGoalsSet')}</Text>
+            <Text style={styles.emptyText}>
+              {t('studentDetails.noGoalsSet')}
+            </Text>
           )}
         </View>
 
@@ -567,14 +771,21 @@ export default function StudentDetailsScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <View style={styles.sectionTitleContainer}>
-              <Ionicons name="document-outline" size={20} color="#111827" style={styles.sectionTitleIcon} />
-              <Text style={styles.sectionTitleWithIcon}>{t('studentDetails.notes')}</Text>
+              <Ionicons
+                name="document-outline"
+                size={20}
+                color="#111827"
+                style={styles.sectionTitleIcon}
+              />
+              <Text style={styles.sectionTitleWithIcon}>
+                {t('studentDetails.notes')}
+              </Text>
             </View>
             <TouchableOpacity onPress={() => setShowNoteModal(true)}>
               <Ionicons name="add-circle" size={24} color="#4f46e5" />
             </TouchableOpacity>
           </View>
-          
+
           {student.notes && student.notes.length > 0 ? (
             student.notes
               .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
@@ -582,8 +793,10 @@ export default function StudentDetailsScreen() {
                 const { truncated, hasMore } = getTruncatedNote(note.content);
                 return (
                   <View key={note.id} style={styles.noteCard}>
-                    <TouchableOpacity 
-                      onPress={hasMore ? () => handleNoteClick(note) : undefined}
+                    <TouchableOpacity
+                      onPress={
+                        hasMore ? () => handleNoteClick(note) : undefined
+                      }
                       activeOpacity={hasMore ? 0.7 : 1}
                       disabled={!hasMore}
                     >
@@ -594,161 +807,294 @@ export default function StudentDetailsScreen() {
                         )}
                       </Text>
                       {hasMore && (
-                        <Text style={styles.descriptionTapHint}>{t('studentDetails.tapToViewFull')}</Text>
+                        <Text style={styles.descriptionTapHint}>
+                          {t('studentDetails.tapToViewFull')}
+                        </Text>
                       )}
                     </TouchableOpacity>
                     <View style={styles.noteFooter}>
                       <Text style={styles.noteDate}>
                         {formatDateLocalized(note.timestamp, locale)}
                       </Text>
-                      <TouchableOpacity onPress={() => handleDeleteNote(note.id)}>
-                        <Ionicons name="trash-outline" size={18} color="#dc2626" />
+                      <TouchableOpacity
+                        onPress={() => handleDeleteNote(note.id)}
+                      >
+                        <Ionicons
+                          name="trash-outline"
+                          size={18}
+                          color="#dc2626"
+                        />
                       </TouchableOpacity>
                     </View>
                   </View>
                 );
               })
           ) : (
-            <Text style={styles.emptyText}>{t('studentDetails.noNotesYet')}</Text>
+            <Text style={styles.emptyText}>
+              {t('studentDetails.noNotesYet')}
+            </Text>
           )}
         </View>
 
         {/* Balance Transactions */}
         <View style={styles.section}>
           <View style={styles.sectionTitleContainer}>
-            <Ionicons name="wallet-outline" size={20} color="#111827" style={styles.sectionTitleIcon} />
+            <Ionicons
+              name="wallet-outline"
+              size={20}
+              color="#111827"
+              style={styles.sectionTitleIcon}
+            />
             <Text style={styles.sectionTitleWithIcon}>
-              {t('studentDetails.balanceTransactionHistory')} ({sortedTransactions.length})
+              {t('studentDetails.balanceTransactionHistory')} (
+              {sortedTransactions.length})
             </Text>
           </View>
-          
+
           {sortedTransactions.length > 0 ? (
             <>
               {paginatedTransactions.map((transaction) => (
-                <TouchableOpacity 
-                  key={transaction.id} 
+                <TouchableOpacity
+                  key={transaction.id}
                   style={styles.transactionCard}
                   onPress={() => handleTransactionClick(transaction)}
                   activeOpacity={0.7}
                 >
                   <View style={styles.transactionHeader}>
-                    <Text style={styles.transactionDate}>{formatDateLocalized(transaction.date, locale)}</Text>
-                    <Text style={[styles.transactionAmount, { color: transaction.changeAmount > 0 ? '#16a34a' : '#dc2626' }]}>
-                      {transaction.changeAmount > 0 ? '+' : ''}{transaction.changeAmount}
+                    <Text style={styles.transactionDate}>
+                      {formatDateLocalized(transaction.date, locale)}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.transactionAmount,
+                        {
+                          color:
+                            transaction.changeAmount > 0
+                              ? '#16a34a'
+                              : '#dc2626',
+                        },
+                      ]}
+                    >
+                      {transaction.changeAmount > 0 ? '+' : ''}
+                      {transaction.changeAmount}
                     </Text>
                   </View>
-                  <Text style={styles.transactionReason}>{transaction.reason}</Text>
+                  <Text style={styles.transactionReason}>
+                    {transaction.reason}
+                  </Text>
                   <Text style={styles.transactionBalance}>
-                    {t('studentDetails.updatedBalance')}: {transaction.balanceAfter}
+                    {t('studentDetails.updatedBalance')}:{' '}
+                    {transaction.balanceAfter}
                   </Text>
                 </TouchableOpacity>
               ))}
-              
+
               {/* Pagination Controls for Transactions */}
               {totalTransactionPages > 1 && (
                 <View style={styles.paginationContainer}>
                   <TouchableOpacity
-                    style={[styles.paginationButton, transactionPage === 1 && styles.paginationButtonDisabled]}
-                    onPress={() => setTransactionPage(prev => Math.max(1, prev - 1))}
+                    style={[
+                      styles.paginationButton,
+                      transactionPage === 1 && styles.paginationButtonDisabled,
+                    ]}
+                    onPress={() =>
+                      setTransactionPage((prev) => Math.max(1, prev - 1))
+                    }
                     disabled={transactionPage === 1}
                   >
-                    <Ionicons name="chevron-back" size={20} color={transactionPage === 1 ? '#9ca3af' : '#4f46e5'} />
-                    <Text style={[styles.paginationButtonText, transactionPage === 1 && styles.paginationButtonTextDisabled]}>
+                    <Ionicons
+                      name="chevron-back"
+                      size={20}
+                      color={transactionPage === 1 ? '#9ca3af' : '#4f46e5'}
+                    />
+                    <Text
+                      style={[
+                        styles.paginationButtonText,
+                        transactionPage === 1 &&
+                          styles.paginationButtonTextDisabled,
+                      ]}
+                    >
                       {t('studentDetails.previous')}
                     </Text>
                   </TouchableOpacity>
-                  
+
                   <Text style={styles.paginationInfo}>
-                    {t('studentDetails.page')} {transactionPage} {t('studentDetails.of')} {totalTransactionPages}
+                    {t('studentDetails.page')} {transactionPage}{' '}
+                    {t('studentDetails.of')} {totalTransactionPages}
                   </Text>
-                  
+
                   <TouchableOpacity
-                    style={[styles.paginationButton, transactionPage === totalTransactionPages && styles.paginationButtonDisabled]}
-                    onPress={() => setTransactionPage(prev => Math.min(totalTransactionPages, prev + 1))}
+                    style={[
+                      styles.paginationButton,
+                      transactionPage === totalTransactionPages &&
+                        styles.paginationButtonDisabled,
+                    ]}
+                    onPress={() =>
+                      setTransactionPage((prev) =>
+                        Math.min(totalTransactionPages, prev + 1)
+                      )
+                    }
                     disabled={transactionPage === totalTransactionPages}
                   >
-                    <Text style={[styles.paginationButtonText, transactionPage === totalTransactionPages && styles.paginationButtonTextDisabled]}>
+                    <Text
+                      style={[
+                        styles.paginationButtonText,
+                        transactionPage === totalTransactionPages &&
+                          styles.paginationButtonTextDisabled,
+                      ]}
+                    >
                       {t('studentDetails.next')}
                     </Text>
-                    <Ionicons name="chevron-forward" size={20} color={transactionPage === totalTransactionPages ? '#9ca3af' : '#4f46e5'} />
+                    <Ionicons
+                      name="chevron-forward"
+                      size={20}
+                      color={
+                        transactionPage === totalTransactionPages
+                          ? '#9ca3af'
+                          : '#4f46e5'
+                      }
+                    />
                   </TouchableOpacity>
                 </View>
               )}
             </>
           ) : (
-            <Text style={styles.emptyText}>{t('studentDetails.noBalanceTransactions')}</Text>
+            <Text style={styles.emptyText}>
+              {t('studentDetails.noBalanceTransactions')}
+            </Text>
           )}
         </View>
 
         {/* Sessions */}
         <View style={styles.section}>
           <View style={styles.sectionTitleContainer}>
-            <Ionicons name="calendar-outline" size={20} color="#111827" style={styles.sectionTitleIcon} />
+            <Ionicons
+              name="calendar-outline"
+              size={20}
+              color="#111827"
+              style={styles.sectionTitleIcon}
+            />
             <Text style={styles.sectionTitleWithIcon}>
               {t('studentDetails.sessionHistory')} ({sortedSessions.length})
             </Text>
           </View>
-          
+
           {sortedSessions.length > 0 ? (
             <>
               {paginatedSessions.map((session) => {
                 const statusColors = getStatusColor(session.status);
                 return (
-                  <TouchableOpacity 
-                    key={session.id} 
+                  <TouchableOpacity
+                    key={session.id}
                     style={styles.sessionCard}
                     onPress={() => handleSessionClick(session)}
                     activeOpacity={0.7}
                   >
                     <View style={styles.sessionHeader}>
-                      <Text style={styles.sessionDate}>{formatDateLocalized(session.date, locale)}</Text>
-                      <View style={[styles.statusBadge, { backgroundColor: statusColors.bg }]}>
-                        <Text style={[styles.statusText, { color: statusColors.text }]}>
+                      <Text style={styles.sessionDate}>
+                        {formatDateLocalized(session.date, locale)}
+                      </Text>
+                      <View
+                        style={[
+                          styles.statusBadge,
+                          { backgroundColor: statusColors.bg },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.statusText,
+                            { color: statusColors.text },
+                          ]}
+                        >
                           {t(`sessionDetails.${session.status}`)}
                         </Text>
                       </View>
                     </View>
-                    <Text style={styles.sessionTime}>{session.startTime} - {session.endTime}</Text>
+                    <Text style={styles.sessionTime}>
+                      {session.startTime} - {session.endTime}
+                    </Text>
                     <Text style={styles.sessionType}>
-                      {session.sessionType === 'individual' ? t('sessions.individual') : t('sessions.team')}
+                      {session.sessionType === 'individual'
+                        ? t('sessions.individual')
+                        : t('sessions.team')}
                     </Text>
                   </TouchableOpacity>
                 );
               })}
-              
+
               {/* Pagination Controls for Sessions */}
               {totalSessionPages > 1 && (
                 <View style={styles.paginationContainer}>
                   <TouchableOpacity
-                    style={[styles.paginationButton, sessionPage === 1 && styles.paginationButtonDisabled]}
-                    onPress={() => setSessionPage(prev => Math.max(1, prev - 1))}
+                    style={[
+                      styles.paginationButton,
+                      sessionPage === 1 && styles.paginationButtonDisabled,
+                    ]}
+                    onPress={() =>
+                      setSessionPage((prev) => Math.max(1, prev - 1))
+                    }
                     disabled={sessionPage === 1}
                   >
-                    <Ionicons name="chevron-back" size={20} color={sessionPage === 1 ? '#9ca3af' : '#4f46e5'} />
-                    <Text style={[styles.paginationButtonText, sessionPage === 1 && styles.paginationButtonTextDisabled]}>
+                    <Ionicons
+                      name="chevron-back"
+                      size={20}
+                      color={sessionPage === 1 ? '#9ca3af' : '#4f46e5'}
+                    />
+                    <Text
+                      style={[
+                        styles.paginationButtonText,
+                        sessionPage === 1 &&
+                          styles.paginationButtonTextDisabled,
+                      ]}
+                    >
                       {t('studentDetails.previous')}
                     </Text>
                   </TouchableOpacity>
-                  
+
                   <Text style={styles.paginationInfo}>
-                    {t('studentDetails.page')} {sessionPage} {t('studentDetails.of')} {totalSessionPages}
+                    {t('studentDetails.page')} {sessionPage}{' '}
+                    {t('studentDetails.of')} {totalSessionPages}
                   </Text>
-                  
+
                   <TouchableOpacity
-                    style={[styles.paginationButton, sessionPage === totalSessionPages && styles.paginationButtonDisabled]}
-                    onPress={() => setSessionPage(prev => Math.min(totalSessionPages, prev + 1))}
+                    style={[
+                      styles.paginationButton,
+                      sessionPage === totalSessionPages &&
+                        styles.paginationButtonDisabled,
+                    ]}
+                    onPress={() =>
+                      setSessionPage((prev) =>
+                        Math.min(totalSessionPages, prev + 1)
+                      )
+                    }
                     disabled={sessionPage === totalSessionPages}
                   >
-                    <Text style={[styles.paginationButtonText, sessionPage === totalSessionPages && styles.paginationButtonTextDisabled]}>
+                    <Text
+                      style={[
+                        styles.paginationButtonText,
+                        sessionPage === totalSessionPages &&
+                          styles.paginationButtonTextDisabled,
+                      ]}
+                    >
                       {t('studentDetails.next')}
                     </Text>
-                    <Ionicons name="chevron-forward" size={20} color={sessionPage === totalSessionPages ? '#9ca3af' : '#4f46e5'} />
+                    <Ionicons
+                      name="chevron-forward"
+                      size={20}
+                      color={
+                        sessionPage === totalSessionPages
+                          ? '#9ca3af'
+                          : '#4f46e5'
+                      }
+                    />
                   </TouchableOpacity>
                 </View>
               )}
             </>
           ) : (
-            <Text style={styles.emptyText}>{t('studentDetails.noSessionsRecorded')}</Text>
+            <Text style={styles.emptyText}>
+              {t('studentDetails.noSessionsRecorded')}
+            </Text>
           )}
         </View>
 
@@ -759,8 +1105,10 @@ export default function StudentDetailsScreen() {
       {showBalanceModal && (
         <View style={styles.modalOverlay}>
           <View style={styles.modal}>
-            <Text style={styles.modalTitle}>{t('studentDetails.addBalanceTransactionTitle')}</Text>
-            
+            <Text style={styles.modalTitle}>
+              {t('studentDetails.addBalanceTransactionTitle')}
+            </Text>
+
             <View style={styles.inputGroup}>
               <Text style={styles.label}>{t('studentDetails.amount')}</Text>
               <TextInput
@@ -774,7 +1122,9 @@ export default function StudentDetailsScreen() {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>{t('studentDetails.reasonDescription')}</Text>
+              <Text style={styles.label}>
+                {t('studentDetails.reasonDescription')}
+              </Text>
               <TextInput
                 style={styles.input}
                 value={balanceReason}
@@ -785,18 +1135,25 @@ export default function StudentDetailsScreen() {
             </View>
 
             <View style={styles.modalActions}>
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.modalButtonCancel]} 
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonCancel]}
                 onPress={() => {
                   setShowBalanceModal(false);
                   setBalanceAmount('');
                   setBalanceReason('');
                 }}
               >
-                <Text style={styles.modalButtonTextCancel}>{t('studentDetails.cancel')}</Text>
+                <Text style={styles.modalButtonTextCancel}>
+                  {t('studentDetails.cancel')}
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.modalButton, styles.modalButtonConfirm]} onPress={handleAddBalance}>
-                <Text style={styles.modalButtonTextConfirm}>{t('studentDetails.addTransaction')}</Text>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonConfirm]}
+                onPress={handleAddBalance}
+              >
+                <Text style={styles.modalButtonTextConfirm}>
+                  {t('studentDetails.addTransaction')}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -808,7 +1165,7 @@ export default function StudentDetailsScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modal}>
             <Text style={styles.modalTitle}>{t('studentDetails.addNote')}</Text>
-            
+
             <View style={styles.inputGroup}>
               <TextInput
                 style={[styles.input, styles.textArea]}
@@ -823,17 +1180,24 @@ export default function StudentDetailsScreen() {
             </View>
 
             <View style={styles.modalActions}>
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.modalButtonCancel]} 
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonCancel]}
                 onPress={() => {
                   setShowNoteModal(false);
                   setNoteContent('');
                 }}
               >
-                <Text style={styles.modalButtonTextCancel}>{t('studentDetails.cancel')}</Text>
+                <Text style={styles.modalButtonTextCancel}>
+                  {t('studentDetails.cancel')}
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.modalButton, styles.modalButtonConfirm]} onPress={handleAddNote}>
-                <Text style={styles.modalButtonTextConfirm}>{t('studentDetails.save')}</Text>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalButtonConfirm]}
+                onPress={handleAddNote}
+              >
+                <Text style={styles.modalButtonTextConfirm}>
+                  {t('studentDetails.save')}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -850,25 +1214,34 @@ export default function StudentDetailsScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{t('studentDetails.description')}</Text>
+              <Text style={styles.modalTitle}>
+                {t('studentDetails.description')}
+              </Text>
             </View>
 
             {student && student.description && (
-              <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
+              <ScrollView
+                style={styles.modalBody}
+                showsVerticalScrollIndicator={false}
+              >
                 <View style={styles.detailSection}>
                   <View style={styles.descriptionCard}>
-                    <Text style={styles.descriptionModalText}>{student.description}</Text>
+                    <Text style={styles.descriptionModalText}>
+                      {student.description}
+                    </Text>
                   </View>
                 </View>
               </ScrollView>
             )}
 
             <View style={styles.modalFooter}>
-              <TouchableOpacity 
-                style={styles.modalCloseButton} 
+              <TouchableOpacity
+                style={styles.modalCloseButton}
                 onPress={() => setShowDescriptionModal(false)}
               >
-                <Text style={styles.modalCloseButtonText}>{t('transactionDetails.close')}</Text>
+                <Text style={styles.modalCloseButtonText}>
+                  {t('transactionDetails.close')}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -883,102 +1256,129 @@ export default function StudentDetailsScreen() {
         onRequestClose={handleCloseNoteModal}
       >
         <View style={styles.modalOverlay}>
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          >
             <View style={styles.modalContent}>
-                  <View style={styles.modalHeader}>
-                    <Text style={styles.modalTitle}>{t('studentDetails.notes')}</Text>
-                    {!isEditingNote && selectedNote && (
-                      <View style={styles.modalHeaderActions}>
-                        <TouchableOpacity onPress={handleEditNote} style={styles.modalHeaderButton}>
-                          <Ionicons name="pencil" size={20} color="#4f46e5" />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={handleDeleteNoteFromModal} style={styles.modalHeaderButton}>
-                          <Ionicons name="trash" size={20} color="#dc2626" />
-                        </TouchableOpacity>
-                      </View>
-                    )}
-                  </View>
-
-                  {selectedNote && (
-                    <ScrollView 
-                      style={styles.modalBody} 
-                      showsVerticalScrollIndicator={true}
-                      keyboardShouldPersistTaps="handled"
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>
+                  {t('studentDetails.notes')}
+                </Text>
+                {!isEditingNote && selectedNote && (
+                  <View style={styles.modalHeaderActions}>
+                    <TouchableOpacity
+                      onPress={handleEditNote}
+                      style={styles.modalHeaderButton}
                     >
-                        <View style={styles.detailSection}>
-                          {isEditingNote ? (
-                            <View style={styles.descriptionCard}>
-                              <TextInput
-                                style={[styles.input, styles.textArea, styles.noteEditInput]}
-                                value={editedNoteContent}
-                                onChangeText={handleNoteContentChange}
-                                placeholder={t('studentDetails.enterNoteContent')}
-                                placeholderTextColor="#9ca3af"
-                                multiline
-                                textAlignVertical="top"
-                                keyboardType="default"
-                                returnKeyType="default"
-                                blurOnSubmit={false}
-                              />
-                            </View>
-                          ) : (
-                            <View style={styles.descriptionCard}>
-                              <Text style={styles.descriptionModalText}>{selectedNote.content}</Text>
-                            </View>
-                          )}
-                          {!isEditingNote && (
-                            <View style={styles.noteModalFooter}>
-                              <Text style={styles.noteDate}>
-                                {t('studentDetails.created')}: {formatDateLocalized(selectedNote.timestamp, locale)}
-                              </Text>
-                              {selectedNote.updatedAt && (
-                                <Text style={styles.noteDate}>
-                                  {t('studentDetails.updated')}: {formatDateLocalized(selectedNote.updatedAt, locale)}
-                                </Text>
-                              )}
-                            </View>
-                          )}
-                        </View>
-                    </ScrollView>
-                  )}
+                      <Ionicons name="pencil" size={20} color="#4f46e5" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={handleDeleteNoteFromModal}
+                      style={styles.modalHeaderButton}
+                    >
+                      <Ionicons name="trash" size={20} color="#dc2626" />
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
 
-                  <View style={styles.modalFooter}>
+              {selectedNote && (
+                <ScrollView
+                  style={styles.modalBody}
+                  showsVerticalScrollIndicator={true}
+                  keyboardShouldPersistTaps="handled"
+                >
+                  <View style={styles.detailSection}>
                     {isEditingNote ? (
-                      <View style={styles.modalFooterActions}>
-                        <TouchableOpacity 
-                          style={[styles.modalButton, styles.modalButtonCancel]} 
-                          onPress={() => {
-                            Keyboard.dismiss();
-                            handleCancelEditNote();
-                          }}
-                          disabled={isSavingNote}
-                        >
-                          <Text style={styles.modalButtonTextCancel}>{t('studentDetails.cancel')}</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity 
-                          style={[styles.modalButton, styles.modalButtonConfirm]} 
-                          onPress={() => {
-                            Keyboard.dismiss();
-                            handleSaveNote();
-                          }}
-                          disabled={isSavingNote}
-                        >
-                          {isSavingNote ? (
-                            <ActivityIndicator size="small" color="#fff" />
-                          ) : (
-                            <Text style={styles.modalButtonTextConfirm}>{t('studentDetails.save')}</Text>
-                          )}
-                        </TouchableOpacity>
+                      <View style={styles.descriptionCard}>
+                        <TextInput
+                          style={[
+                            styles.input,
+                            styles.textArea,
+                            styles.noteEditInput,
+                          ]}
+                          value={editedNoteContent}
+                          onChangeText={handleNoteContentChange}
+                          placeholder={t('studentDetails.enterNoteContent')}
+                          placeholderTextColor="#9ca3af"
+                          multiline
+                          textAlignVertical="top"
+                          keyboardType="default"
+                          returnKeyType="default"
+                          blurOnSubmit={false}
+                        />
                       </View>
                     ) : (
-                      <TouchableOpacity 
-                        style={styles.modalCloseButton} 
-                        onPress={handleCloseNoteModal}
-                      >
-                        <Text style={styles.modalCloseButtonText}>{t('transactionDetails.close')}</Text>
-                      </TouchableOpacity>
+                      <View style={styles.descriptionCard}>
+                        <Text style={styles.descriptionModalText}>
+                          {selectedNote.content}
+                        </Text>
+                      </View>
+                    )}
+                    {!isEditingNote && (
+                      <View style={styles.noteModalFooter}>
+                        <Text style={styles.noteDate}>
+                          {t('studentDetails.created')}:{' '}
+                          {formatDateLocalized(selectedNote.timestamp, locale)}
+                        </Text>
+                        {selectedNote.updatedAt && (
+                          <Text style={styles.noteDate}>
+                            {t('studentDetails.updated')}:{' '}
+                            {formatDateLocalized(
+                              selectedNote.updatedAt,
+                              locale
+                            )}
+                          </Text>
+                        )}
+                      </View>
                     )}
                   </View>
+                </ScrollView>
+              )}
+
+              <View style={styles.modalFooter}>
+                {isEditingNote ? (
+                  <View style={styles.modalFooterActions}>
+                    <TouchableOpacity
+                      style={[styles.modalButton, styles.modalButtonCancel]}
+                      onPress={() => {
+                        Keyboard.dismiss();
+                        handleCancelEditNote();
+                      }}
+                      disabled={isSavingNote}
+                    >
+                      <Text style={styles.modalButtonTextCancel}>
+                        {t('studentDetails.cancel')}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.modalButton, styles.modalButtonConfirm]}
+                      onPress={() => {
+                        Keyboard.dismiss();
+                        handleSaveNote();
+                      }}
+                      disabled={isSavingNote}
+                    >
+                      {isSavingNote ? (
+                        <ActivityIndicator size="small" color="#fff" />
+                      ) : (
+                        <Text style={styles.modalButtonTextConfirm}>
+                          {t('studentDetails.save')}
+                        </Text>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.modalCloseButton}
+                    onPress={handleCloseNoteModal}
+                  >
+                    <Text style={styles.modalCloseButtonText}>
+                      {t('transactionDetails.close')}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
           </KeyboardAvoidingView>
         </View>
@@ -994,24 +1394,39 @@ export default function StudentDetailsScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{t('transactionDetails.title')}</Text>
+              <Text style={styles.modalTitle}>
+                {t('transactionDetails.title')}
+              </Text>
             </View>
 
             {selectedTransaction && (
-              <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
+              <ScrollView
+                style={styles.modalBody}
+                showsVerticalScrollIndicator={false}
+              >
                 {/* Date */}
                 <View style={styles.detailSection}>
                   <View style={styles.detailRow}>
-                    <Ionicons name="calendar-outline" size={20} color="#6b7280" style={{ marginRight: 12 }} />
+                    <Ionicons
+                      name="calendar-outline"
+                      size={20}
+                      color="#6b7280"
+                      style={{ marginRight: 12 }}
+                    />
                     <View style={styles.detailContent}>
-                      <Text style={styles.detailLabel}>{t('transactionDetails.date')}</Text>
+                      <Text style={styles.detailLabel}>
+                        {t('transactionDetails.date')}
+                      </Text>
                       <Text style={styles.detailValue}>
-                        {new Date(selectedTransaction.date).toLocaleDateString(locale, {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
+                        {new Date(selectedTransaction.date).toLocaleDateString(
+                          locale,
+                          {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          }
+                        )}
                       </Text>
                     </View>
                   </View>
@@ -1020,15 +1435,25 @@ export default function StudentDetailsScreen() {
                 {/* Time */}
                 <View style={styles.detailSection}>
                   <View style={styles.detailRow}>
-                    <Ionicons name="time-outline" size={20} color="#6b7280" style={{ marginRight: 12 }} />
+                    <Ionicons
+                      name="time-outline"
+                      size={20}
+                      color="#6b7280"
+                      style={{ marginRight: 12 }}
+                    />
                     <View style={styles.detailContent}>
-                      <Text style={styles.detailLabel}>{t('transactionDetails.time')}</Text>
+                      <Text style={styles.detailLabel}>
+                        {t('transactionDetails.time')}
+                      </Text>
                       <Text style={styles.detailValue}>
-                        {new Date(selectedTransaction.date).toLocaleTimeString(locale, {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          hour12: false
-                        })}
+                        {new Date(selectedTransaction.date).toLocaleTimeString(
+                          locale,
+                          {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false,
+                          }
+                        )}
                       </Text>
                     </View>
                   </View>
@@ -1037,34 +1462,48 @@ export default function StudentDetailsScreen() {
                 {/* Transaction Type */}
                 <View style={styles.detailSection}>
                   <View style={styles.detailRow}>
-                    <Ionicons 
-                      name={selectedTransaction.transactionType === 'added' ? 'trending-up' : 'trending-down'} 
-                      size={20} 
-                      color={selectedTransaction.transactionType === 'added' ? '#16a34a' : '#dc2626'} 
+                    <Ionicons
+                      name={
+                        selectedTransaction.transactionType === 'added'
+                          ? 'trending-up'
+                          : 'trending-down'
+                      }
+                      size={20}
+                      color={
+                        selectedTransaction.transactionType === 'added'
+                          ? '#16a34a'
+                          : '#dc2626'
+                      }
                       style={{ marginRight: 12 }}
                     />
                     <View style={styles.detailContent}>
-                      <Text style={styles.detailLabel}>{t('transactionDetails.transactionType')}</Text>
+                      <Text style={styles.detailLabel}>
+                        {t('transactionDetails.transactionType')}
+                      </Text>
                       <View style={styles.detailValueRow}>
                         <Text style={styles.detailValue}>
-                          {selectedTransaction.transactionType === 'added' 
-                            ? t('transactionDetails.balanceAdded') 
+                          {selectedTransaction.transactionType === 'added'
+                            ? t('transactionDetails.balanceAdded')
                             : t('transactionDetails.balanceDeducted')}
                         </Text>
-                        <View style={[
-                          styles.typeBadge,
-                          selectedTransaction.transactionType === 'added' 
-                            ? styles.typeBadgeAdded 
-                            : styles.typeBadgeDeducted
-                        ]}>
-                          <Text style={[
-                            styles.typeBadgeText,
-                            selectedTransaction.transactionType === 'added' 
-                              ? styles.typeBadgeTextAdded 
-                              : styles.typeBadgeTextDeducted
-                          ]}>
-                            {selectedTransaction.transactionType === 'added' 
-                              ? t('transactionDetails.added') 
+                        <View
+                          style={[
+                            styles.typeBadge,
+                            selectedTransaction.transactionType === 'added'
+                              ? styles.typeBadgeAdded
+                              : styles.typeBadgeDeducted,
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.typeBadgeText,
+                              selectedTransaction.transactionType === 'added'
+                                ? styles.typeBadgeTextAdded
+                                : styles.typeBadgeTextDeducted,
+                            ]}
+                          >
+                            {selectedTransaction.transactionType === 'added'
+                              ? t('transactionDetails.added')
                               : t('transactionDetails.deducted')}
                           </Text>
                         </View>
@@ -1076,14 +1515,32 @@ export default function StudentDetailsScreen() {
                 {/* Change Amount */}
                 <View style={styles.detailSection}>
                   <View style={styles.detailRow}>
-                    <Ionicons name="wallet-outline" size={20} color="#6b7280" style={{ marginRight: 12 }} />
+                    <Ionicons
+                      name="wallet-outline"
+                      size={20}
+                      color="#6b7280"
+                      style={{ marginRight: 12 }}
+                    />
                     <View style={styles.detailContent}>
-                      <Text style={styles.detailLabel}>{t('transactionDetails.changeAmount')}</Text>
-                      <Text style={[
-                        styles.detailValue,
-                        { color: selectedTransaction.changeAmount > 0 ? '#16a34a' : '#dc2626' }
-                      ]}>
-                        {selectedTransaction.changeAmount > 0 ? '+' : ''}{selectedTransaction.changeAmount} {Math.abs(selectedTransaction.changeAmount) === 1 ? t('transactionDetails.session') : t('transactionDetails.sessions')}
+                      <Text style={styles.detailLabel}>
+                        {t('transactionDetails.changeAmount')}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.detailValue,
+                          {
+                            color:
+                              selectedTransaction.changeAmount > 0
+                                ? '#16a34a'
+                                : '#dc2626',
+                          },
+                        ]}
+                      >
+                        {selectedTransaction.changeAmount > 0 ? '+' : ''}
+                        {selectedTransaction.changeAmount}{' '}
+                        {Math.abs(selectedTransaction.changeAmount) === 1
+                          ? t('transactionDetails.session')
+                          : t('transactionDetails.sessions')}
                       </Text>
                     </View>
                   </View>
@@ -1092,19 +1549,35 @@ export default function StudentDetailsScreen() {
                 {/* Reason/Description */}
                 <View style={styles.detailSection}>
                   <View style={styles.detailRow}>
-                    <Ionicons name="document-text-outline" size={20} color="#6b7280" style={{ marginRight: 12 }} />
+                    <Ionicons
+                      name="document-text-outline"
+                      size={20}
+                      color="#6b7280"
+                      style={{ marginRight: 12 }}
+                    />
                     <View style={styles.detailContent}>
-                      <Text style={styles.detailLabel}>{t('transactionDetails.reasonDescription')}</Text>
+                      <Text style={styles.detailLabel}>
+                        {t('transactionDetails.reasonDescription')}
+                      </Text>
                       <View style={styles.reasonCard}>
                         <Text style={styles.reasonText}>
                           {(() => {
                             const currentLanguage = i18n.language;
-                            if (currentLanguage === 'ru' && selectedTransaction.reasonRu) {
+                            if (
+                              currentLanguage === 'ru' &&
+                              selectedTransaction.reasonRu
+                            ) {
                               return selectedTransaction.reasonRu;
-                            } else if (currentLanguage === 'en' && selectedTransaction.reasonEn) {
+                            } else if (
+                              currentLanguage === 'en' &&
+                              selectedTransaction.reasonEn
+                            ) {
                               return selectedTransaction.reasonEn;
                             }
-                            return selectedTransaction.reason || t('transactionDetails.noDescriptionProvided');
+                            return (
+                              selectedTransaction.reason ||
+                              t('transactionDetails.noDescriptionProvided')
+                            );
                           })()}
                         </Text>
                       </View>
@@ -1115,19 +1588,32 @@ export default function StudentDetailsScreen() {
                 {/* Updated Balance */}
                 <View style={styles.detailSection}>
                   <View style={styles.detailRow}>
-                    <Ionicons name="wallet-outline" size={20} color="#6b7280" style={{ marginRight: 12 }} />
+                    <Ionicons
+                      name="wallet-outline"
+                      size={20}
+                      color="#6b7280"
+                      style={{ marginRight: 12 }}
+                    />
                     <View style={styles.detailContent}>
-                      <Text style={styles.detailLabel}>{t('transactionDetails.updatedBalance')}</Text>
+                      <Text style={styles.detailLabel}>
+                        {t('transactionDetails.updatedBalance')}
+                      </Text>
                       <View style={styles.balanceCard}>
-                        <Text style={[
-                          styles.modalBalanceValue,
-                          selectedTransaction.balanceAfter > 0 
-                            ? styles.balanceValuePositive 
-                            : selectedTransaction.balanceAfter < 0 
-                            ? styles.balanceValueNegative 
-                            : styles.balanceValueNeutral
-                        ]}>
-                          {selectedTransaction.balanceAfter > 0 ? '+' : ''}{selectedTransaction.balanceAfter} {Math.abs(selectedTransaction.balanceAfter) === 1 ? t('transactionDetails.session') : t('transactionDetails.sessions')}
+                        <Text
+                          style={[
+                            styles.modalBalanceValue,
+                            selectedTransaction.balanceAfter > 0
+                              ? styles.balanceValuePositive
+                              : selectedTransaction.balanceAfter < 0
+                                ? styles.balanceValueNegative
+                                : styles.balanceValueNeutral,
+                          ]}
+                        >
+                          {selectedTransaction.balanceAfter > 0 ? '+' : ''}
+                          {selectedTransaction.balanceAfter}{' '}
+                          {Math.abs(selectedTransaction.balanceAfter) === 1
+                            ? t('transactionDetails.session')
+                            : t('transactionDetails.sessions')}
                         </Text>
                         <Text style={styles.balanceLabel}>
                           {t('transactionDetails.balanceAfterTransaction')}
@@ -1140,9 +1626,15 @@ export default function StudentDetailsScreen() {
                 {/* Transaction ID */}
                 <View style={[styles.detailSection, styles.lastDetailSection]}>
                   <View style={styles.detailRow}>
-                    <Ionicons name="information-circle-outline" size={20} color="#9ca3af" style={{ marginRight: 12 }} />
+                    <Ionicons
+                      name="information-circle-outline"
+                      size={20}
+                      color="#9ca3af"
+                      style={{ marginRight: 12 }}
+                    />
                     <Text style={styles.transactionIdText}>
-                      {t('transactionDetails.transactionId')}: {selectedTransaction.id}
+                      {t('transactionDetails.transactionId')}:{' '}
+                      {selectedTransaction.id}
                     </Text>
                   </View>
                 </View>
@@ -1150,11 +1642,13 @@ export default function StudentDetailsScreen() {
             )}
 
             <View style={styles.modalFooter}>
-              <TouchableOpacity 
-                style={styles.modalCloseButton} 
+              <TouchableOpacity
+                style={styles.modalCloseButton}
                 onPress={() => setShowTransactionDetailsModal(false)}
               >
-                <Text style={styles.modalCloseButtonText}>{t('transactionDetails.close')}</Text>
+                <Text style={styles.modalCloseButtonText}>
+                  {t('transactionDetails.close')}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -1584,7 +2078,7 @@ const styles = StyleSheet.create({
   modalHeaderButton: {
     padding: 4,
   },
-  modalCloseButton: {
+  modalCloseButtonSmall: {
     padding: 4,
   },
   modalBody: {
@@ -1744,4 +2238,3 @@ const styles = StyleSheet.create({
     color: '#6b7280',
   },
 });
-

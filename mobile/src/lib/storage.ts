@@ -1,6 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Student, Session, AppSettings, StudentNote, BalanceTransaction } from '@shared/types';
-import { calculateAge, formatBalanceAsInteger, generateTransactionReason } from '@shared/utils/dateUtils';
+import {
+  Student,
+  Session,
+  AppSettings,
+  StudentNote,
+  BalanceTransaction,
+} from '@shared/types';
+import {
+  calculateAge,
+  formatBalanceAsInteger,
+  generateTransactionReason,
+} from '@shared/utils/dateUtils';
 
 const STUDENTS_KEY = 'yoga_tracker_students';
 const SESSIONS_KEY = 'yoga_tracker_sessions';
@@ -18,8 +28,8 @@ const defaultSettings: AppSettings = {
     'Похудение',
     'Медитация',
     'Укрепление корпуса',
-    'Здоровая спина'
-  ]
+    'Здоровая спина',
+  ],
 };
 
 // Students
@@ -33,7 +43,7 @@ export const getStudents = async (): Promise<Student[]> => {
       const memberSince = s.memberSince ? new Date(s.memberSince) : undefined;
       const age = calculateAge(birthday);
       const balance = formatBalanceAsInteger(s.balance || 0);
-      
+
       return {
         ...s,
         createdAt: new Date(s.createdAt),
@@ -41,15 +51,19 @@ export const getStudents = async (): Promise<Student[]> => {
         memberSince,
         age,
         balance,
-        notes: s.notes ? s.notes.map((note: any) => ({
-          ...note,
-          timestamp: new Date(note.timestamp),
-          updatedAt: note.updatedAt ? new Date(note.updatedAt) : undefined
-        })) : [],
-        balanceTransactions: s.balanceTransactions ? s.balanceTransactions.map((transaction: any) => ({
-          ...transaction,
-          date: new Date(transaction.date)
-        })) : []
+        notes: s.notes
+          ? s.notes.map((note: any) => ({
+              ...note,
+              timestamp: new Date(note.timestamp),
+              updatedAt: note.updatedAt ? new Date(note.updatedAt) : undefined,
+            }))
+          : [],
+        balanceTransactions: s.balanceTransactions
+          ? s.balanceTransactions.map((transaction: any) => ({
+              ...transaction,
+              date: new Date(transaction.date),
+            }))
+          : [],
       };
     });
   } catch (error) {
@@ -61,22 +75,22 @@ export const getStudents = async (): Promise<Student[]> => {
 export const saveStudent = async (student: Student): Promise<void> => {
   try {
     const students = await getStudents();
-    const existingIndex = students.findIndex(s => s.id === student.id);
+    const existingIndex = students.findIndex((s) => s.id === student.id);
     const age = calculateAge(student.birthday);
     const balance = formatBalanceAsInteger(student.balance || 0);
-    
+
     const updatedStudent = {
       ...student,
       age,
-      balance
+      balance,
     };
-    
+
     if (existingIndex >= 0) {
       students[existingIndex] = updatedStudent;
     } else {
       students.push(updatedStudent);
     }
-    
+
     await AsyncStorage.setItem(STUDENTS_KEY, JSON.stringify(students));
   } catch (error) {
     console.error('Error saving student:', error);
@@ -87,7 +101,7 @@ export const saveStudent = async (student: Student): Promise<void> => {
 export const deleteStudent = async (studentId: string): Promise<void> => {
   try {
     const students = await getStudents();
-    const filtered = students.filter(s => s.id !== studentId);
+    const filtered = students.filter((s) => s.id !== studentId);
     await AsyncStorage.setItem(STUDENTS_KEY, JSON.stringify(filtered));
   } catch (error) {
     console.error('Error deleting student:', error);
@@ -104,7 +118,7 @@ export const getSessions = async (): Promise<Session[]> => {
     return sessions.map((s: any) => ({
       ...s,
       date: new Date(s.date),
-      createdAt: new Date(s.createdAt)
+      createdAt: new Date(s.createdAt),
     }));
   } catch (error) {
     console.error('Error getting sessions:', error);
@@ -115,14 +129,14 @@ export const getSessions = async (): Promise<Session[]> => {
 export const saveSession = async (session: Session): Promise<void> => {
   try {
     const sessions = await getSessions();
-    const existingIndex = sessions.findIndex(s => s.id === session.id);
-    
+    const existingIndex = sessions.findIndex((s) => s.id === session.id);
+
     if (existingIndex >= 0) {
       sessions[existingIndex] = session;
     } else {
       sessions.push(session);
     }
-    
+
     await AsyncStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
   } catch (error) {
     console.error('Error saving session:', error);
@@ -133,7 +147,7 @@ export const saveSession = async (session: Session): Promise<void> => {
 export const deleteSession = async (sessionId: string): Promise<void> => {
   try {
     const sessions = await getSessions();
-    const filtered = sessions.filter(s => s.id !== sessionId);
+    const filtered = sessions.filter((s) => s.id !== sessionId);
     await AsyncStorage.setItem(SESSIONS_KEY, JSON.stringify(filtered));
   } catch (error) {
     console.error('Error deleting session:', error);
@@ -141,9 +155,11 @@ export const deleteSession = async (sessionId: string): Promise<void> => {
   }
 };
 
-export const getSessionsForStudent = async (studentId: string): Promise<Session[]> => {
+export const getSessionsForStudent = async (
+  studentId: string
+): Promise<Session[]> => {
   const sessions = await getSessions();
-  return sessions.filter(s => s.studentIds.includes(studentId));
+  return sessions.filter((s) => s.studentIds.includes(studentId));
 };
 
 // Settings
@@ -168,21 +184,24 @@ export const saveSettings = async (settings: AppSettings): Promise<void> => {
 };
 
 // Student Notes
-export const addStudentNote = async (studentId: string, content: string): Promise<void> => {
+export const addStudentNote = async (
+  studentId: string,
+  content: string
+): Promise<void> => {
   try {
     const students = await getStudents();
-    const studentIndex = students.findIndex(s => s.id === studentId);
-    
+    const studentIndex = students.findIndex((s) => s.id === studentId);
+
     if (studentIndex === -1) {
       throw new Error('Student not found');
     }
-    
+
     const newNote: StudentNote = {
       id: Date.now().toString(),
       content,
       timestamp: new Date(),
     };
-    
+
     students[studentIndex].notes.push(newNote);
     await AsyncStorage.setItem(STUDENTS_KEY, JSON.stringify(students));
   } catch (error) {
@@ -191,26 +210,32 @@ export const addStudentNote = async (studentId: string, content: string): Promis
   }
 };
 
-export const updateStudentNote = async (studentId: string, noteId: string, content: string): Promise<void> => {
+export const updateStudentNote = async (
+  studentId: string,
+  noteId: string,
+  content: string
+): Promise<void> => {
   try {
     const students = await getStudents();
-    const studentIndex = students.findIndex(s => s.id === studentId);
-    
+    const studentIndex = students.findIndex((s) => s.id === studentId);
+
     if (studentIndex === -1) {
       throw new Error('Student not found');
     }
-    
-    const noteIndex = students[studentIndex].notes.findIndex(n => n.id === noteId);
+
+    const noteIndex = students[studentIndex].notes.findIndex(
+      (n) => n.id === noteId
+    );
     if (noteIndex === -1) {
       throw new Error('Note not found');
     }
-    
+
     students[studentIndex].notes[noteIndex] = {
       ...students[studentIndex].notes[noteIndex],
       content,
       updatedAt: new Date(),
     };
-    
+
     await AsyncStorage.setItem(STUDENTS_KEY, JSON.stringify(students));
   } catch (error) {
     console.error('Error updating student note:', error);
@@ -218,16 +243,21 @@ export const updateStudentNote = async (studentId: string, noteId: string, conte
   }
 };
 
-export const deleteStudentNote = async (studentId: string, noteId: string): Promise<void> => {
+export const deleteStudentNote = async (
+  studentId: string,
+  noteId: string
+): Promise<void> => {
   try {
     const students = await getStudents();
-    const studentIndex = students.findIndex(s => s.id === studentId);
-    
+    const studentIndex = students.findIndex((s) => s.id === studentId);
+
     if (studentIndex === -1) {
       throw new Error('Student not found');
     }
-    
-    students[studentIndex].notes = students[studentIndex].notes.filter(n => n.id !== noteId);
+
+    students[studentIndex].notes = students[studentIndex].notes.filter(
+      (n) => n.id !== noteId
+    );
     await AsyncStorage.setItem(STUDENTS_KEY, JSON.stringify(students));
   } catch (error) {
     console.error('Error deleting student note:', error);
@@ -236,18 +266,22 @@ export const deleteStudentNote = async (studentId: string, noteId: string): Prom
 };
 
 // Balance Transactions
-export const addBalanceTransaction = async (studentId: string, changeAmount: number, reason: string): Promise<void> => {
+export const addBalanceTransaction = async (
+  studentId: string,
+  changeAmount: number,
+  reason: string
+): Promise<void> => {
   try {
     const students = await getStudents();
-    const studentIndex = students.findIndex(s => s.id === studentId);
-    
+    const studentIndex = students.findIndex((s) => s.id === studentId);
+
     if (studentIndex === -1) {
       throw new Error('Student not found');
     }
-    
+
     const currentBalance = students[studentIndex].balance;
     const newBalance = currentBalance + changeAmount;
-    
+
     const transaction: BalanceTransaction = {
       id: Date.now().toString(),
       date: new Date(),
@@ -256,14 +290,13 @@ export const addBalanceTransaction = async (studentId: string, changeAmount: num
       reason,
       balanceAfter: newBalance,
     };
-    
+
     students[studentIndex].balance = newBalance;
     students[studentIndex].balanceTransactions.push(transaction);
-    
+
     await AsyncStorage.setItem(STUDENTS_KEY, JSON.stringify(students));
   } catch (error) {
     console.error('Error adding balance transaction:', error);
     throw error;
   }
 };
-

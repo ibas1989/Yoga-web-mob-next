@@ -34,6 +34,7 @@ npx expo install expo-file-system expo-sharing expo-document-picker
 ```
 
 **Packages installed:**
+
 - `expo-file-system` - Read/write files
 - `expo-sharing` - Native share/save dialogs
 - `expo-document-picker` - File picker UI
@@ -41,6 +42,7 @@ npx expo install expo-file-system expo-sharing expo-document-picker
 ### How It Works
 
 #### Export Process:
+
 1. User taps "Export to File" button
 2. App generates backup JSON
 3. Saves to temporary cache
@@ -49,6 +51,7 @@ npx expo install expo-file-system expo-sharing expo-document-picker
 6. File saved with timestamp
 
 #### Import Process:
+
 1. User taps "Select Backup File" button
 2. Native file picker opens
 3. User browses and selects JSON file
@@ -76,6 +79,7 @@ npx expo install expo-file-system expo-sharing expo-document-picker
 ### Features
 
 ✅ **Export Backup**
+
 - Single button tap
 - Native save dialog
 - Timestamped filenames
@@ -83,7 +87,8 @@ npx expo install expo-file-system expo-sharing expo-document-picker
 - Works on iOS and Android
 
 ✅ **Import Backup**
-- Single button tap  
+
+- Single button tap
 - Native file picker
 - Browse device storage
 - Validation before restore
@@ -91,6 +96,7 @@ npx expo install expo-file-system expo-sharing expo-document-picker
 - Shows what will be restored
 
 ✅ **Safety**
+
 - Validation checks
 - Confirmation dialogs
 - Warning messages
@@ -100,6 +106,7 @@ npx expo install expo-file-system expo-sharing expo-document-picker
 ### UI Flow
 
 #### Settings Tab:
+
 ```
 🌍 Language Selection
    [🇺🇸 English] [🇷🇺 Русский]
@@ -115,6 +122,7 @@ npx expo install expo-file-system expo-sharing expo-document-picker
 ```
 
 #### Backup Tab:
+
 ```
 📤 Export Backup
    [Export to File] button
@@ -164,6 +172,7 @@ npx expo install expo-file-system expo-sharing expo-document-picker
 To test the backup system:
 
 1. **Export Test:**
+
    ```
    Settings → Backup tab
    Tap "Export to File"
@@ -185,20 +194,23 @@ To test the backup system:
 ### Platform Support
 
 ✅ **iOS:**
+
 - Files app integration
 - iCloud Drive support
 - Share sheet
 - Standard file picker
 
 ✅ **Android:**
+
 - File manager integration
-- Google Drive support  
+- Google Drive support
 - Share dialog
 - Storage Access Framework
 
 ### Error Handling
 
 The system handles:
+
 - Missing packages (with helpful message)
 - File read errors
 - Invalid JSON
@@ -210,6 +222,7 @@ The system handles:
 ### No Additional Setup Required
 
 The packages are now installed and the code uses dynamic imports, so:
+
 - ✅ Works immediately in Expo Go
 - ✅ Works in development builds
 - ✅ Works in production builds
@@ -220,7 +233,8 @@ The packages are now installed and the code uses dynamic imports, so:
 
 **Before:** Text-based copy/paste system with stats displays
 
-**After:** 
+**After:**
+
 - ✅ Native file-based import/export
 - ✅ Cleaner UI without redundant stats
 - ✅ Professional file handling
@@ -230,4 +244,3 @@ The packages are now installed and the code uses dynamic imports, so:
 - ✅ Better user experience
 
 **The backup system is now complete and production-ready!** 🎉
-

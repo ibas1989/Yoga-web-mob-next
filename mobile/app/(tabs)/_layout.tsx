@@ -5,7 +5,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import { getPendingTasksCount } from '../../src/lib/utils';
-import { addSessionEventListener, SessionEventDetail } from '../../src/lib/eventSystem';
+import {
+  addSessionEventListener,
+  SessionEventDetail,
+} from '../../src/lib/eventSystem';
 import { TabBadge } from '../../src/components/TabBadge';
 
 export default function TabsLayout() {
@@ -25,25 +28,46 @@ export default function TabsLayout() {
       console.log('[TabsLayout] Pending tasks count:', count);
       setPendingTasksCount(count);
     };
-    
+
     // Initial load
     updatePendingTasksCount();
-    
+
     // Listen for all session-related events to update count
     const handleSessionEvent = (detail: SessionEventDetail) => {
       console.log('[TabsLayout] Session event received:', detail);
       updatePendingTasksCount();
     };
-    
+
     // Listen to all session change events
-    const cleanup1 = addSessionEventListener('sessionCreated', handleSessionEvent);
-    const cleanup2 = addSessionEventListener('sessionUpdated', handleSessionEvent);
-    const cleanup3 = addSessionEventListener('sessionCompleted', handleSessionEvent);
-    const cleanup4 = addSessionEventListener('sessionCancelled', handleSessionEvent);
-    const cleanup5 = addSessionEventListener('sessionDeleted', handleSessionEvent);
-    const cleanup6 = addSessionEventListener('sessionChanged', handleSessionEvent);
-    const cleanup7 = addSessionEventListener('taskListUpdate', handleSessionEvent);
-    
+    const cleanup1 = addSessionEventListener(
+      'sessionCreated',
+      handleSessionEvent
+    );
+    const cleanup2 = addSessionEventListener(
+      'sessionUpdated',
+      handleSessionEvent
+    );
+    const cleanup3 = addSessionEventListener(
+      'sessionCompleted',
+      handleSessionEvent
+    );
+    const cleanup4 = addSessionEventListener(
+      'sessionCancelled',
+      handleSessionEvent
+    );
+    const cleanup5 = addSessionEventListener(
+      'sessionDeleted',
+      handleSessionEvent
+    );
+    const cleanup6 = addSessionEventListener(
+      'sessionChanged',
+      handleSessionEvent
+    );
+    const cleanup7 = addSessionEventListener(
+      'taskListUpdate',
+      handleSessionEvent
+    );
+
     // Cleanup listeners on unmount
     return () => {
       cleanup1();
@@ -109,7 +133,11 @@ export default function TabsLayout() {
           title: t('navigation.students'),
           headerTitle: t('navigation.students'),
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account-group" size={size} color={color} />
+            <MaterialCommunityIcons
+              name="account-group"
+              size={size}
+              color={color}
+            />
           ),
         }}
       />
@@ -119,8 +147,20 @@ export default function TabsLayout() {
           title: t('navigation.tasks'),
           headerTitle: t('navigation.tasks'),
           tabBarIcon: ({ color, size }) => (
-            <View style={{ position: 'relative', width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
-              <MaterialCommunityIcons name="checkbox-marked-outline" size={size} color={color} />
+            <View
+              style={{
+                position: 'relative',
+                width: size,
+                height: size,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <MaterialCommunityIcons
+                name="checkbox-marked-outline"
+                size={size}
+                color={color}
+              />
               <TabBadge count={pendingTasksCount} />
             </View>
           ),
@@ -139,4 +179,3 @@ export default function TabsLayout() {
     </Tabs>
   );
 }
-

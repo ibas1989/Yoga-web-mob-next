@@ -17,11 +17,11 @@ export function TabBadge({ count, maxCount = 99 }: TabBadgeProps) {
 
   // Format count for display
   const displayCount = count > maxCount ? `${maxCount}+` : count.toString();
-  
+
   // Calculate dynamic width based on number of digits
   // Formula: base padding (12) + character width (9 per char) + extra padding (4)
   const digitCount = displayCount.length;
-  const dynamicWidth = Math.max(22, 12 + (digitCount * 9) + 4);
+  const dynamicWidth = Math.max(22, 12 + digitCount * 9 + 4);
 
   return (
     <View style={[styles.badge, { minWidth: dynamicWidth }]}>
@@ -65,4 +65,3 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
   },
 });
-

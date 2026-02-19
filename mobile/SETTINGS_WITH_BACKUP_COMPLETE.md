@@ -74,12 +74,14 @@
 ## 📱 How to Use
 
 ### Export Backup
+
 1. Go to Settings → Backup tab
 2. Tap "Share Backup Data" card
 3. Choose where to save (Files app, Notes, Email, etc.)
 4. Backup saved as text file
 
 ### Import Backup
+
 1. Open your saved backup file
 2. Select all text and copy
 3. Go to Settings → Backup tab
@@ -88,6 +90,7 @@
 6. Confirm the replacement
 
 ### Change Settings
+
 1. Go to Settings tab
 2. Modify any values (language, prices, goals)
 3. Orange "Unsaved" badge appears
@@ -96,15 +99,18 @@
 ## 🔧 Technical Details
 
 **Files Created/Modified:**
+
 - `/mobile/src/lib/backup.ts` - Backup utility functions
 - `/mobile/app/(tabs)/settings.tsx` - Complete Settings UI
 
 **Dependencies Used:**
+
 - AsyncStorage (already installed)
 - React Native Share API (built-in)
 - No additional packages required!
 
 **Features:**
+
 - JSON backup format
 - Validation before restore
 - Confirmation dialogs
@@ -124,10 +130,10 @@
 ## 🎉 Ready to Use!
 
 Reload your Expo Go app and you'll see:
+
 - Settings tab with full configuration options
 - Backup tab with export/import functionality
 - Beautiful, professional UI
 - All features working perfectly!
 
 **The Settings screen is now 100% complete with all requested features!** 🚀
-

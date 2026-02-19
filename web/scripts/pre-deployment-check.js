@@ -2,7 +2,7 @@
 
 /**
  * Pre-Deployment Validation Script
- * 
+ *
  * This script runs comprehensive checks before deployment to prevent issues:
  * 1. Code quality checks (linting, TypeScript)
  * 2. Build validation
@@ -24,17 +24,17 @@ const CRITICAL_FILES = [
   'components/StudentsView.tsx',
   'components/TasksView.tsx',
   'lib/storage.ts',
-  'lib/types.ts'
+  'lib/types.ts',
 ];
 
 const CRITICAL_ROUTES = [
   '/',
   '/?view=calendar',
-  '/?view=students', 
+  '/?view=students',
   '/?view=tasks',
   '/?view=settings',
   '/sessions/new',
-  '/students/new'
+  '/students/new',
 ];
 
 // Color codes for output
@@ -45,7 +45,7 @@ const colors = {
   yellow: '\x1b[33m',
   blue: '\x1b[34m',
   magenta: '\x1b[35m',
-  cyan: '\x1b[36m'
+  cyan: '\x1b[36m',
 };
 
 function log(message, color = 'reset') {
@@ -111,7 +111,10 @@ function checkTypeScript() {
 function checkLinting() {
   try {
     log('Running ESLint...', 'blue');
-    const result = execSync('npm run lint', { stdio: 'pipe', encoding: 'utf8' });
+    const result = execSync('npm run lint', {
+      stdio: 'pipe',
+      encoding: 'utf8',
+    });
     logSuccess('ESLint passed');
     return true;
   } catch (error) {
@@ -133,7 +136,10 @@ function checkLinting() {
 function checkBuild() {
   try {
     log('Testing build process...', 'blue');
-    const result = execSync('npm run build', { stdio: 'pipe', encoding: 'utf8' });
+    const result = execSync('npm run build', {
+      stdio: 'pipe',
+      encoding: 'utf8',
+    });
     if (result.includes('✓ Compiled successfully')) {
       logSuccess('Build process completed');
       return true;
@@ -162,17 +168,20 @@ function checkComponentImports() {
 
   const criticalComponents = [
     'components/Calendar.tsx',
-    'components/StudentsView.tsx', 
+    'components/StudentsView.tsx',
     'components/TasksView.tsx',
     'components/CompleteSessionDialog.tsx',
-    'components/AddStudentDialog.tsx'
+    'components/AddStudentDialog.tsx',
   ];
 
   for (const component of criticalComponents) {
     if (checkFileExists(component)) {
       // Check if component has proper exports
       try {
-        const content = fs.readFileSync(path.join(PROJECT_ROOT, component), 'utf8');
+        const content = fs.readFileSync(
+          path.join(PROJECT_ROOT, component),
+          'utf8'
+        );
         if (content.includes('export') && content.includes('function')) {
           logSuccess(`Component structure OK: ${component}`);
         } else {
@@ -201,7 +210,7 @@ function checkNavigationConsistency() {
   const navigationFiles = [
     'app/sessions/[id]/page.tsx',
     'app/sessions/[id]/edit/page.tsx',
-    'app/sessions/new/page.tsx'
+    'app/sessions/new/page.tsx',
   ];
 
   for (const file of navigationFiles) {
@@ -233,14 +242,14 @@ function checkDialogStateManagement() {
   const dialogFiles = [
     'components/CompleteSessionDialog.tsx',
     'components/AddStudentDialog.tsx',
-    'components/SessionDialog.tsx'
+    'components/SessionDialog.tsx',
   ];
 
   for (const file of dialogFiles) {
     if (fs.existsSync(path.join(PROJECT_ROOT, file))) {
       try {
         const content = fs.readFileSync(path.join(PROJECT_ROOT, file), 'utf8');
-        
+
         // Check for proper dialog state management
         if (content.includes('onOpenChange') && content.includes('useState')) {
           logSuccess(`Dialog state management OK: ${file}`);
@@ -254,7 +263,6 @@ function checkDialogStateManagement() {
         } else if (file.includes('AddStudentDialog')) {
           logWarning(`Z-index handling may be missing: ${file}`);
         }
-
       } catch (error) {
         logError(`Error checking dialog in ${file}: ${error.message}`);
         allPassed = false;
@@ -276,16 +284,19 @@ function checkCommonIssues() {
   const filesToCheck = [
     'app/layout.tsx',
     'app/page.tsx',
-    'components/Calendar.tsx'
+    'components/Calendar.tsx',
   ];
 
   for (const file of filesToCheck) {
     if (fs.existsSync(path.join(PROJECT_ROOT, file))) {
       try {
         const content = fs.readFileSync(path.join(PROJECT_ROOT, file), 'utf8');
-        
+
         // Check for hardcoded localhost URLs
-        if (content.includes('localhost:3000') || content.includes('localhost:3001')) {
+        if (
+          content.includes('localhost:3000') ||
+          content.includes('localhost:3001')
+        ) {
           logWarning(`Hardcoded localhost URL found in ${file}`);
         }
 
@@ -293,7 +304,6 @@ function checkCommonIssues() {
         if (file.includes('layout.tsx') && !content.includes('ErrorBoundary')) {
           logWarning(`Error boundary may be missing in ${file}`);
         }
-
       } catch (error) {
         logError(`Error checking ${file}: ${error.message}`);
         allPassed = false;
@@ -310,7 +320,7 @@ function checkCommonIssues() {
 async function runPreDeploymentChecks() {
   log('🚀 Starting Pre-Deployment Validation', 'magenta');
   log('This will help prevent deployment issues', 'blue');
-  
+
   let allChecksPassed = true;
 
   // 1. Critical Files Check
@@ -331,7 +341,9 @@ async function runPreDeploymentChecks() {
   logSection('Code Quality (ESLint)');
   const lintingPassed = checkLinting();
   if (!lintingPassed) {
-    logWarning('ESLint failed but continuing - build success is more important');
+    logWarning(
+      'ESLint failed but continuing - build success is more important'
+    );
   }
 
   // 4. Build Check
@@ -382,7 +394,7 @@ async function runPreDeploymentChecks() {
 }
 
 // Run the checks
-runPreDeploymentChecks().catch(error => {
+runPreDeploymentChecks().catch((error) => {
   logError(`Pre-deployment check failed: ${error.message}`);
   process.exit(1);
 });

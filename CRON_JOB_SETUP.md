@@ -14,6 +14,7 @@ The cron job system consists of two components:
 ### Session Qualification Logic
 
 A session qualifies to be added to the Task list when:
+
 - **Current time** > **Session start time + Session length**
 - Session status is "scheduled" (not completed or cancelled)
 
@@ -28,6 +29,7 @@ A session qualifies to be added to the Task list when:
 - Integrates with existing event system
 
 **Events dispatched**:
+
 - `sessionChanged` - General session change event
 - `taskListUpdate` - Specific event for task list updates
 
@@ -80,8 +82,9 @@ crontab -l | grep check-completed-sessions
 ### TasksView Component
 
 The `TasksView` component automatically listens for:
+
 - `sessionCreated`
-- `sessionUpdated` 
+- `sessionUpdated`
 - `sessionCompleted`
 - `sessionCancelled`
 - `sessionDeleted`
@@ -91,6 +94,7 @@ The `TasksView` component automatically listens for:
 ### Bottom Navigation Badge
 
 The task badge in the bottom navigation automatically updates when:
+
 - Sessions are completed/cancelled
 - New sessions are created
 - Sessions become overdue
@@ -121,10 +125,10 @@ Access the browser cron job controls:
 
 ```javascript
 // In browser console
-window.sessionCron.start()    // Start cron job
-window.sessionCron.stop()     // Stop cron job  
-window.sessionCron.check()    // Manual check
-window.sessionCron.isRunning() // Check status
+window.sessionCron.start(); // Start cron job
+window.sessionCron.stop(); // Stop cron job
+window.sessionCron.check(); // Manual check
+window.sessionCron.isRunning(); // Check status
 ```
 
 ## Troubleshooting

@@ -5,11 +5,13 @@ Expo Go allows you to run and test your React Native app on your physical device
 ## 📱 Step 1: Install Expo Go App
 
 ### For iOS:
+
 1. Open the **App Store** on your iPhone/iPad
 2. Search for **"Expo Go"**
 3. Install the official **Expo Go** app by Expo
 
 ### For Android:
+
 1. Open **Google Play Store** on your Android device
 2. Search for **"Expo Go"**
 3. Install the official **Expo Go** app by Expo
@@ -17,16 +19,19 @@ Expo Go allows you to run and test your React Native app on your physical device
 ## 🚀 Step 2: Start Expo Development Server
 
 1. **Open terminal** and navigate to the mobile directory:
+
    ```bash
    cd /Users/ivanbasyj/Yoga-web-mob/mobile
    ```
 
 2. **Start Expo server**:
+
    ```bash
    npm start
    ```
-   
+
    Or if you want to specify a port:
+
    ```bash
    npx expo start
    ```
@@ -38,12 +43,14 @@ Expo Go allows you to run and test your React Native app on your physical device
 ### Option A: Scan QR Code (Recommended)
 
 #### For iOS:
+
 1. Open the **Camera app** on your iPhone/iPad
 2. Point it at the **QR code** in the terminal
 3. Tap the notification that appears
 4. The app will open in **Expo Go**
 
 #### For Android:
+
 1. Open the **Expo Go** app on your Android device
 2. Tap **"Scan QR code"**
 3. Point the camera at the **QR code** in the terminal
@@ -54,6 +61,7 @@ Expo Go allows you to run and test your React Native app on your physical device
 If QR code scanning doesn't work:
 
 1. In the terminal, you'll see URLs like:
+
    ```
    exp://192.168.100.95:8081
    ```
@@ -72,24 +80,32 @@ If QR code scanning doesn't work:
 ## 🔧 Troubleshooting
 
 ### Issue: "Unable to connect to Expo"
-**Solution**: 
+
+**Solution**:
+
 - Check that both devices are on the same network
 - Try restarting the Expo server: `npm start`
 - Check firewall settings on your computer
 
 ### Issue: QR code doesn't work
+
 **Solution**:
+
 - Manually enter the URL shown in terminal into Expo Go app
 - The URL format is: `exp://YOUR_IP:8081`
 
 ### Issue: App loads but shows errors
+
 **Solution**:
+
 - Check the terminal for error messages
 - Make sure all dependencies are installed: `npm install`
 - Try clearing Expo cache: `npx expo start -c`
 
 ### Issue: Port 8081 is in use
+
 **Solution**:
+
 - Kill the process using port 8081: `lsof -ti:8081 | xargs kill`
 - Or use a different port: `npx expo start --port 8082`
 
@@ -112,6 +128,7 @@ npx expo start --tunnel
 ## 🎯 What You'll See
 
 Once connected:
+
 1. Expo Go app will load your React Native app
 2. Any changes you make will **hot reload** automatically
 3. You can shake the device to open the **Expo Dev Menu**
@@ -133,4 +150,3 @@ Once connected:
 ---
 
 **Ready to start?** Run `cd /Users/ivanbasyj/Yoga-web-mob/mobile && npm start` and scan the QR code!
-

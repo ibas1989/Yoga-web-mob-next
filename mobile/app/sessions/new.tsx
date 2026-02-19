@@ -61,7 +61,8 @@ function PickerModal({
                 <Text
                   style={[
                     styles.modalOptionText,
-                    item.value === selectedValue && styles.modalOptionTextSelected,
+                    item.value === selectedValue &&
+                      styles.modalOptionTextSelected,
                   ]}
                 >
                   {item.label}
@@ -76,7 +77,11 @@ function PickerModal({
 }
 
 export default function NewSessionScreen() {
-  const { date: dateParam, time: timeParam, returnTo } = useLocalSearchParams<{
+  const {
+    date: dateParam,
+    time: timeParam,
+    returnTo,
+  } = useLocalSearchParams<{
     date?: string;
     time?: string;
     returnTo?: string;
@@ -179,7 +184,7 @@ export default function NewSessionScreen() {
     // Reload students to get the newly added one
     const loadedStudents = await getStudents();
     setStudents(loadedStudents);
-    
+
     // Auto-select the newly added student
     if (!selectedStudentIds.includes(studentId)) {
       setSelectedStudentIds((prev) => [...prev, studentId]);
@@ -199,11 +204,12 @@ export default function NewSessionScreen() {
     initialDateNormalized.setHours(0, 0, 0, 0);
     const selectedDateNormalized = new Date(selectedDate);
     selectedDateNormalized.setHours(0, 0, 0, 0);
-    const dateChanged = selectedDateNormalized.getTime() !== initialDateNormalized.getTime();
-    
+    const dateChanged =
+      selectedDateNormalized.getTime() !== initialDateNormalized.getTime();
+
     // Check if time was changed from initial value
     const timeChanged = startTime !== initialTime;
-    
+
     return (
       dateChanged ||
       timeChanged ||
@@ -264,7 +270,9 @@ export default function NewSessionScreen() {
       studentIds: selectedStudentIds,
       goals: selectedGoals,
       pricePerStudent:
-        sessionType === 'individual' ? defaultIndividualCharge : defaultTeamCharge,
+        sessionType === 'individual'
+          ? defaultIndividualCharge
+          : defaultTeamCharge,
       status: 'scheduled',
       balanceEntries: {},
       notes,
@@ -298,7 +306,9 @@ export default function NewSessionScreen() {
         {/* Date */}
         <View style={styles.section}>
           <Text style={styles.label}>{t('sessions.sessionDate')}</Text>
-          <Text style={styles.dateText}>{selectedDate.toLocaleDateString()}</Text>
+          <Text style={styles.dateText}>
+            {selectedDate.toLocaleDateString()}
+          </Text>
         </View>
 
         {/* Time */}
@@ -326,7 +336,8 @@ export default function NewSessionScreen() {
             <Text style={styles.pickerArrow}>▼</Text>
           </TouchableOpacity>
           <Text style={styles.helperText}>
-            {t('sessions.endTime')}: {calculateEndTime(startTime, parseInt(duration))}
+            {t('sessions.endTime')}:{' '}
+            {calculateEndTime(startTime, parseInt(duration))}
           </Text>
         </View>
 
@@ -347,17 +358,23 @@ export default function NewSessionScreen() {
         {/* Students */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.label}>{t('sessions.attendeesLabel')} ({selectedStudentIds.length})</Text>
+            <Text style={styles.label}>
+              {t('sessions.attendeesLabel')} ({selectedStudentIds.length})
+            </Text>
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => setShowAddStudentModal(true)}
             >
-              <Text style={styles.addButtonText}>{t('sessions.addStudentButton')}</Text>
+              <Text style={styles.addButtonText}>
+                {t('sessions.addStudentButton')}
+              </Text>
             </TouchableOpacity>
           </View>
           {selectedStudentIds.length === 0 ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateText}>{t('sessions.noAttendeesAddedYet')}</Text>
+              <Text style={styles.emptyStateText}>
+                {t('sessions.noAttendeesAddedYet')}
+              </Text>
               <Text style={styles.emptyStateSubtext}>
                 {t('sessions.useAddStudentButton')}
               </Text>
@@ -374,7 +391,10 @@ export default function NewSessionScreen() {
                   <View style={styles.attendeeInfo}>
                     <Text style={styles.studentName}>{student.name}</Text>
                     <Text style={styles.studentBalance}>
-                      {t('sessions.balance')}: {student.balance} {Math.abs(student.balance) === 1 ? t('common.session') : t('common.sessions')}
+                      {t('sessions.balance')}: {student.balance}{' '}
+                      {Math.abs(student.balance) === 1
+                        ? t('common.session')
+                        : t('common.sessions')}
                     </Text>
                   </View>
                   <TouchableOpacity

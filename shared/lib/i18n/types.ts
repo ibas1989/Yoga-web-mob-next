@@ -1,5 +1,5 @@
 // Type definitions for translation keys
-export type TranslationKeys = 
+export type TranslationKeys =
   | 'navigation.calendar'
   | 'navigation.students'
   | 'navigation.tasks'

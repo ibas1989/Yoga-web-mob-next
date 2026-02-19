@@ -7,13 +7,16 @@ export const suppressHydrationWarnings = () => {
 
   const originalError = console.error;
   const originalWarn = console.warn;
-  
+
   console.error = (...args) => {
     const firstArg = args[0];
-    const stringArg = typeof firstArg === 'string' ? firstArg : (firstArg?.message || '');
-    
+    const stringArg =
+      typeof firstArg === 'string' ? firstArg : firstArg?.message || '';
+
     if (
-      stringArg.includes('Warning: A tree hydrated but some attributes of the server rendered HTML didn\'t match the client properties') ||
+      stringArg.includes(
+        "Warning: A tree hydrated but some attributes of the server rendered HTML didn't match the client properties"
+      ) ||
       stringArg.includes('data-new-gr-c-s-check-loaded') ||
       stringArg.includes('data-gr-ext-installed') ||
       stringArg.includes('Grammarly') ||
@@ -21,7 +24,8 @@ export const suppressHydrationWarnings = () => {
       stringArg.includes('Failed to fetch RSC payload') ||
       stringArg.includes('Falling back to browser navigation') ||
       stringArg.includes('RSC payload') ||
-      (firstArg instanceof TypeError && firstArg.message.includes('Failed to fetch'))
+      (firstArg instanceof TypeError &&
+        firstArg.message.includes('Failed to fetch'))
     ) {
       // Suppress hydration warnings caused by browser extensions and RSC fetch errors
       return;
@@ -33,8 +37,8 @@ export const suppressHydrationWarnings = () => {
     if (
       typeof args[0] === 'string' &&
       (args[0].includes('Failed to fetch RSC payload') ||
-       args[0].includes('Falling back to browser navigation') ||
-       args[0].includes('Failed to fetch'))
+        args[0].includes('Falling back to browser navigation') ||
+        args[0].includes('Failed to fetch'))
     ) {
       // Suppress RSC-related warnings
       return;
@@ -50,7 +54,7 @@ export const suppressHydrationWarnings = () => {
 
 export const isBrowserExtensionPresent = () => {
   if (typeof window === 'undefined') return false;
-  
+
   return !!(
     document.body.getAttribute('data-new-gr-c-s-check-loaded') ||
     document.body.getAttribute('data-gr-ext-installed') ||
@@ -101,5 +105,5 @@ export const safeStorage = {
     } catch {
       // ignore
     }
-  }
+  },
 };

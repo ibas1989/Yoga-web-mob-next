@@ -22,7 +22,10 @@ import { useTranslation } from 'react-i18next';
 import { AddStudentModal } from '../../../src/components/AddStudentModal';
 
 export default function CompleteSessionScreen() {
-  const { id, returnTo } = useLocalSearchParams<{ id: string; returnTo?: string }>();
+  const { id, returnTo } = useLocalSearchParams<{
+    id: string;
+    returnTo?: string;
+  }>();
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -56,12 +59,18 @@ export default function CompleteSessionScreen() {
             : settings.defaultTeamSessionCharge;
         setSessionDeduction(deduction);
       } else {
-        Alert.alert(t('sessionComplete.error'), t('sessionComplete.sessionNotFoundOrCompleted'));
+        Alert.alert(
+          t('sessionComplete.error'),
+          t('sessionComplete.sessionNotFoundOrCompleted')
+        );
         router.back();
       }
     } catch (error) {
       console.error('Error loading session:', error);
-      Alert.alert(t('sessionComplete.error'), t('sessionComplete.failedToLoadSession'));
+      Alert.alert(
+        t('sessionComplete.error'),
+        t('sessionComplete.failedToLoadSession')
+      );
     } finally {
       setIsLoading(false);
     }
@@ -79,7 +88,7 @@ export default function CompleteSessionScreen() {
     // Reload students to get the newly added one
     const loadedStudents = await getStudents();
     setAllStudents(loadedStudents);
-    
+
     // Auto-select the newly added student
     if (!selectedStudentIds.includes(studentId)) {
       setSelectedStudentIds((prev) => [...prev, studentId]);
@@ -90,7 +99,10 @@ export default function CompleteSessionScreen() {
     if (!session) return;
 
     if (selectedStudentIds.length === 0) {
-      Alert.alert(t('sessionComplete.error'), t('sessionComplete.pleaseSelectAtLeastOneAttendee'));
+      Alert.alert(
+        t('sessionComplete.error'),
+        t('sessionComplete.pleaseSelectAtLeastOneAttendee')
+      );
       return;
     }
 
@@ -104,7 +116,10 @@ export default function CompleteSessionScreen() {
 
       const reason = t('transactionDetails.sessionCompletedReason', {
         date: new Date(session.date).toLocaleDateString(),
-        sessionType: session.sessionType === 'team' ? t('sessionDetails.team') : t('sessionDetails.individual')
+        sessionType:
+          session.sessionType === 'team'
+            ? t('sessionDetails.team')
+            : t('sessionDetails.individual'),
       });
       addBalanceTransaction(studentId, -sessionDeduction, reason);
     });
@@ -114,18 +129,22 @@ export default function CompleteSessionScreen() {
     session.status = 'completed';
     await saveSession(session);
 
-    Alert.alert(t('sessionComplete.success'), t('sessionComplete.sessionCompletedSuccessfully'), [
-      {
-        text: t('sessionComplete.ok'),
-        onPress: () => {
-          if (returnTo) {
-            router.push(returnTo as any);
-          } else {
-            router.back();
-          }
+    Alert.alert(
+      t('sessionComplete.success'),
+      t('sessionComplete.sessionCompletedSuccessfully'),
+      [
+        {
+          text: t('sessionComplete.ok'),
+          onPress: () => {
+            if (returnTo) {
+              router.push(returnTo as any);
+            } else {
+              router.back();
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   const handleBack = () => {
@@ -150,7 +169,9 @@ export default function CompleteSessionScreen() {
           </TouchableOpacity>
         </View>
         <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{t('sessionComplete.sessionNotFound')}</Text>
+          <Text style={styles.errorText}>
+            {t('sessionComplete.sessionNotFound')}
+          </Text>
         </View>
       </View>
     );
@@ -159,8 +180,9 @@ export default function CompleteSessionScreen() {
   const originalAttendees = allStudents.filter((s) =>
     session.studentIds.includes(s.id)
   );
-  const addedStudents = allStudents.filter((s) =>
-    selectedStudentIds.includes(s.id) && !session.studentIds.includes(s.id)
+  const addedStudents = allStudents.filter(
+    (s) =>
+      selectedStudentIds.includes(s.id) && !session.studentIds.includes(s.id)
   );
 
   return (
@@ -171,26 +193,34 @@ export default function CompleteSessionScreen() {
           <Text style={styles.backButtonText}>← {t('sessions.back')}</Text>
         </TouchableOpacity>
         <View style={styles.headerSpacer} />
-        <TouchableOpacity 
-          onPress={handleComplete} 
+        <TouchableOpacity
+          onPress={handleComplete}
           style={[
             styles.completeButtonHeader,
-            selectedStudentIds.length === 0 && styles.completeButtonHeaderDisabled,
+            selectedStudentIds.length === 0 &&
+              styles.completeButtonHeaderDisabled,
           ]}
           disabled={selectedStudentIds.length === 0}
         >
-          <Text style={styles.completeButtonHeaderText}>{t('sessionComplete.completeSession')}</Text>
+          <Text style={styles.completeButtonHeaderText}>
+            {t('sessionComplete.completeSession')}
+          </Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.content}>
         {/* Info Card */}
         <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>{t('sessionComplete.completeSession')}</Text>
+          <Text style={styles.infoTitle}>
+            {t('sessionComplete.completeSession')}
+          </Text>
           <Text style={styles.infoText}>
-            {t('sessionComplete.eachAttendeeDeducted', { 
-              count: sessionDeduction, 
-              sessionText: sessionDeduction === 1 ? t('common.session') : t('common.sessions') 
+            {t('sessionComplete.eachAttendeeDeducted', {
+              count: sessionDeduction,
+              sessionText:
+                sessionDeduction === 1
+                  ? t('common.session')
+                  : t('common.sessions'),
             })}
           </Text>
         </View>
@@ -198,19 +228,27 @@ export default function CompleteSessionScreen() {
         {/* Session Type */}
         <View style={styles.typeCard}>
           <Text style={styles.typeText}>
-            {t('sessionComplete.sessionType')}: {session.sessionType === 'team' ? t('sessionDetails.team') : t('sessionDetails.individual')}
+            {t('sessionComplete.sessionType')}:{' '}
+            {session.sessionType === 'team'
+              ? t('sessionDetails.team')
+              : t('sessionDetails.individual')}
           </Text>
           <Text style={styles.typeSubtext}>
-            {t('sessionComplete.eachAttendeeDeducted', { 
-              count: sessionDeduction, 
-              sessionText: sessionDeduction === 1 ? t('common.session') : t('common.sessions') 
+            {t('sessionComplete.eachAttendeeDeducted', {
+              count: sessionDeduction,
+              sessionText:
+                sessionDeduction === 1
+                  ? t('common.session')
+                  : t('common.sessions'),
             })}
           </Text>
         </View>
 
         {/* Attendees */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('sessionComplete.confirmAttendees')}</Text>
+          <Text style={styles.sectionTitle}>
+            {t('sessionComplete.confirmAttendees')}
+          </Text>
           <Text style={styles.sectionSubtitle}>
             {t('sessionComplete.uncheckAnyoneWhoDidntAttend')}
           </Text>
@@ -222,7 +260,10 @@ export default function CompleteSessionScreen() {
             return (
               <TouchableOpacity
                 key={student.id}
-                style={[styles.studentCard, isSelected && styles.studentCardSelected]}
+                style={[
+                  styles.studentCard,
+                  isSelected && styles.studentCardSelected,
+                ]}
                 onPress={() => toggleStudent(student.id)}
               >
                 <View
@@ -236,16 +277,29 @@ export default function CompleteSessionScreen() {
                 <View style={styles.studentInfo}>
                   <Text style={styles.studentName}>{student.name}</Text>
                   <Text style={styles.studentBalance}>
-                    {t('sessionComplete.currentBalance')}: {student.balance} {Math.abs(student.balance) === 1 ? t('common.session') : t('common.sessions')}
+                    {t('sessionComplete.currentBalance')}: {student.balance}{' '}
+                    {Math.abs(student.balance) === 1
+                      ? t('common.session')
+                      : t('common.sessions')}
                   </Text>
                   {isSelected && (
                     <Text style={styles.studentBalanceAfter}>
-                      {t('sessionComplete.after')}: {newBalance} {Math.abs(newBalance) === 1 ? t('common.session') : t('common.sessions')}
+                      {t('sessionComplete.after')}: {newBalance}{' '}
+                      {Math.abs(newBalance) === 1
+                        ? t('common.session')
+                        : t('common.sessions')}
                     </Text>
                   )}
                 </View>
-                <Text style={[styles.attendanceStatus, !isSelected && styles.notAttended]}>
-                  {isSelected ? t('sessionComplete.attended') : t('sessionComplete.didNotAttend')}
+                <Text
+                  style={[
+                    styles.attendanceStatus,
+                    !isSelected && styles.notAttended,
+                  ]}
+                >
+                  {isSelected
+                    ? t('sessionComplete.attended')
+                    : t('sessionComplete.didNotAttend')}
                 </Text>
               </TouchableOpacity>
             );
@@ -265,7 +319,11 @@ export default function CompleteSessionScreen() {
               return (
                 <TouchableOpacity
                   key={student.id}
-                  style={[styles.studentCard, styles.studentCardAdded, isSelected && styles.studentCardSelected]}
+                  style={[
+                    styles.studentCard,
+                    styles.studentCardAdded,
+                    isSelected && styles.studentCardSelected,
+                  ]}
                   onPress={() => toggleStudent(student.id)}
                 >
                   <View
@@ -279,11 +337,17 @@ export default function CompleteSessionScreen() {
                   <View style={styles.studentInfo}>
                     <Text style={styles.studentName}>{student.name}</Text>
                     <Text style={styles.studentBalance}>
-                      {t('sessionComplete.currentBalance')}: {student.balance} {Math.abs(student.balance) === 1 ? t('common.session') : t('common.sessions')}
+                      {t('sessionComplete.currentBalance')}: {student.balance}{' '}
+                      {Math.abs(student.balance) === 1
+                        ? t('common.session')
+                        : t('common.sessions')}
                     </Text>
                     {isSelected && (
                       <Text style={styles.studentBalanceAfter}>
-                        {t('sessionComplete.after')}: {newBalance} {Math.abs(newBalance) === 1 ? t('common.session') : t('common.sessions')}
+                        {t('sessionComplete.after')}: {newBalance}{' '}
+                        {Math.abs(newBalance) === 1
+                          ? t('common.session')
+                          : t('common.sessions')}
                       </Text>
                     )}
                   </View>
@@ -310,7 +374,9 @@ export default function CompleteSessionScreen() {
 
         {/* Summary */}
         <View style={styles.summaryCard}>
-          <Text style={styles.summaryLabel}>{t('sessionComplete.totalAttendees')}:</Text>
+          <Text style={styles.summaryLabel}>
+            {t('sessionComplete.totalAttendees')}:
+          </Text>
           <Text style={styles.summaryValue}>{selectedStudentIds.length}</Text>
         </View>
       </ScrollView>
@@ -550,4 +616,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-

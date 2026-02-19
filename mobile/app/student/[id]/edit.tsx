@@ -1,14 +1,35 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Keyboard, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  Dimensions,
+} from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Student } from '@shared/types';
-import { getStudents, saveStudent, getSettings } from '../../../src/lib/storage';
+import {
+  getStudents,
+  saveStudent,
+  getSettings,
+} from '../../../src/lib/storage';
 import { useTranslation } from 'react-i18next';
 import DatePickerInput from '../../../src/components/DatePicker';
 
 export default function EditStudentScreen() {
   const router = useRouter();
-  const { id, returnTo } = useLocalSearchParams<{ id: string; returnTo?: string }>();
+  const { id, returnTo } = useLocalSearchParams<{
+    id: string;
+    returnTo?: string;
+  }>();
   const { t } = useTranslation();
   const [originalStudent, setOriginalStudent] = useState<Student | null>(null);
   const [availableGoals, setAvailableGoals] = useState<string[]>([]);
@@ -60,9 +81,9 @@ export default function EditStudentScreen() {
     // Scroll to description section position
     setTimeout(() => {
       if (descriptionSectionY > 0) {
-        scrollViewRef.current?.scrollTo({ 
-          y: Math.max(0, descriptionSectionY - 20), 
-          animated: true 
+        scrollViewRef.current?.scrollTo({
+          y: Math.max(0, descriptionSectionY - 20),
+          animated: true,
         });
       }
     }, 100);
@@ -76,7 +97,7 @@ export default function EditStudentScreen() {
     setIsLoading(true);
     try {
       const studentsData = await getStudents();
-      const student = studentsData.find(s => s.id === id);
+      const student = studentsData.find((s) => s.id === id);
       const settings = await getSettings();
 
       if (!student) {
@@ -94,7 +115,9 @@ export default function EditStudentScreen() {
       setWeight(student.weight ? student.weight.toString() : '');
       setHeight(student.height ? student.height.toString() : '');
       setBirthday(student.birthday ? new Date(student.birthday) : undefined);
-      setMemberSince(student.memberSince ? new Date(student.memberSince) : undefined);
+      setMemberSince(
+        student.memberSince ? new Date(student.memberSince) : undefined
+      );
       setDescription(student.description || '');
       setSelectedGoals(student.goals || []);
     } catch (error) {
@@ -106,24 +129,27 @@ export default function EditStudentScreen() {
   };
 
   const handleGoalToggle = (goal: string) => {
-    setSelectedGoals(prev =>
-      prev.includes(goal) ? prev.filter(g => g !== goal) : [...prev, goal]
+    setSelectedGoals((prev) =>
+      prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
     );
   };
 
   // Check if user has made any changes
   const hasUnsavedChanges = () => {
     if (!originalStudent) return false;
-    
+
     return (
       name.trim() !== originalStudent.name ||
       phone.trim() !== (originalStudent.phone || '') ||
-      weight !== (originalStudent.weight ? originalStudent.weight.toString() : '') ||
-      height !== (originalStudent.height ? originalStudent.height.toString() : '') ||
-      (birthday?.getTime() !== originalStudent.birthday?.getTime()) ||
-      (memberSince?.getTime() !== originalStudent.memberSince?.getTime()) ||
+      weight !==
+        (originalStudent.weight ? originalStudent.weight.toString() : '') ||
+      height !==
+        (originalStudent.height ? originalStudent.height.toString() : '') ||
+      birthday?.getTime() !== originalStudent.birthday?.getTime() ||
+      memberSince?.getTime() !== originalStudent.memberSince?.getTime() ||
       description.trim() !== (originalStudent.description || '') ||
-      JSON.stringify(selectedGoals.sort()) !== JSON.stringify((originalStudent.goals || []).sort())
+      JSON.stringify(selectedGoals.sort()) !==
+        JSON.stringify((originalStudent.goals || []).sort())
     );
   };
 
@@ -182,16 +208,16 @@ export default function EditStudentScreen() {
 
       await saveStudent(updatedStudent);
       Alert.alert(t('common.success'), t('students.studentUpdated'), [
-        { 
-          text: 'OK', 
+        {
+          text: 'OK',
           onPress: () => {
             if (returnTo) {
               router.push(returnTo as any);
             } else {
               router.back();
             }
-          }
-        }
+          },
+        },
       ]);
     } catch (error) {
       console.error('Error updating student:', error);
@@ -205,15 +231,17 @@ export default function EditStudentScreen() {
     return (
       <View style={styles.centerContainer}>
         <ActivityIndicator size="large" color="#4f46e5" />
-        <Text style={styles.loadingText}>{t('studentPages.loadingStudentData')}</Text>
+        <Text style={styles.loadingText}>
+          {t('studentPages.loadingStudentData')}
+        </Text>
       </View>
     );
   }
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <KeyboardAvoidingView 
-        style={styles.flex} 
+      <KeyboardAvoidingView
+        style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         {/* Header */}
@@ -221,166 +249,194 @@ export default function EditStudentScreen() {
           <TouchableOpacity onPress={handleBackClick} style={styles.backButton}>
             <Text style={styles.backButtonText}>← Back</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{t('studentPages.editStudent')}</Text>
-          <TouchableOpacity 
-            onPress={handleSave} 
+          <Text style={styles.headerTitle}>
+            {t('studentPages.editStudent')}
+          </Text>
+          <TouchableOpacity
+            onPress={handleSave}
             style={styles.saveButton}
             disabled={isSaving}
           >
             {isSaving ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Text style={styles.saveButtonText}>{t('studentPages.save')}</Text>
+              <Text style={styles.saveButtonText}>
+                {t('studentPages.save')}
+              </Text>
             )}
           </TouchableOpacity>
         </View>
 
-      <ScrollView 
-        ref={scrollViewRef}
-        style={styles.content} 
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* Personal Information */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('studentDetails.personalInformation')}</Text>
-          
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>{t('studentForm.nameRequired')}</Text>
-            <TextInput
-              style={styles.input}
-              value={name}
-              onChangeText={setName}
-              placeholder={t('studentPages.enterStudentName')}
-              placeholderTextColor="#9ca3af"
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>{t('studentForm.phone')}</Text>
-            <TextInput
-              style={styles.input}
-              value={phone}
-              onChangeText={setPhone}
-              placeholder={t('studentPages.enterPhoneNumber')}
-              placeholderTextColor="#9ca3af"
-              keyboardType="phone-pad"
-            />
-          </View>
-
-          <View style={styles.row}>
-            <View style={[styles.inputGroup, styles.halfWidth]}>
-              <Text style={styles.label}>{t('studentForm.weight')} (kg)</Text>
-              <TextInput
-                style={styles.input}
-                value={weight}
-                onChangeText={setWeight}
-                placeholder={t('studentPages.enterWeight')}
-                placeholderTextColor="#9ca3af"
-                keyboardType="decimal-pad"
-              />
-            </View>
-
-            <View style={[styles.inputGroup, styles.halfWidth]}>
-              <Text style={styles.label}>{t('studentForm.height')} (cm)</Text>
-              <TextInput
-                style={styles.input}
-                value={height}
-                onChangeText={setHeight}
-                placeholder={t('studentPages.enterHeight')}
-                placeholderTextColor="#9ca3af"
-                keyboardType="decimal-pad"
-              />
-            </View>
-          </View>
-
-          <DatePickerInput
-            label={t('studentForm.birthday')}
-            value={birthday}
-            onChange={setBirthday}
-            placeholder={t('studentPages.selectBirthday')}
-            maxDate={new Date()}
-          />
-
-          <DatePickerInput
-            label={t('studentPages.memberSince')}
-            value={memberSince}
-            onChange={setMemberSince}
-            placeholder={t('studentPages.selectMemberSince')}
-            maxDate={new Date()}
-          />
-
-          <View style={styles.balanceInfo}>
-            <View>
-              <Text style={styles.label}>{t('studentPages.currentBalance')}</Text>
-              <Text style={styles.balanceValue}>
-                {originalStudent.balance > 0 ? '+' : ''}{originalStudent.balance} {Math.abs(originalStudent.balance) === 1 ? t('calendar.sessions.session') : t('calendar.sessions.sessions')}
-              </Text>
-              <Text style={styles.helpText}>{t('studentPages.balanceSystemManaged')}</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Description */}
-        <View 
-          ref={descriptionSectionRef}
-          style={styles.section}
-          onLayout={(event) => {
-            const { y } = event.nativeEvent.layout;
-            setDescriptionSectionY(y);
-          }}
+        <ScrollView
+          ref={scrollViewRef}
+          style={styles.content}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.sectionTitle}>{t('studentForm.description')}</Text>
-          <TextInput
-            ref={descriptionInputRef}
-            style={[
-              styles.input, 
-              styles.textArea,
-              isDescriptionFocused && styles.textAreaExpanded,
-              isDescriptionFocused && keyboardHeight > 0 && {
-                height: Dimensions.get('window').height - keyboardHeight - descriptionSectionY - 140
-              }
-            ]}
-            value={description}
-            onChangeText={setDescription}
-            placeholder={t('studentForm.descriptionPlaceholder')}
-            placeholderTextColor="#9ca3af"
-            multiline
-            numberOfLines={isDescriptionFocused ? undefined : 4}
-            textAlignVertical="top"
-            onFocus={handleDescriptionFocus}
-            onBlur={handleDescriptionBlur}
-            autoCapitalize="sentences"
-          />
-        </View>
+          {/* Personal Information */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>
+              {t('studentDetails.personalInformation')}
+            </Text>
 
-        {/* Goals */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('studentPages.goalsAndFocusAreas')}</Text>
-          <Text style={styles.sectionSubtitle}>{t('studentPages.selectGoalsForStudent')}</Text>
-          <View style={styles.goalsContainer}>
-            {availableGoals.map((goal) => (
-              <TouchableOpacity
-                key={goal}
-                style={[
-                  styles.goalChip,
-                  selectedGoals.includes(goal) && styles.goalChipSelected
-                ]}
-                onPress={() => handleGoalToggle(goal)}
-              >
-                <Text style={[
-                  styles.goalChipText,
-                  selectedGoals.includes(goal) && styles.goalChipTextSelected
-                ]}>
-                  {goal}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>{t('studentForm.nameRequired')}</Text>
+              <TextInput
+                style={styles.input}
+                value={name}
+                onChangeText={setName}
+                placeholder={t('studentPages.enterStudentName')}
+                placeholderTextColor="#9ca3af"
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>{t('studentForm.phone')}</Text>
+              <TextInput
+                style={styles.input}
+                value={phone}
+                onChangeText={setPhone}
+                placeholder={t('studentPages.enterPhoneNumber')}
+                placeholderTextColor="#9ca3af"
+                keyboardType="phone-pad"
+              />
+            </View>
+
+            <View style={styles.row}>
+              <View style={[styles.inputGroup, styles.halfWidth]}>
+                <Text style={styles.label}>{t('studentForm.weight')} (kg)</Text>
+                <TextInput
+                  style={styles.input}
+                  value={weight}
+                  onChangeText={setWeight}
+                  placeholder={t('studentPages.enterWeight')}
+                  placeholderTextColor="#9ca3af"
+                  keyboardType="decimal-pad"
+                />
+              </View>
+
+              <View style={[styles.inputGroup, styles.halfWidth]}>
+                <Text style={styles.label}>{t('studentForm.height')} (cm)</Text>
+                <TextInput
+                  style={styles.input}
+                  value={height}
+                  onChangeText={setHeight}
+                  placeholder={t('studentPages.enterHeight')}
+                  placeholderTextColor="#9ca3af"
+                  keyboardType="decimal-pad"
+                />
+              </View>
+            </View>
+
+            <DatePickerInput
+              label={t('studentForm.birthday')}
+              value={birthday}
+              onChange={setBirthday}
+              placeholder={t('studentPages.selectBirthday')}
+              maxDate={new Date()}
+            />
+
+            <DatePickerInput
+              label={t('studentPages.memberSince')}
+              value={memberSince}
+              onChange={setMemberSince}
+              placeholder={t('studentPages.selectMemberSince')}
+              maxDate={new Date()}
+            />
+
+            <View style={styles.balanceInfo}>
+              <View>
+                <Text style={styles.label}>
+                  {t('studentPages.currentBalance')}
                 </Text>
-              </TouchableOpacity>
-            ))}
+                <Text style={styles.balanceValue}>
+                  {originalStudent.balance > 0 ? '+' : ''}
+                  {originalStudent.balance}{' '}
+                  {Math.abs(originalStudent.balance) === 1
+                    ? t('calendar.sessions.session')
+                    : t('calendar.sessions.sessions')}
+                </Text>
+                <Text style={styles.helpText}>
+                  {t('studentPages.balanceSystemManaged')}
+                </Text>
+              </View>
+            </View>
           </View>
-        </View>
 
-        <View style={styles.bottomSpacing} />
-      </ScrollView>
+          {/* Description */}
+          <View
+            ref={descriptionSectionRef}
+            style={styles.section}
+            onLayout={(event) => {
+              const { y } = event.nativeEvent.layout;
+              setDescriptionSectionY(y);
+            }}
+          >
+            <Text style={styles.sectionTitle}>
+              {t('studentForm.description')}
+            </Text>
+            <TextInput
+              ref={descriptionInputRef}
+              style={[
+                styles.input,
+                styles.textArea,
+                isDescriptionFocused && styles.textAreaExpanded,
+                isDescriptionFocused &&
+                  keyboardHeight > 0 && {
+                    height:
+                      Dimensions.get('window').height -
+                      keyboardHeight -
+                      descriptionSectionY -
+                      140,
+                  },
+              ]}
+              value={description}
+              onChangeText={setDescription}
+              placeholder={t('studentForm.descriptionPlaceholder')}
+              placeholderTextColor="#9ca3af"
+              multiline
+              numberOfLines={isDescriptionFocused ? undefined : 4}
+              textAlignVertical="top"
+              onFocus={handleDescriptionFocus}
+              onBlur={handleDescriptionBlur}
+              autoCapitalize="sentences"
+            />
+          </View>
+
+          {/* Goals */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>
+              {t('studentPages.goalsAndFocusAreas')}
+            </Text>
+            <Text style={styles.sectionSubtitle}>
+              {t('studentPages.selectGoalsForStudent')}
+            </Text>
+            <View style={styles.goalsContainer}>
+              {availableGoals.map((goal) => (
+                <TouchableOpacity
+                  key={goal}
+                  style={[
+                    styles.goalChip,
+                    selectedGoals.includes(goal) && styles.goalChipSelected,
+                  ]}
+                  onPress={() => handleGoalToggle(goal)}
+                >
+                  <Text
+                    style={[
+                      styles.goalChipText,
+                      selectedGoals.includes(goal) &&
+                        styles.goalChipTextSelected,
+                    ]}
+                  >
+                    {goal}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.bottomSpacing} />
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -540,4 +596,3 @@ const styles = StyleSheet.create({
     height: 40,
   },
 });
-

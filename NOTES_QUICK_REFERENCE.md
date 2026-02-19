@@ -3,6 +3,7 @@
 ## 📍 Where to Find Notes Management
 
 ### Student Details Page (`/students/[id]`)
+
 **Full CRUD operations now available!**
 
 ```
@@ -26,12 +27,14 @@ Student Details Page
 ## 🎮 How to Use
 
 ### ➕ Adding a Note
+
 1. Click **[+ Add a Note]** button
 2. Type your note in the modal
 3. Click **Save Note**
 4. ✅ Done! Note appears instantly
 
 ### ✏️ Editing a Note
+
 1. Click **[Edit]** on any note
 2. Modify the content
 3. Click **Save**
@@ -39,6 +42,7 @@ Student Details Page
 5. ✅ Done! Changes saved
 
 ### 🗑️ Deleting a Note
+
 1. Click **[Delete]** on any note
 2. Confirm deletion
 3. ✅ Done! Note removed
@@ -48,6 +52,7 @@ Student Details Page
 ## 🎨 Visual Layout
 
 ### Notes Section Structure
+
 ```
 ┌────────────────────────────────────────────────┐
 │ 📝 Notes                                       │
@@ -73,6 +78,7 @@ Student Details Page
 ```
 
 ### Add Note Modal
+
 ```
 ┌─────────────────────────────────────┐
 │ 📝 Add a Note                    × │
@@ -93,6 +99,7 @@ Student Details Page
 ```
 
 ### Inline Edit Mode
+
 ```
 ┌──────────────────────────────────────────┐
 │ ┌────────────────────────────────────┐   │
@@ -111,20 +118,24 @@ Student Details Page
 ## 🔔 Important Notes
 
 ### Auto-Refresh
+
 - All operations automatically refresh the UI
 - No need to manually reload the page
 - Changes appear instantly
 
 ### Timestamps
+
 - **Created:** Always shown (when note was first created)
 - **Updated:** Only shown if note was edited after creation
 
 ### Confirmations
+
 - **Edit:** Confirmation dialog before saving changes
 - **Delete:** Confirmation dialog before deletion
 - Prevents accidental data loss
 
 ### Long Notes
+
 - Notes longer than 200 characters are truncated
 - Shows "Click to view full content..." indicator
 - Click anywhere on note to open full view in modal
@@ -134,16 +145,19 @@ Student Details Page
 ## 🛠️ Troubleshooting
 
 ### Note doesn't appear after creation
+
 - Check if modal closed successfully
 - Try refreshing the page manually
 - Verify note content wasn't empty
 
 ### Edit/Delete buttons not visible
+
 - Make sure you're on Student Details page (not Edit page)
 - Check if page loaded completely
 - Try scrolling to ensure buttons are rendered
 
 ### Changes not saving
+
 - Wait for loading spinner to finish
 - Don't close modal/page while saving
 - Check browser console for errors
@@ -153,6 +167,7 @@ Student Details Page
 ## 📱 Mobile Support
 
 All note operations work seamlessly on mobile:
+
 - Touch-friendly button sizes
 - Responsive modal layout
 - Optimized for smaller screens
@@ -172,6 +187,7 @@ All note operations work seamlessly on mobile:
 ## 📞 Support
 
 If you encounter any issues:
+
 1. Check browser console for errors
 2. Try clearing browser cache
 3. Verify localStorage is enabled
@@ -182,4 +198,3 @@ If you encounter any issues:
 
 **Last Updated:** October 13, 2025  
 **Feature Status:** ✅ Fully Operational
-

@@ -67,7 +67,8 @@ function PickerModal({
                 <Text
                   style={[
                     styles.modalOptionText,
-                    item.value === selectedValue && styles.modalOptionTextSelected,
+                    item.value === selectedValue &&
+                      styles.modalOptionTextSelected,
                   ]}
                 >
                   {item.label}
@@ -82,7 +83,10 @@ function PickerModal({
 }
 
 export default function EditSessionScreen() {
-  const { id, returnTo } = useLocalSearchParams<{ id: string; returnTo?: string }>();
+  const { id, returnTo } = useLocalSearchParams<{
+    id: string;
+    returnTo?: string;
+  }>();
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -153,9 +157,15 @@ export default function EditSessionScreen() {
       const startParts = session.startTime.split(':');
       const endParts = session.endTime.split(':');
       const startDateObj = new Date();
-      startDateObj.setHours(parseInt(startParts[0] || '0'), parseInt(startParts[1] || '0'));
+      startDateObj.setHours(
+        parseInt(startParts[0] || '0'),
+        parseInt(startParts[1] || '0')
+      );
       const endDateObj = new Date();
-      endDateObj.setHours(parseInt(endParts[0] || '0'), parseInt(endParts[1] || '0'));
+      endDateObj.setHours(
+        parseInt(endParts[0] || '0'),
+        parseInt(endParts[1] || '0')
+      );
       const diffMs = endDateObj.getTime() - startDateObj.getTime();
       const minutes = Math.max(30, Math.round(diffMs / 60000));
       setDuration(String(minutes));
@@ -197,7 +207,7 @@ export default function EditSessionScreen() {
     // Reload students to get the newly added one
     const loadedStudents = await getStudents();
     setStudents(loadedStudents);
-    
+
     // Auto-select the newly added student
     if (!selectedStudentIds.includes(studentId)) {
       setSelectedStudentIds((prev) => [...prev, studentId]);
@@ -213,24 +223,32 @@ export default function EditSessionScreen() {
   // Check if user has made any changes
   const hasUnsavedChanges = () => {
     if (!originalSession) return false;
-    
+
     // Calculate original duration for comparison
     const startParts = originalSession.startTime.split(':');
     const endParts = originalSession.endTime.split(':');
     const startDateObj = new Date();
-    startDateObj.setHours(parseInt(startParts[0] || '0'), parseInt(startParts[1] || '0'));
+    startDateObj.setHours(
+      parseInt(startParts[0] || '0'),
+      parseInt(startParts[1] || '0')
+    );
     const endDateObj = new Date();
-    endDateObj.setHours(parseInt(endParts[0] || '0'), parseInt(endParts[1] || '0'));
+    endDateObj.setHours(
+      parseInt(endParts[0] || '0'),
+      parseInt(endParts[1] || '0')
+    );
     const diffMs = endDateObj.getTime() - startDateObj.getTime();
     const originalDuration = Math.max(30, Math.round(diffMs / 60000));
-    
+
     return (
       selectedDate.getTime() !== new Date(originalSession.date).getTime() ||
       startTime !== originalSession.startTime ||
       duration !== String(originalDuration) ||
       sessionType !== originalSession.sessionType ||
-      JSON.stringify(selectedStudentIds.sort()) !== JSON.stringify(originalSession.studentIds.sort()) ||
-      JSON.stringify(selectedGoals.sort()) !== JSON.stringify((originalSession.goals || []).sort()) ||
+      JSON.stringify(selectedStudentIds.sort()) !==
+        JSON.stringify(originalSession.studentIds.sort()) ||
+      JSON.stringify(selectedGoals.sort()) !==
+        JSON.stringify((originalSession.goals || []).sort()) ||
       notes.trim() !== (originalSession.notes || '').trim()
     );
   };
@@ -322,7 +340,9 @@ export default function EditSessionScreen() {
         {/* Date */}
         <View style={styles.section}>
           <Text style={styles.label}>{t('sessions.sessionDate')}</Text>
-          <Text style={styles.dateText}>{selectedDate.toLocaleDateString()}</Text>
+          <Text style={styles.dateText}>
+            {selectedDate.toLocaleDateString()}
+          </Text>
         </View>
 
         {/* Time */}
@@ -350,7 +370,8 @@ export default function EditSessionScreen() {
             <Text style={styles.pickerArrow}>▼</Text>
           </TouchableOpacity>
           <Text style={styles.helperText}>
-            {t('sessions.endTime')}: {calculateEndTime(startTime, parseInt(duration))}
+            {t('sessions.endTime')}:{' '}
+            {calculateEndTime(startTime, parseInt(duration))}
           </Text>
         </View>
 
@@ -371,17 +392,23 @@ export default function EditSessionScreen() {
         {/* Students */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.label}>{t('sessions.attendeesLabel')} ({selectedStudentIds.length})</Text>
+            <Text style={styles.label}>
+              {t('sessions.attendeesLabel')} ({selectedStudentIds.length})
+            </Text>
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => setShowAddStudentModal(true)}
             >
-              <Text style={styles.addButtonText}>{t('sessions.addStudentButton')}</Text>
+              <Text style={styles.addButtonText}>
+                {t('sessions.addStudentButton')}
+              </Text>
             </TouchableOpacity>
           </View>
           {selectedStudentIds.length === 0 ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyStateText}>{t('sessions.noAttendeesAddedYet')}</Text>
+              <Text style={styles.emptyStateText}>
+                {t('sessions.noAttendeesAddedYet')}
+              </Text>
               <Text style={styles.emptyStateSubtext}>
                 {t('sessions.useAddStudentButton')}
               </Text>
@@ -398,7 +425,10 @@ export default function EditSessionScreen() {
                   <View style={styles.attendeeInfo}>
                     <Text style={styles.studentName}>{student.name}</Text>
                     <Text style={styles.studentBalance}>
-                      {t('sessions.balance')}: {student.balance} {Math.abs(student.balance) === 1 ? t('common.session') : t('common.sessions')}
+                      {t('sessions.balance')}: {student.balance}{' '}
+                      {Math.abs(student.balance) === 1
+                        ? t('common.session')
+                        : t('common.sessions')}
                     </Text>
                   </View>
                   <TouchableOpacity
@@ -739,4 +769,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-

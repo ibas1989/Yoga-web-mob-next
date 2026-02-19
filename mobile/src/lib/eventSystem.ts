@@ -6,7 +6,7 @@
 import { DeviceEventEmitter } from 'react-native';
 
 // Event types for type safety
-export type SessionEventType = 
+export type SessionEventType =
   | 'sessionCreated'
   | 'sessionUpdated'
   | 'sessionCompleted'
@@ -28,12 +28,12 @@ export interface SessionEventDetail {
  * Enhanced event dispatcher for React Native
  */
 export function dispatchSessionEvent(
-  eventType: SessionEventType, 
+  eventType: SessionEventType,
   detail: SessionEventDetail
 ): void {
   try {
     DeviceEventEmitter.emit(eventType, detail);
-    
+
     // Log in development mode
     if (__DEV__) {
       console.log(`📡 Dispatched ${eventType} event:`, detail);
@@ -52,7 +52,7 @@ export function addSessionEventListener(
 ): () => void {
   try {
     const subscription = DeviceEventEmitter.addListener(eventType, handler);
-    
+
     // Return cleanup function
     return () => {
       subscription.remove();
@@ -70,13 +70,13 @@ export function addBatchSessionEventListeners(
   eventTypes: SessionEventType[],
   handler: (detail: SessionEventDetail) => void
 ): () => void {
-  const subscriptions = eventTypes.map(eventType => 
+  const subscriptions = eventTypes.map((eventType) =>
     addSessionEventListener(eventType, handler)
   );
 
   // Return cleanup function
   return () => {
-    subscriptions.forEach(cleanup => cleanup());
+    subscriptions.forEach((cleanup) => cleanup());
   };
 }
 
@@ -89,19 +89,12 @@ export function getEventSystemStatus(): {
   return {
     eventTypes: [
       'sessionCreated',
-      'sessionUpdated', 
+      'sessionUpdated',
       'sessionCompleted',
       'sessionCancelled',
       'sessionDeleted',
       'sessionChanged',
-      'taskListUpdate'
-    ]
+      'taskListUpdate',
+    ],
   };
 }
-
-
-
-
-
-
-

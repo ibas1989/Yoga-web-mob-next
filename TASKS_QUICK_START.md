@@ -24,13 +24,17 @@ expo start
 ### 3. Test Scenarios
 
 #### Scenario A: No Overdue Sessions
-**Expected Result**: 
+
+**Expected Result**:
+
 - See empty state with checkmark icon
 - Message: "No pending tasks" / "Нет ожидающих задач"
 - Subtext: "All your sessions are up to date!"
 
 #### Scenario B: With Overdue Sessions
+
 **Setup**: Create a session in the past
+
 1. Go to Calendar tab
 2. Create a session with:
    - Date: Yesterday or earlier
@@ -39,6 +43,7 @@ expo start
    - Assign some students
 
 **Expected Result**:
+
 - See task card showing:
   - Clock icon (⏰)
   - "Session with X student(s)"
@@ -46,7 +51,9 @@ expo start
   - "Pending" badge (orange)
 
 #### Scenario C: View Task Details
+
 **Steps**:
+
 1. Tap on any task card
 2. Modal should open showing:
    - Task title
@@ -57,7 +64,9 @@ expo start
    - "Cancel" button
 
 #### Scenario D: Complete a Task
+
 **Steps**:
+
 1. Tap on a task card
 2. Tap "Complete Task" button
 3. Should navigate to Session Details page
@@ -68,13 +77,17 @@ expo start
 8. Task should disappear from list
 
 #### Scenario E: Pull to Refresh
+
 **Steps**:
+
 1. On Tasks screen, pull down to refresh
 2. Should show refresh indicator
 3. List should reload
 
 #### Scenario F: Language Switching
+
 **Steps**:
+
 1. Go to Settings tab
 2. Change language (EN ↔ RU)
 3. Go back to Tasks tab
@@ -84,6 +97,7 @@ expo start
 ## 📱 Features Checklist
 
 ### Display Features
+
 - ✅ Fixed header with title and description
 - ✅ Loading state with spinner
 - ✅ Empty state when no tasks
@@ -95,6 +109,7 @@ expo start
   - Pending badge
 
 ### Interactive Features
+
 - ✅ Tap task to view details
 - ✅ Task detail modal with full info
 - ✅ Complete task navigation
@@ -103,6 +118,7 @@ expo start
 - ✅ Back navigation support
 
 ### Internationalization
+
 - ✅ English translations
 - ✅ Russian translations
 - ✅ Proper plural forms
@@ -110,6 +126,7 @@ expo start
 - ✅ Localized time formats
 
 ### Navigation Flow
+
 - ✅ Tasks → Task Details (Modal)
 - ✅ Tasks → Session Details (with returnTo)
 - ✅ Session Details → Complete Session (with returnTo)
@@ -118,6 +135,7 @@ expo start
 ## 🎨 Visual Elements
 
 ### Colors
+
 - Primary action: Orange (#f97316)
 - Background: Light gray (#f9fafb)
 - Cards: White (#ffffff)
@@ -126,6 +144,7 @@ expo start
 - Badge: Orange tint (#fff7ed with #c2410c text)
 
 ### Icons
+
 - Clock emoji (⏰) for task cards
 - Checkmark (✓) for empty state
 - Calendar (📅) for dates
@@ -134,11 +153,13 @@ expo start
 ## 🔧 Technical Details
 
 ### Files Modified
+
 1. `/mobile/app/(tabs)/tasks.tsx` - Main implementation
 2. `/mobile/app/(tabs)/_layout.tsx` - Added translations
 3. `/shared/lib/utils/dateUtils.ts` - Added utility function
 
 ### Dependencies Used
+
 - React Native core components
 - Expo Router for navigation
 - react-i18next for translations
@@ -146,6 +167,7 @@ expo start
 - Shared types and utilities
 
 ### State Management
+
 - Local state with useState
 - Automatic refresh with useFocusEffect
 - Pull-to-refresh with RefreshControl
@@ -154,12 +176,15 @@ expo start
 ## 🐛 Troubleshooting
 
 ### Tasks Not Showing?
+
 **Check**:
+
 1. Do you have scheduled sessions in the past?
 2. Are the sessions still marked as "scheduled" (not completed/cancelled)?
 3. Has the session's end time passed?
 
 ### Fix: Create a Test Session
+
 ```javascript
 // In mobile app, create a session with:
 date: new Date('2025-11-04'), // Yesterday
@@ -170,10 +195,12 @@ studentIds: ['some-student-id']
 ```
 
 ### Modal Not Opening?
+
 - Make sure you're tapping the card (not just the badge)
 - Check console for errors
 
 ### Navigation Not Working?
+
 - Ensure returnTo parameter is properly formatted
 - Check that session ID is valid
 - Verify session exists in storage
@@ -205,19 +232,24 @@ Return to Tasks → Auto-refresh → Updated list
 ## 🎓 How It Works
 
 ### Task Determination
+
 A session becomes a task when:
+
 1. Status is "scheduled" (not completed or cancelled)
 2. Current time > session end time
 3. Session has not been marked complete
 
 ### Auto-Refresh
+
 Tasks list automatically refreshes when:
+
 1. Screen first loads
 2. Screen comes into focus (tab switch)
 3. User pulls to refresh
 4. After completing a session
 
 ### Translation Keys Used
+
 ```
 tasks.title
 tasks.description
@@ -240,6 +272,7 @@ common.cancel
 ## ✅ Verification Steps
 
 1. **Install & Run**
+
 ```bash
 cd mobile
 npm install  # if needed
@@ -247,11 +280,13 @@ npm start
 ```
 
 2. **Check Translations**
+
 - Switch language in settings
 - Verify all text changes
 - Check date/time formats
 
 3. **Test Full Flow**
+
 - Create overdue session
 - View in tasks
 - Open details
@@ -259,6 +294,7 @@ npm start
 - Verify task disappears
 
 4. **Test Edge Cases**
+
 - No tasks (empty state)
 - Many tasks (scrolling)
 - Long student names
@@ -268,6 +304,7 @@ npm start
 ## 🎉 Success Criteria
 
 The implementation is successful if:
+
 - ✅ Tasks list loads and displays correctly
 - ✅ Task cards show all required information
 - ✅ Modal opens with complete details
@@ -290,11 +327,8 @@ The implementation is successful if:
 The Tasks feature is **complete and ready to use**. No additional setup required.
 
 Optional enhancements for the future:
+
 - Add task count badge on tab icon
 - Add push notifications for overdue tasks
 - Add swipe actions on task cards
 - Add filtering/sorting options
-
-
-
-

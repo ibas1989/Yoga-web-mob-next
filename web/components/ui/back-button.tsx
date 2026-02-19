@@ -11,25 +11,31 @@ interface BackButtonProps {
    * Default: '/' (home page)
    */
   fallbackRoute?: string;
-  
+
   /**
    * Button variant
    * Default: 'ghost'
    */
-  variant?: 'ghost' | 'outline' | 'default' | 'secondary' | 'destructive' | 'link';
-  
+  variant?:
+    | 'ghost'
+    | 'outline'
+    | 'default'
+    | 'secondary'
+    | 'destructive'
+    | 'link';
+
   /**
    * Button size
    * Default: 'sm'
    */
   size?: 'default' | 'sm' | 'lg' | 'icon';
-  
+
   /**
    * Custom label text
    * Default: 'Back'
    */
   label?: string;
-  
+
   /**
    * Additional CSS classes
    */
@@ -38,24 +44,24 @@ interface BackButtonProps {
 
 /**
  * BackButton Component
- * 
+ *
  * A reusable navigation button that returns users to their previous page.
  * Includes smart fallback logic to navigate to a specified route if no
  * navigation history exists.
- * 
+ *
  * @example
  * // Basic usage with default fallback to home
  * <BackButton />
- * 
+ *
  * @example
  * // With custom fallback route
  * <BackButton fallbackRoute="/students" />
- * 
+ *
  * @example
  * // With custom styling
- * <BackButton 
- *   fallbackRoute="/sessions" 
- *   variant="outline" 
+ * <BackButton
+ *   fallbackRoute="/sessions"
+ *   variant="outline"
  *   label="Return to Sessions"
  * />
  */
@@ -81,9 +87,9 @@ export function BackButton({
   };
 
   return (
-    <Button 
-      variant={variant} 
-      size={size} 
+    <Button
+      variant={variant}
+      size={size}
       onClick={handleBack}
       className={className}
       aria-label={label}
@@ -93,4 +99,3 @@ export function BackButton({
     </Button>
   );
 }
-
