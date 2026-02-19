@@ -215,3 +215,11 @@ Private project for personal use.
 ## 🤝 Contributing
 
 This is a private project. No external contributions at this time.
+
+## ✅ CI/CD
+
+This project uses GitHub Actions for continuous integration. All pull requests are automatically tested for:
+- Code linting
+- Type checking
+- Test execution
+- Code formatting
