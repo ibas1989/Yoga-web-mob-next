@@ -1,0 +1,21 @@
+{
+  "name": "@yoga-tracker/shared",
+  "version": "0.1.0",
+  "private": true,
+  "main": "lib/index.ts",
+  "types": "lib/index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "date-fns": "^3.6.0",
+    "i18next": "^25.6.0",
+    "react-i18next": "^16.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.0",
+    "@types/react": "^18.3.0",
+    "typescript": "^5.4.0"
+  }
+}
+
