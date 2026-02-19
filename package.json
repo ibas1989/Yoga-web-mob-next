@@ -9,8 +9,14 @@
     "shared"
   ],
   "scripts": {
+    "dev": "npm run dev:web",
     "dev:web": "npm run dev --workspace=web",
+    "dev:mobile": "npm run start --workspace=mobile",
+    "build": "npm run build:web",
     "build:web": "npm run build --workspace=web",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "type-check": "npm run type-check --workspaces --if-present"
   },
   "engines": {
@@ -19,5 +25,8 @@
   "overrides": {
     "react": "19.1.0",
     "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5"
   }
 }

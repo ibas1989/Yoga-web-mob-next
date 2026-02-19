@@ -8,7 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { ContextualBar } from '@/components/ui/contextual-bar';
 import { DatePicker } from '@/components/ui/date-picker';
 import { Student } from '@shared/types';
@@ -26,7 +32,7 @@ export default function EditStudentPage() {
   const [availableGoals, setAvailableGoals] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   // Form fields
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -37,10 +43,9 @@ export default function EditStudentPage() {
   const [memberSince, setMemberSince] = useState<Date | undefined>(undefined);
   const [description, setDescription] = useState('');
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
-  
+
   // State for unsaved changes confirmation
   const [showBackConfirmation, setShowBackConfirmation] = useState(false);
-
 
   useEffect(() => {
     loadData();
@@ -49,7 +54,7 @@ export default function EditStudentPage() {
   const loadData = () => {
     setIsLoading(true);
     const students = getStudents();
-    const student = students.find(s => s.id === studentId);
+    const student = students.find((s) => s.id === studentId);
     const settings = getSettings();
 
     if (!student) {
@@ -75,33 +80,32 @@ export default function EditStudentPage() {
   };
 
   const handleGoalToggle = (goal: string) => {
-    setSelectedGoals(prev =>
-      prev.includes(goal)
-        ? prev.filter(g => g !== goal)
-        : [...prev, goal]
+    setSelectedGoals((prev) =>
+      prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
     );
   };
 
   // Check if user has made any changes
   const hasUnsavedChanges = () => {
     if (!originalStudent) return false;
-    
+
     return (
       name.trim() !== originalStudent.name ||
       phone.trim() !== (originalStudent.phone || '') ||
       balance !== originalStudent.balance ||
       weight !== originalStudent.weight ||
       height !== originalStudent.height ||
-      (birthday?.getTime() !== originalStudent.birthday?.getTime()) ||
-      (memberSince?.getTime() !== originalStudent.memberSince?.getTime()) ||
+      birthday?.getTime() !== originalStudent.birthday?.getTime() ||
+      memberSince?.getTime() !== originalStudent.memberSince?.getTime() ||
       description.trim() !== (originalStudent.description || '') ||
-      JSON.stringify(selectedGoals.sort()) !== JSON.stringify(originalStudent.goals.sort())
+      JSON.stringify(selectedGoals.sort()) !==
+        JSON.stringify(originalStudent.goals.sort())
     );
   };
 
   const handleSave = () => {
     if (!originalStudent) return;
-    
+
     if (!name.trim()) {
       alert(t('validation.enterStudentName'));
       return;
@@ -119,13 +123,13 @@ export default function EditStudentPage() {
       height,
       birthday,
       memberSince,
-      description: description.trim()
+      description: description.trim(),
     };
 
     saveStudent(updatedStudent);
-    
+
     setIsSaving(false);
-    
+
     // Navigate back to the student details page with updated data
     router.push(`/students/${studentId}`);
   };
@@ -150,9 +154,6 @@ export default function EditStudentPage() {
     setShowBackConfirmation(false);
   };
 
-
-
-
   const formatDate = (date: Date | string | null | undefined) => {
     if (!date) return t('common.notSpecified');
     const dateObj = date instanceof Date ? date : new Date(date);
@@ -173,7 +174,7 @@ export default function EditStudentPage() {
     return new Intl.DateTimeFormat(locale, {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: false
+      hour12: false,
     }).format(dateObj);
   };
 
@@ -182,7 +183,9 @@ export default function EditStudentPage() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground animate-spin" />
-          <p className="text-muted-foreground">{t('studentPages.loadingStudentData')}</p>
+          <p className="text-muted-foreground">
+            {t('studentPages.loadingStudentData')}
+          </p>
         </div>
       </div>
     );
@@ -194,9 +197,9 @@ export default function EditStudentPage() {
       <div className="fixed top-0 left-0 right-0 z-40 bg-background border-b safe-top-bar">
         <div className="container mx-auto px-4 pb-3">
           <div className="flex items-center">
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleBackClick}
               className="flex items-center gap-2 flex-shrink-0"
             >
@@ -230,139 +233,163 @@ export default function EditStudentPage() {
       <div className="pt-20">
         {/* Main Content */}
         <main className="container mx-auto px-4 py-8">
-        <div className="max-w-3xl mx-auto space-y-6">
-          {/* Personal Information */}
-          <Card>
-            <CardContent className="space-y-4 pt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">{t('studentForm.nameRequired')}</Label>
-                  <Input
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder={t('studentPages.enterStudentName')}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="phone">{t('studentForm.phone')}</Label>
-                  <Input
-                    id="phone"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder={t('studentPages.enterPhoneNumber')}
-                  />
-                </div>
+          <div className="max-w-3xl mx-auto space-y-6">
+            {/* Personal Information */}
+            <Card>
+              <CardContent className="space-y-4 pt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">
+                      {t('studentForm.nameRequired')}
+                    </Label>
+                    <Input
+                      id="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder={t('studentPages.enterStudentName')}
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="weight">{t('studentForm.weight')}</Label>
-                  <Input
-                    id="weight"
-                    type="number"
-                    step="0.1"
-                    value={weight || ''}
-                    onChange={(e) => setWeight(parseFloat(e.target.value) || undefined)}
-                    placeholder={t('studentPages.enterWeight')}
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">{t('studentForm.phone')}</Label>
+                    <Input
+                      id="phone"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder={t('studentPages.enterPhoneNumber')}
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="height">{t('studentForm.height')}</Label>
-                  <Input
-                    id="height"
-                    type="number"
-                    step="0.1"
-                    value={height || ''}
-                    onChange={(e) => setHeight(parseFloat(e.target.value) || undefined)}
-                    placeholder={t('studentPages.enterHeight')}
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="weight">{t('studentForm.weight')}</Label>
+                    <Input
+                      id="weight"
+                      type="number"
+                      step="0.1"
+                      value={weight || ''}
+                      onChange={(e) =>
+                        setWeight(parseFloat(e.target.value) || undefined)
+                      }
+                      placeholder={t('studentPages.enterWeight')}
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="birthday">{t('studentForm.birthday')}</Label>
-                  <DatePicker
-                    date={birthday}
-                    onDateChange={setBirthday}
-                    placeholder={t('studentPages.selectBirthday') || 'Select birthday'}
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="height">{t('studentForm.height')}</Label>
+                    <Input
+                      id="height"
+                      type="number"
+                      step="0.1"
+                      value={height || ''}
+                      onChange={(e) =>
+                        setHeight(parseFloat(e.target.value) || undefined)
+                      }
+                      placeholder={t('studentPages.enterHeight')}
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="memberSince">{t('studentPages.memberSince')}</Label>
-                  <DatePicker
-                    date={memberSince}
-                    onDateChange={setMemberSince}
-                    placeholder={t('studentPages.selectMemberSince') || 'Select member since date'}
-                  />
-                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="birthday">
+                      {t('studentForm.birthday')}
+                    </Label>
+                    <DatePicker
+                      date={birthday}
+                      onDateChange={setBirthday}
+                      placeholder={
+                        t('studentPages.selectBirthday') || 'Select birthday'
+                      }
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="balance">{t('studentPages.currentBalance')}</Label>
-                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-md">
-                    <p className="text-sm font-medium text-gray-700">
-                      {balance > 0 ? `+${balance}` : balance} {Math.abs(balance) === 1 ? t('calendar.sessions.session') : t('calendar.sessions.sessions')}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {t('studentPages.balanceSystemManaged')}
-                    </p>
+                  <div className="space-y-2">
+                    <Label htmlFor="memberSince">
+                      {t('studentPages.memberSince')}
+                    </Label>
+                    <DatePicker
+                      date={memberSince}
+                      onDateChange={setMemberSince}
+                      placeholder={
+                        t('studentPages.selectMemberSince') ||
+                        'Select member since date'
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="balance">
+                      {t('studentPages.currentBalance')}
+                    </Label>
+                    <div className="p-3 bg-gray-50 border border-gray-200 rounded-md">
+                      <p className="text-sm font-medium text-gray-700">
+                        {balance > 0 ? `+${balance}` : balance}{' '}
+                        {Math.abs(balance) === 1
+                          ? t('calendar.sessions.session')
+                          : t('calendar.sessions.sessions')}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {t('studentPages.balanceSystemManaged')}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          {/* Description */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center">
-                <FileText className="h-5 w-5 mr-2" />
-                {t('studentForm.description')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <textarea
-                id="description"
-                name="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder={t('studentForm.descriptionPlaceholder')}
-                className="w-full min-h-[100px] px-3 py-2 border border-input bg-background rounded-md text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              />
-            </CardContent>
-          </Card>
+            {/* Description */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center">
+                  <FileText className="h-5 w-5 mr-2" />
+                  {t('studentForm.description')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder={t('studentForm.descriptionPlaceholder')}
+                  className="w-full min-h-[100px] px-3 py-2 border border-input bg-background rounded-md text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </CardContent>
+            </Card>
 
-
-          {/* Goals */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">{t('studentPages.goalsAndFocusAreas')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">{t('studentPages.selectGoalsForStudent')}</p>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {availableGoals.map((goal) => (
-                    <div key={goal} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`goal-${goal}`}
-                        checked={selectedGoals.includes(goal)}
-                        onCheckedChange={() => handleGoalToggle(goal)}
-                      />
-                      <Label htmlFor={`goal-${goal}`} className="text-sm cursor-pointer">
-                        {goal}
-                      </Label>
-                    </div>
-                  ))}
+            {/* Goals */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">
+                  {t('studentPages.goalsAndFocusAreas')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    {t('studentPages.selectGoalsForStudent')}
+                  </p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {availableGoals.map((goal) => (
+                      <div key={goal} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`goal-${goal}`}
+                          checked={selectedGoals.includes(goal)}
+                          onCheckedChange={() => handleGoalToggle(goal)}
+                        />
+                        <Label
+                          htmlFor={`goal-${goal}`}
+                          className="text-sm cursor-pointer"
+                        >
+                          {goal}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
+              </CardContent>
+            </Card>
           </div>
         </main>
       </div>
-
 
       {/* Back Navigation Confirmation Dialog */}
       <ConfirmationDialog
@@ -378,4 +405,3 @@ export default function EditStudentPage() {
     </div>
   );
 }
-

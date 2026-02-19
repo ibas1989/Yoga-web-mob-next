@@ -10,37 +10,43 @@ import { useCallback } from 'react';
 export function useSafeNavigation() {
   const router = useRouter();
 
-  const safePush = useCallback((href: string) => {
-    // For home page navigation with view parameters, use direct navigation
-    if (href.startsWith('/?view=')) {
-      window.location.href = href;
-      return;
-    }
-    
-    try {
-      router.push(href);
-    } catch (error) {
-      console.error('Router push failed:', error);
-      // Fallback to window.location
-      window.location.href = href;
-    }
-  }, [router]);
+  const safePush = useCallback(
+    (href: string) => {
+      // For home page navigation with view parameters, use direct navigation
+      if (href.startsWith('/?view=')) {
+        window.location.href = href;
+        return;
+      }
 
-  const safeReplace = useCallback((href: string) => {
-    // For home page navigation with view parameters, use direct navigation
-    if (href.startsWith('/?view=')) {
-      window.location.href = href;
-      return;
-    }
-    
-    try {
-      router.replace(href);
-    } catch (error) {
-      console.error('Router replace failed:', error);
-      // Fallback to window.location
-      window.location.href = href;
-    }
-  }, [router]);
+      try {
+        router.push(href);
+      } catch (error) {
+        console.error('Router push failed:', error);
+        // Fallback to window.location
+        window.location.href = href;
+      }
+    },
+    [router]
+  );
+
+  const safeReplace = useCallback(
+    (href: string) => {
+      // For home page navigation with view parameters, use direct navigation
+      if (href.startsWith('/?view=')) {
+        window.location.href = href;
+        return;
+      }
+
+      try {
+        router.replace(href);
+      } catch (error) {
+        console.error('Router replace failed:', error);
+        // Fallback to window.location
+        window.location.href = href;
+      }
+    },
+    [router]
+  );
 
   const safeBack = useCallback(() => {
     try {

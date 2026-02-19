@@ -79,13 +79,17 @@ export default function DayViewScreen() {
   const handleTimeSlotClick = (timeSlot: string) => {
     if (!selectedDate) return;
     const dateStr = formatDateForUrl(selectedDate);
-    router.push(`/sessions/new?date=${dateStr}&time=${timeSlot}&returnTo=/calendar/day/${dateStr}` as any);
+    router.push(
+      `/sessions/new?date=${dateStr}&time=${timeSlot}&returnTo=/calendar/day/${dateStr}` as any
+    );
   };
 
   const handleSessionClick = (session: Session) => {
     if (!selectedDate) return;
     const dateStr = formatDateForUrl(selectedDate);
-    router.push(`/sessions/${session.id}?returnTo=/calendar/day/${dateStr}` as any);
+    router.push(
+      `/sessions/${session.id}?returnTo=/calendar/day/${dateStr}` as any
+    );
   };
 
   const handleBackToCalendar = () => {
@@ -99,9 +103,15 @@ export default function DayViewScreen() {
   };
 
   // Calculate statistics
-  const scheduledCount = daySessions.filter((s) => s.status === 'scheduled').length;
-  const completedCount = daySessions.filter((s) => s.status === 'completed').length;
-  const cancelledCount = daySessions.filter((s) => s.status === 'cancelled').length;
+  const scheduledCount = daySessions.filter(
+    (s) => s.status === 'scheduled'
+  ).length;
+  const completedCount = daySessions.filter(
+    (s) => s.status === 'completed'
+  ).length;
+  const cancelledCount = daySessions.filter(
+    (s) => s.status === 'cancelled'
+  ).length;
 
   const getStatusColor = (status: Session['status']) => {
     switch (status) {
@@ -126,21 +136,25 @@ export default function DayViewScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleBackToCalendar} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={handleBackToCalendar}
+          style={styles.backButton}
+        >
           <Text style={styles.backButtonText}>← {t('calendarDay.back')}</Text>
         </TouchableOpacity>
         <View style={styles.headerTitle}>
           <Text style={styles.headerDay}>
-            {format(selectedDate, 'EEEE', { locale: i18n.language === 'ru' ? ru : enUS })}
+            {format(selectedDate, 'EEEE', {
+              locale: i18n.language === 'ru' ? ru : enUS,
+            })}
           </Text>
           <Text style={styles.headerDate}>
-            {i18n.language === 'ru' 
+            {i18n.language === 'ru'
               ? format(selectedDate, 'd MMMM, yyyy', { locale: ru })
-              : format(selectedDate, 'MMMM d, yyyy', { locale: enUS })
-            }
+              : format(selectedDate, 'MMMM d, yyyy', { locale: enUS })}
           </Text>
         </View>
         <View style={styles.backButton} />
@@ -149,27 +163,40 @@ export default function DayViewScreen() {
       {/* Summary Cards */}
       <View style={styles.summaryContainer}>
         <View style={styles.summaryCard}>
-          <Text style={styles.summaryLabel}>{t('calendarDay.totalSessions')}</Text>
+          <Text style={styles.summaryLabel}>
+            {t('calendarDay.totalSessions')}
+          </Text>
           <Text style={styles.summaryValue}>{daySessions.length}</Text>
         </View>
         <View style={styles.summaryCard}>
           <Text style={styles.summaryLabel}>{t('calendarDay.scheduled')}</Text>
-          <Text style={[styles.summaryValue, styles.scheduledText]}>{scheduledCount}</Text>
+          <Text style={[styles.summaryValue, styles.scheduledText]}>
+            {scheduledCount}
+          </Text>
         </View>
         <View style={styles.summaryCard}>
           <Text style={styles.summaryLabel}>{t('calendarDay.completed')}</Text>
-          <Text style={[styles.summaryValue, styles.completedText]}>{completedCount}</Text>
+          <Text style={[styles.summaryValue, styles.completedText]}>
+            {completedCount}
+          </Text>
         </View>
         <View style={styles.summaryCard}>
           <Text style={styles.summaryLabel}>{t('calendarDay.cancelled')}</Text>
-          <Text style={[styles.summaryValue, styles.cancelledText]}>{cancelledCount}</Text>
+          <Text style={[styles.summaryValue, styles.cancelledText]}>
+            {cancelledCount}
+          </Text>
         </View>
       </View>
 
       {/* Timeline */}
       <ScrollView style={styles.timelineContainer}>
         {/* Positioning container so overlayed sessions can span multiple rows */}
-        <View style={{ position: 'relative', height: timeSlots.length * styles.timeSlot.minHeight }}>
+        <View
+          style={{
+            position: 'relative',
+            height: timeSlots.length * styles.timeSlot.minHeight,
+          }}
+        >
           {/* Grid rows with labels and add-session tap areas */}
           {timeSlots.map((timeSlot) => {
             const isHourMark = timeSlot.endsWith(':00');
@@ -178,8 +205,15 @@ export default function DayViewScreen() {
                 key={timeSlot}
                 style={[styles.timeSlot, isHourMark && styles.timeSlotHour]}
               >
-                <View style={[styles.timeLabel, isHourMark && styles.timeLabelHour]}>
-                  <Text style={[styles.timeLabelText, isHourMark && styles.timeLabelTextHour]}>
+                <View
+                  style={[styles.timeLabel, isHourMark && styles.timeLabelHour]}
+                >
+                  <Text
+                    style={[
+                      styles.timeLabelText,
+                      isHourMark && styles.timeLabelTextHour,
+                    ]}
+                  >
                     {timeSlot}
                   </Text>
                 </View>
@@ -195,18 +229,32 @@ export default function DayViewScreen() {
           <View style={styles.sessionsOverlay} pointerEvents="box-none">
             {daySessions
               .slice()
-              .sort((a, b) => (a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0))
+              .sort((a, b) =>
+                a.startTime < b.startTime
+                  ? -1
+                  : a.startTime > b.startTime
+                    ? 1
+                    : 0
+              )
               .map((session) => {
                 const startIdx = timeToIndex[session.startTime];
                 const endIdx = Math.max(
                   startIdx + 1,
-                  timeToIndex[session.endTime] ?? startIdx + Math.ceil((timeToMinutes(session.endTime) - timeToMinutes(session.startTime)) / 30)
+                  timeToIndex[session.endTime] ??
+                    startIdx +
+                      Math.ceil(
+                        (timeToMinutes(session.endTime) -
+                          timeToMinutes(session.startTime)) /
+                          30
+                      )
                 );
                 if (startIdx === undefined) return null;
                 const durationSlots = Math.max(1, endIdx - startIdx);
                 const top = startIdx * styles.timeSlot.minHeight + 8; // small inner padding
                 const height = durationSlots * styles.timeSlot.minHeight - 16; // account for padding
-                const sessionStudents = students.filter((s) => session.studentIds.includes(s.id));
+                const sessionStudents = students.filter((s) =>
+                  session.studentIds.includes(s.id)
+                );
 
                 return (
                   <TouchableOpacity
@@ -224,21 +272,36 @@ export default function DayViewScreen() {
                         {session.startTime} - {session.endTime}
                       </Text>
                       <View style={styles.sessionStatusBadge}>
-                        <Text style={[
-                          styles.sessionStatusText,
-                          session.status === 'cancelled' && styles.sessionStatusTextCancelled,
-                          session.status === 'scheduled' && styles.sessionStatusTextScheduled
-                        ]}>{t(`calendarDay.status.${session.status}`)}</Text>
+                        <Text
+                          style={[
+                            styles.sessionStatusText,
+                            session.status === 'cancelled' &&
+                              styles.sessionStatusTextCancelled,
+                            session.status === 'scheduled' &&
+                              styles.sessionStatusTextScheduled,
+                          ]}
+                        >
+                          {t(`calendarDay.status.${session.status}`)}
+                        </Text>
                       </View>
                     </View>
                     <Text style={styles.sessionType}>
-                      {session.sessionType === 'team' ? t('sessionDetails.team') : t('sessionDetails.individual')} {t('calendarDay.session')}
+                      {session.sessionType === 'team'
+                        ? t('sessionDetails.team')
+                        : t('sessionDetails.individual')}{' '}
+                      {t('calendarDay.session')}
                     </Text>
                     <Text style={styles.sessionAttendees}>
-                      {sessionStudents.length} {sessionStudents.length === 1 ? t('calendarDay.attendee') : t('calendarDay.attendees')}
+                      {sessionStudents.length}{' '}
+                      {sessionStudents.length === 1
+                        ? t('calendarDay.attendee')
+                        : t('calendarDay.attendees')}
                     </Text>
                     {sessionStudents.length > 0 && (
-                      <Text style={styles.sessionStudentNames} numberOfLines={1}>
+                      <Text
+                        style={styles.sessionStudentNames}
+                        numberOfLines={1}
+                      >
                         {sessionStudents.map((s) => s.name).join(', ')}
                       </Text>
                     )}
@@ -449,4 +512,3 @@ const styles = StyleSheet.create({
     color: '#999',
   },
 });
-

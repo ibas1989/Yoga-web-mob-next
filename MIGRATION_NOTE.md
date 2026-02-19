@@ -27,6 +27,7 @@ Currently, the repository contains the original Next.js web application. The nex
 ## 🚀 Next Steps
 
 1. **Connect to remote Git repository**:
+
    ```bash
    cd /Users/ivanbasyj/Yoga-web-mob
    git remote add origin <your-repo-url>
@@ -46,4 +47,3 @@ Currently, the repository contains the original Next.js web application. The nex
 - Original repository remains untouched at `/Users/ivanbasyj/Yoga`
 - This repository is ready for web + mobile development
 - All source code, components, and utilities have been preserved
-

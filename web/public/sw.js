@@ -13,14 +13,15 @@ const urlsToCache = [
   '/icon-192.png',
   '/icon-192-maskable.png',
   '/icon-512.png',
-  '/icon-512-maskable.png'
+  '/icon-512-maskable.png',
 ];
 
 // Install event - cache resources
 self.addEventListener('install', (event) => {
   console.log('Service Worker: Installing...');
   event.waitUntil(
-    caches.open(STATIC_CACHE_NAME)
+    caches
+      .open(STATIC_CACHE_NAME)
       .then((cache) => {
         console.log('Service Worker: Caching static files');
         return cache.addAll(urlsToCache);
@@ -48,51 +49,58 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Skip Next.js development server requests and static files to avoid conflicts
-  if (event.request.url.includes('/_next/') || 
-      event.request.url.includes('/__next') ||
-      event.request.url.includes('.hot-update.')) {
+  if (
+    event.request.url.includes('/_next/') ||
+    event.request.url.includes('/__next') ||
+    event.request.url.includes('.hot-update.')
+  ) {
     return;
   }
-  
+
   // Skip Next.js development server requests to avoid conflicts
-  if (event.request.url.includes('/_next/static/') && event.request.url.includes('localhost')) {
+  if (
+    event.request.url.includes('/_next/static/') &&
+    event.request.url.includes('localhost')
+  ) {
     return;
   }
 
   event.respondWith(
-    caches.match(event.request)
-      .then((cachedResponse) => {
-        // Return cached version if available
-        if (cachedResponse) {
-          return cachedResponse;
-        }
+    caches.match(event.request).then((cachedResponse) => {
+      // Return cached version if available
+      if (cachedResponse) {
+        return cachedResponse;
+      }
 
-        // Fetch from network
-        return fetch(event.request)
-          .then((response) => {
-            // Don't cache if not a valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Clone the response
-            const responseToCache = response.clone();
-
-            // Cache dynamic content
-            caches.open(DYNAMIC_CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-
+      // Fetch from network
+      return fetch(event.request)
+        .then((response) => {
+          // Don't cache if not a valid response
+          if (
+            !response ||
+            response.status !== 200 ||
+            response.type !== 'basic'
+          ) {
             return response;
-          })
-          .catch(() => {
-            // Return offline page for navigation requests
-            if (event.request.mode === 'navigate') {
-              return caches.match('/');
-            }
+          }
+
+          // Clone the response
+          const responseToCache = response.clone();
+
+          // Cache dynamic content
+          caches.open(DYNAMIC_CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
           });
-      })
+
+          return response;
+        })
+        .catch(() => {
+          // Return offline page for navigation requests
+          if (event.request.mode === 'navigate') {
+            return caches.match('/');
+          }
+        });
+    })
   );
 });
 
@@ -100,19 +108,25 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('activate', (event) => {
   console.log('Service Worker: Activating...');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== STATIC_CACHE_NAME && cacheName !== DYNAMIC_CACHE_NAME) {
-            console.log('Service Worker: Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => {
-      console.log('Service Worker: Activation complete');
-      return self.clients.claim();
-    })
+    caches
+      .keys()
+      .then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (
+              cacheName !== STATIC_CACHE_NAME &&
+              cacheName !== DYNAMIC_CACHE_NAME
+            ) {
+              console.log('Service Worker: Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+      .then(() => {
+        console.log('Service Worker: Activation complete');
+        return self.clients.claim();
+      })
   );
 });
 
@@ -136,18 +150,16 @@ self.addEventListener('push', (event) => {
       actions: [
         {
           action: 'open',
-          title: 'Open App'
+          title: 'Open App',
         },
         {
           action: 'close',
-          title: 'Close'
-        }
-      ]
+          title: 'Close',
+        },
+      ],
     };
 
-    event.waitUntil(
-      self.registration.showNotification(data.title, options)
-    );
+    event.waitUntil(self.registration.showNotification(data.title, options));
   }
 });
 
@@ -156,9 +168,7 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
   if (event.action === 'open' || !event.action) {
-    event.waitUntil(
-      clients.openWindow('/')
-    );
+    event.waitUntil(clients.openWindow('/'));
   }
 });
 

@@ -12,10 +12,10 @@ interface BadgeProps {
 
 /**
  * Badge Component
- * 
+ *
  * A small circular badge typically used for showing notification counts.
  * Displays a number in a red circular background with smooth animations.
- * 
+ *
  * @param count - The number to display in the badge
  * @param className - Additional CSS classes to apply
  * @param maxCount - Maximum number to display (e.g., 99+ for counts over 99)
@@ -24,10 +24,10 @@ export function Badge({ count, className, maxCount = 99 }: BadgeProps) {
   const { t } = useTranslation();
   // Don't render badge if count is 0 or negative
   if (count <= 0) return null;
-  
+
   // Format count for display
   const displayCount = count > maxCount ? `${maxCount}+` : count.toString();
-  
+
   return (
     <div
       className={cn(
@@ -42,7 +42,7 @@ export function Badge({ count, className, maxCount = 99 }: BadgeProps) {
       )}
       aria-label={t('ui.pendingTasks', { count })}
       style={{
-        animation: 'badgePulse 0.3s ease-in-out'
+        animation: 'badgePulse 0.3s ease-in-out',
       }}
     >
       {displayCount}

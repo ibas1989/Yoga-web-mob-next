@@ -59,7 +59,7 @@ export function ConfirmationDialog({
 
   const getIcon = () => {
     if (icon) return icon;
-    
+
     switch (variant) {
       case 'destructive':
         return <Trash2 className="h-6 w-6 text-red-500" />;
@@ -144,7 +144,7 @@ export function DeleteConfirmationDialog({
   isLoading?: boolean;
 }) {
   const { t } = useTranslation();
-  
+
   return (
     <ConfirmationDialog
       open={open}
@@ -174,7 +174,7 @@ export function UpdateConfirmationDialog({
   isLoading?: boolean;
 }) {
   const { t } = useTranslation();
-  
+
   return (
     <ConfirmationDialog
       open={open}
@@ -222,7 +222,7 @@ export function UnsavedChangesConfirmationDialog({
   };
 
   const { t } = useTranslation();
-  
+
   return (
     <Dialog open={open} onOpenChange={handleDialogOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -236,11 +236,7 @@ export function UnsavedChangesConfirmationDialog({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
-          <Button
-            variant="outline"
-            onClick={handleCancel}
-            disabled={isLoading}
-          >
+          <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
             {t('unsavedChangesConfirmation.cancel')}
           </Button>
           <Button

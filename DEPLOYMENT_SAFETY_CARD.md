@@ -16,17 +16,20 @@ npm run deploy
 ## ✅ What Gets Checked Automatically
 
 ### **Code Quality**
+
 - ✅ TypeScript compilation
 - ✅ ESLint compliance
 - ✅ Build process success
 
 ### **Component Integrity**
+
 - ✅ Critical files exist
 - ✅ Component imports work
 - ✅ Dialog state management
 - ✅ Navigation consistency
 
 ### **Deployment Safety**
+
 - ✅ No hardcoded URLs
 - ✅ Proper error boundaries
 - ✅ Z-index handling
@@ -35,18 +38,21 @@ npm run deploy
 ## 🔧 Quick Fixes for Common Issues
 
 ### **TypeScript Errors**
+
 ```bash
 npm run type-check
 # Fix all errors before deploying
 ```
 
 ### **ESLint Warnings**
+
 ```bash
 npm run lint
 # Fix all warnings before deploying
 ```
 
 ### **Build Failures**
+
 ```bash
 npm run clean
 npm run build
@@ -54,11 +60,13 @@ npm run build
 ```
 
 ### **Dialog Issues**
+
 - Check z-index values
 - Verify nested dialog handling
 - Test mobile view
 
 ### **Navigation Issues**
+
 - Use returnTo parameter consistently
 - Test all navigation paths
 - Check mobile swipe behavior
@@ -66,6 +74,7 @@ npm run build
 ## 🚨 Emergency Procedures
 
 ### **If Deployment Fails**
+
 ```bash
 # 1. Check what went wrong
 npm run health-check
@@ -81,6 +90,7 @@ npm run deploy
 ```
 
 ### **If App Breaks After Deployment**
+
 ```bash
 # 1. Run health check
 npm run health-check
@@ -122,6 +132,7 @@ npm run health-check
 ## 🎉 Remember
 
 **Prevention is better than cure!**
+
 - Always run checks before deploying
 - Test locally first
 - Monitor after deployment

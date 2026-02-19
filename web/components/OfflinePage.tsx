@@ -17,19 +17,20 @@ export function OfflinePage() {
             You're Offline
           </h1>
           <p className="text-gray-600">
-            It looks like you're not connected to the internet. 
-            Some features may be limited, but you can still access your cached data.
+            It looks like you're not connected to the internet. Some features
+            may be limited, but you can still access your cached data.
           </p>
         </div>
-        
+
         <div className="space-y-4">
           <Button onClick={handleRefresh} className="w-full">
             <RefreshCw className="h-4 w-4 mr-2" />
             Try Again
           </Button>
-          
+
           <p className="text-sm text-gray-500">
-            Your data is safely stored locally and will sync when you're back online.
+            Your data is safely stored locally and will sync when you're back
+            online.
           </p>
         </div>
       </div>

@@ -48,18 +48,15 @@ export function DuplicateNoteDialog({
             Duplicate note name
           </DialogTitle>
           <DialogDescription className="text-left">
-            A note with the name <strong>"{noteName}"</strong> already exists for this student.
+            A note with the name <strong>"{noteName}"</strong> already exists
+            for this student.
             <br />
             <br />
             Do you want to create another note with the same name?
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
-          <Button
-            variant="outline"
-            onClick={handleCancel}
-            disabled={isLoading}
-          >
+          <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
             Cancel
           </Button>
           <Button

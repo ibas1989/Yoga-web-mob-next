@@ -8,23 +8,31 @@ import { Card, CardContent } from './ui/card';
 import { Input } from './ui/input';
 import { Student } from '@shared/types';
 import { useStudents } from '@/lib/hooks/useStudents';
-import { formatBalanceForDisplay, getAgeFromBirthDate } from '@shared/utils/dateUtils';
+import {
+  formatBalanceForDisplay,
+  getAgeFromBirthDate,
+} from '@shared/utils/dateUtils';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export function StudentsView() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { students, isLoading: studentsLoading, error: studentsError } = useStudents();
+  const {
+    students,
+    isLoading: studentsLoading,
+    error: studentsError,
+  } = useStudents();
   const [searchQuery, setSearchQuery] = useState('');
 
   // The useStudents hook handles all the real-time updates automatically
 
   // Filter students based on search query - only search by name after 2+ characters
-  const filteredStudents = searchQuery.length < 2 
-    ? students 
-    : students.filter(student => 
-        student.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+  const filteredStudents =
+    searchQuery.length < 2
+      ? students
+      : students.filter((student) =>
+          student.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
 
   const handleCreateNew = () => {
     router.push('/students/new');
@@ -34,8 +42,6 @@ export function StudentsView() {
     // Navigate to the full page student details
     router.push(`/students/${student.id}`);
   };
-
-
 
   if (studentsError) {
     return (
@@ -62,13 +68,15 @@ export function StudentsView() {
             />
           </div>
         </div>
-        
+
         {/* Content */}
         <div className="p-4">
           <Card>
             <CardContent className="pt-6">
               <div className="text-center py-12">
-                <div className="text-red-500 mb-4">{t('students.errorLoading')}</div>
+                <div className="text-red-500 mb-4">
+                  {t('students.errorLoading')}
+                </div>
                 <p className="text-sm text-muted-foreground">{studentsError}</p>
               </div>
             </CardContent>
@@ -106,7 +114,7 @@ export function StudentsView() {
           />
         </div>
       </div>
-      
+
       {/* Content */}
       <div className="p-4">
         {studentsLoading ? (
@@ -114,7 +122,9 @@ export function StudentsView() {
             <CardContent className="pt-6">
               <div className="text-center py-12">
                 <Loader2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground animate-spin" />
-                <h3 className="text-base font-semibold mb-2">{t('students.loading')}</h3>
+                <h3 className="text-base font-semibold mb-2">
+                  {t('students.loading')}
+                </h3>
                 <p className="text-sm text-muted-foreground">
                   {t('students.loadingDescription')}
                 </p>
@@ -126,7 +136,9 @@ export function StudentsView() {
             <CardContent className="pt-6">
               <div className="text-center py-12">
                 <User className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-base font-semibold mb-2">{t('students.noStudents')}</h3>
+                <h3 className="text-base font-semibold mb-2">
+                  {t('students.noStudents')}
+                </h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   {t('students.noStudentsDescription')}
                 </p>
@@ -142,14 +154,13 @@ export function StudentsView() {
             <CardContent className="pt-6">
               <div className="text-center py-12">
                 <Search className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-base font-semibold mb-2">{t('students.noStudentsFound')}</h3>
+                <h3 className="text-base font-semibold mb-2">
+                  {t('students.noStudentsFound')}
+                </h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   {t('students.noStudentsFoundDescription')}
                 </p>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setSearchQuery('')}
-                >
+                <Button variant="outline" onClick={() => setSearchQuery('')}>
                   {t('students.clearSearch')}
                 </Button>
               </div>
@@ -158,8 +169,8 @@ export function StudentsView() {
         ) : (
           <div className="space-y-2">
             {filteredStudents.map((student) => (
-              <div 
-                key={student.id} 
+              <div
+                key={student.id}
                 className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
                 onClick={() => handleStudentClick(student)}
               >
@@ -169,7 +180,9 @@ export function StudentsView() {
                       <User className="h-4 w-4 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-medium text-gray-900 truncate">{student.name}</h3>
+                      <h3 className="text-base font-medium text-gray-900 truncate">
+                        {student.name}
+                      </h3>
                       <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
                         {student.phone && (
                           <span className="truncate">{student.phone}</span>
@@ -184,8 +197,8 @@ export function StudentsView() {
                       student.balance > 0
                         ? 'text-green-700 bg-green-100'
                         : student.balance < 0
-                        ? 'text-red-700 bg-red-100'
-                        : 'text-green-700 bg-green-100'
+                          ? 'text-red-700 bg-red-100'
+                          : 'text-green-700 bg-green-100'
                     }`}
                   >
                     {formatBalanceForDisplay(student.balance)}
@@ -196,7 +209,6 @@ export function StudentsView() {
           </div>
         )}
       </div>
-
     </div>
   );
 }

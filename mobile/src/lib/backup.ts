@@ -46,14 +46,17 @@ const formatBackupDateTime = (date: Date): string => {
 };
 
 // Export backup to file (Downloads folder or user-selected location)
-export const exportBackupToFile = async (): Promise<{ success: boolean; message: string }> => {
+export const exportBackupToFile = async (): Promise<{
+  success: boolean;
+  message: string;
+}> => {
   try {
     const backup = await generateBackup();
     const filename = `${formatBackupDateTime(new Date())}_Yoga_Backup.json`;
-    
+
     // Save to device's cache directory first
     const fileUri = `${FileSystem.cacheDirectory}${filename}`;
-    
+
     await FileSystem.writeAsStringAsync(
       fileUri,
       JSON.stringify(backup, null, 2),
@@ -68,10 +71,11 @@ export const exportBackupToFile = async (): Promise<{ success: boolean; message:
         dialogTitle: 'Save Yoga Tracker Backup',
         UTI: 'public.json',
       });
-      
+
       return {
         success: true,
-        message: 'Backup exported successfully! You can now save it to your preferred location.',
+        message:
+          'Backup exported successfully! You can now save it to your preferred location.',
       };
     } else {
       return {
@@ -89,7 +93,11 @@ export const exportBackupToFile = async (): Promise<{ success: boolean; message:
 };
 
 // Import backup from file picker
-export const importBackupFromFile = async (): Promise<{ success: boolean; message: string; data?: BackupData }> => {
+export const importBackupFromFile = async (): Promise<{
+  success: boolean;
+  message: string;
+  data?: BackupData;
+}> => {
   try {
     // Pick a file
     const result = await DocumentPicker.getDocumentAsync({
@@ -105,7 +113,7 @@ export const importBackupFromFile = async (): Promise<{ success: boolean; messag
     }
 
     const fileUri = result.assets[0].uri;
-    
+
     // Read the file
     const fileContent = await FileSystem.readAsStringAsync(fileUri, {
       encoding: 'utf8',
@@ -138,7 +146,9 @@ export const importBackupFromFile = async (): Promise<{ success: boolean; messag
 };
 
 // Validate backup data
-export const validateBackup = (backup: any): { valid: boolean; issues: string[] } => {
+export const validateBackup = (
+  backup: any
+): { valid: boolean; issues: string[] } => {
   const issues: string[] = [];
 
   if (!backup.version) {
@@ -168,14 +178,22 @@ export const validateBackup = (backup: any): { valid: boolean; issues: string[] 
 };
 
 // Restore backup data to storage
-export const restoreBackup = async (backup: BackupData): Promise<{ success: boolean; message: string }> => {
+export const restoreBackup = async (
+  backup: BackupData
+): Promise<{ success: boolean; message: string }> => {
   try {
     // Store students
-    await AsyncStorage.setItem('yoga_tracker_students', JSON.stringify(backup.students));
-    
+    await AsyncStorage.setItem(
+      'yoga_tracker_students',
+      JSON.stringify(backup.students)
+    );
+
     // Store sessions
-    await AsyncStorage.setItem('yoga_tracker_sessions', JSON.stringify(backup.sessions));
-    
+    await AsyncStorage.setItem(
+      'yoga_tracker_sessions',
+      JSON.stringify(backup.sessions)
+    );
+
     // Store settings
     await saveSettings(backup.settings);
 
@@ -210,4 +228,3 @@ export const getBackupStats = async (): Promise<BackupStats> => {
     };
   }
 };
-

@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 import { useRouter, useNavigation } from 'expo-router';
 import { Student } from '@shared/types';
 import { getStudents } from '../../src/lib/storage';
@@ -32,7 +41,7 @@ export default function StudentsScreen() {
     if (searchQuery.length < 2) {
       setFilteredStudents(students);
     } else {
-      const filtered = students.filter(student =>
+      const filtered = students.filter((student) =>
         student.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredStudents(filtered);
@@ -80,10 +89,14 @@ export default function StudentsScreen() {
     <View style={styles.container}>
       {/* Header with Search and Create Button */}
       <View style={styles.header}>
-        
         {/* Search Bar */}
         <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color="#9ca3af" style={styles.searchIcon} />
+          <Ionicons
+            name="search"
+            size={20}
+            color="#9ca3af"
+            style={styles.searchIcon}
+          />
           <TextInput
             style={styles.searchInput}
             placeholder={t('students.search')}
@@ -111,19 +124,33 @@ export default function StudentsScreen() {
           <View style={styles.emptyContainer}>
             <Ionicons name="people-outline" size={64} color="#9ca3af" />
             <Text style={styles.emptyTitle}>
-              {searchQuery.length >= 2 ? t('students.noStudentsFound') : t('students.noStudents')}
+              {searchQuery.length >= 2
+                ? t('students.noStudentsFound')
+                : t('students.noStudents')}
             </Text>
             <Text style={styles.emptySubtitle}>
-              {searchQuery.length >= 2 ? t('students.noStudentsFoundDescription') : t('students.noStudentsDescription')}
+              {searchQuery.length >= 2
+                ? t('students.noStudentsFoundDescription')
+                : t('students.noStudentsDescription')}
             </Text>
             {searchQuery.length >= 2 ? (
-              <TouchableOpacity style={styles.clearButton} onPress={() => setSearchQuery('')}>
-                <Text style={styles.clearButtonText}>{t('students.clearSearch')}</Text>
+              <TouchableOpacity
+                style={styles.clearButton}
+                onPress={() => setSearchQuery('')}
+              >
+                <Text style={styles.clearButtonText}>
+                  {t('students.clearSearch')}
+                </Text>
               </TouchableOpacity>
             ) : (
-              <TouchableOpacity style={styles.createButton} onPress={handleCreateNew}>
+              <TouchableOpacity
+                style={styles.createButton}
+                onPress={handleCreateNew}
+              >
                 <Ionicons name="add" size={20} color="#fff" />
-                <Text style={styles.createButtonText}>{t('students.createNew')}</Text>
+                <Text style={styles.createButtonText}>
+                  {t('students.createNew')}
+                </Text>
               </TouchableOpacity>
             )}
           </View>
@@ -141,8 +168,20 @@ export default function StudentsScreen() {
                     <Text style={styles.studentName}>{student.name}</Text>
                   </View>
                 </View>
-                <View style={[styles.balanceBadge, { backgroundColor: getBalanceColor(student.balance) + '20' }]}>
-                  <Text style={[styles.balanceText, { color: getBalanceColor(student.balance) }]}>
+                <View
+                  style={[
+                    styles.balanceBadge,
+                    {
+                      backgroundColor: getBalanceColor(student.balance) + '20',
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.balanceText,
+                      { color: getBalanceColor(student.balance) },
+                    ]}
+                  >
                     {formatBalanceForDisplay(student.balance)}
                   </Text>
                 </View>
@@ -306,4 +345,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-

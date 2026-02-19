@@ -7,13 +7,13 @@ import { Button } from './button';
 
 /**
  * FixedTopBar Component
- * 
+ *
  * A permanently pinned navigation bar that remains visible at the top of the viewport
  * across all pages. Provides consistent access to main navigation tabs:
  * - Calendar (home page)
  * - Students
  * - Settings
- * 
+ *
  * The bar uses fixed positioning and stays at the top even when scrolling.
  */
 export function FixedTopBar() {
@@ -71,4 +71,3 @@ export function FixedTopBar() {
     </header>
   );
 }
-

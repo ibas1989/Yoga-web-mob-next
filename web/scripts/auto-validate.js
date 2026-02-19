@@ -2,7 +2,7 @@
 
 /**
  * Auto-Validation Script
- * 
+ *
  * This script automatically runs comprehensive validation after any changes.
  * It's designed to be called automatically by the AI assistant after making changes.
  */
@@ -19,7 +19,7 @@ const colors = {
   yellow: '\x1b[33m',
   blue: '\x1b[34m',
   magenta: '\x1b[35m',
-  cyan: '\x1b[36m'
+  cyan: '\x1b[36m',
 };
 
 function log(message, color = 'reset') {
@@ -83,7 +83,7 @@ function checkRecentChanges() {
  */
 async function testApplicationRuntime() {
   log('\n🔍 Runtime Application Test');
-  
+
   try {
     // Test if dev server is running
     const response = await fetch('http://localhost:3001/');
@@ -106,16 +106,16 @@ async function testApplicationRuntime() {
  */
 async function testCriticalRoutes() {
   log('\n🔍 Critical Routes Test');
-  
+
   const routes = [
     { path: '/', name: 'Home' },
     { path: '/?view=calendar', name: 'Calendar' },
     { path: '/?view=students', name: 'Students' },
-    { path: '/?view=tasks', name: 'Tasks' }
+    { path: '/?view=tasks', name: 'Tasks' },
   ];
-  
+
   let allRoutesPassed = true;
-  
+
   for (const route of routes) {
     try {
       const response = await fetch(`http://localhost:3001${route.path}`);
@@ -130,7 +130,7 @@ async function testCriticalRoutes() {
       allRoutesPassed = false;
     }
   }
-  
+
   return allRoutesPassed;
 }
 
@@ -140,18 +140,18 @@ async function testCriticalRoutes() {
 async function runAutoValidation() {
   log('🤖 Starting Auto-Validation', 'magenta');
   log('This runs automatically after any changes', 'blue');
-  
+
   let allChecksPassed = true;
-  
+
   // Check if there are recent changes
   const hasChanges = checkRecentChanges();
-  
+
   // 1. TypeScript Check
   log('\n🔍 TypeScript Compilation Check');
   if (!runCommand('npx tsc --noEmit', 'TypeScript compilation')) {
     allChecksPassed = false;
   }
-  
+
   // 2. Linting Check (with warnings allowed)
   log('\n🔍 Code Quality Check');
   try {
@@ -160,7 +160,7 @@ async function runAutoValidation() {
   } catch (error) {
     logWarning('ESLint - WARNINGS (continuing)');
   }
-  
+
   // 3. Build Check
   log('\n🔍 Build Process Check');
   try {
@@ -176,7 +176,7 @@ async function runAutoValidation() {
       allChecksPassed = false;
     }
   }
-  
+
   // 4. Critical Files Check
   log('\n🔍 Critical Files Check');
   const criticalFiles = [
@@ -186,9 +186,9 @@ async function runAutoValidation() {
     'components/StudentsView.tsx',
     'components/TasksView.tsx',
     'lib/storage.ts',
-    'lib/types.ts'
+    'lib/types.ts',
   ];
-  
+
   for (const file of criticalFiles) {
     if (fs.existsSync(file)) {
       logSuccess(`File exists: ${file}`);
@@ -197,15 +197,15 @@ async function runAutoValidation() {
       allChecksPassed = false;
     }
   }
-  
+
   // 5. Component Integrity Check
   log('\n🔍 Component Integrity Check');
   const components = [
     'components/CompleteSessionDialog.tsx',
     'components/AddStudentDialog.tsx',
-    'components/SessionDialog.tsx'
+    'components/SessionDialog.tsx',
   ];
-  
+
   for (const component of components) {
     if (fs.existsSync(component)) {
       try {
@@ -224,26 +224,32 @@ async function runAutoValidation() {
       allChecksPassed = false;
     }
   }
-  
+
   // 6. Dialog State Management Check
   log('\n🔍 Dialog State Management Check');
   if (fs.existsSync('components/CompleteSessionDialog.tsx')) {
-    const content = fs.readFileSync('components/CompleteSessionDialog.tsx', 'utf8');
-    if (content.includes('onOpenChange') && content.includes('showAddStudentDialog')) {
+    const content = fs.readFileSync(
+      'components/CompleteSessionDialog.tsx',
+      'utf8'
+    );
+    if (
+      content.includes('onOpenChange') &&
+      content.includes('showAddStudentDialog')
+    ) {
       logSuccess('Dialog state management - OK');
     } else {
       logWarning('Dialog state management - May need attention');
     }
   }
-  
+
   // 7. Navigation Consistency Check
   log('\n🔍 Navigation Consistency Check');
   const navFiles = [
     'app/sessions/[id]/page.tsx',
     'app/sessions/[id]/edit/page.tsx',
-    'app/sessions/new/page.tsx'
+    'app/sessions/new/page.tsx',
   ];
-  
+
   for (const file of navFiles) {
     if (fs.existsSync(file)) {
       try {
@@ -259,7 +265,7 @@ async function runAutoValidation() {
       }
     }
   }
-  
+
   // 8. Runtime Application Test (CRITICAL)
   log('\n🔍 Runtime Application Test');
   const runtimeTest = await testApplicationRuntime();
@@ -268,7 +274,7 @@ async function runAutoValidation() {
     logError('CRITICAL: Application is not running properly!');
     logWarning('This is exactly the kind of issue that should be caught!');
   }
-  
+
   // 9. Critical Routes Test (CRITICAL)
   const routesTest = await testCriticalRoutes();
   if (!routesTest) {
@@ -276,7 +282,7 @@ async function runAutoValidation() {
     logError('CRITICAL: Critical routes are failing!');
     logWarning('This indicates serious runtime issues!');
   }
-  
+
   // Final Result
   console.log('\n' + '='.repeat(60));
   if (allChecksPassed) {
@@ -293,21 +299,23 @@ async function runAutoValidation() {
 }
 
 // Run auto-validation
-runAutoValidation().then(success => {
-  if (success) {
-    log('\n🎯 Next Steps:', 'cyan');
-    log('1. Changes are validated and safe', 'green');
-    log('2. You can proceed with confidence', 'green');
-    log('3. Run "npm run deploy" when ready', 'blue');
-    process.exit(0);
-  } else {
-    log('\n🚨 Action Required:', 'red');
-    log('1. Fix the reported issues', 'yellow');
-    log('2. Run this validation again', 'yellow');
-    log('3. Only proceed when all checks pass', 'red');
+runAutoValidation()
+  .then((success) => {
+    if (success) {
+      log('\n🎯 Next Steps:', 'cyan');
+      log('1. Changes are validated and safe', 'green');
+      log('2. You can proceed with confidence', 'green');
+      log('3. Run "npm run deploy" when ready', 'blue');
+      process.exit(0);
+    } else {
+      log('\n🚨 Action Required:', 'red');
+      log('1. Fix the reported issues', 'yellow');
+      log('2. Run this validation again', 'yellow');
+      log('3. Only proceed when all checks pass', 'red');
+      process.exit(1);
+    }
+  })
+  .catch((error) => {
+    logError(`Auto-validation failed: ${error.message}`);
     process.exit(1);
-  }
-}).catch(error => {
-  logError(`Auto-validation failed: ${error.message}`);
-  process.exit(1);
-});
+  });

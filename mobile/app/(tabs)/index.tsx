@@ -42,4 +42,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
 });
-

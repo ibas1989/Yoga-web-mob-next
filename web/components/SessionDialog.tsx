@@ -52,7 +52,7 @@ export function SessionDialog({
   const [availableGoals, setAvailableGoals] = useState<string[]>([]);
   const [defaultTeamCharge, setDefaultTeamCharge] = useState(1);
   const [defaultIndividualCharge, setDefaultIndividualCharge] = useState(2);
-  
+
   const [startTime, setStartTime] = useState('09:00');
   const [duration, setDuration] = useState('60'); // Duration in minutes
   const [sessionType, setSessionType] = useState<'team' | 'individual'>('team');
@@ -61,7 +61,9 @@ export function SessionDialog({
   const [notes, setNotes] = useState('');
   const [studentSearchQuery, setStudentSearchQuery] = useState('');
   const [showAddStudentDialog, setShowAddStudentDialog] = useState(false);
-  const [lastAddedStudentId, setLastAddedStudentId] = useState<string | null>(null);
+  const [lastAddedStudentId, setLastAddedStudentId] = useState<string | null>(
+    null
+  );
   const notesTextareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   // Time options - 30-minute intervals from 06:00 to 22:00
@@ -88,9 +90,19 @@ export function SessionDialog({
         const startParts = sessionToEdit.startTime.split(':');
         const endParts = sessionToEdit.endTime.split(':');
         const startDateObj = new Date();
-        startDateObj.setHours(parseInt(startParts[0] || '0'), parseInt(startParts[1] || '0'), 0, 0);
+        startDateObj.setHours(
+          parseInt(startParts[0] || '0'),
+          parseInt(startParts[1] || '0'),
+          0,
+          0
+        );
         const endDateObj = new Date();
-        endDateObj.setHours(parseInt(endParts[0] || '0'), parseInt(endParts[1] || '0'), 0, 0);
+        endDateObj.setHours(
+          parseInt(endParts[0] || '0'),
+          parseInt(endParts[1] || '0'),
+          0,
+          0
+        );
         const diffMs = endDateObj.getTime() - startDateObj.getTime();
         const minutes = Math.max(30, Math.round(diffMs / 60000));
         setDuration(String(minutes));
@@ -106,8 +118,11 @@ export function SessionDialog({
 
   useEffect(() => {
     // Auto-select newly added student
-    if (lastAddedStudentId && !selectedStudentIds.includes(lastAddedStudentId)) {
-      setSelectedStudentIds(prev => [...prev, lastAddedStudentId]);
+    if (
+      lastAddedStudentId &&
+      !selectedStudentIds.includes(lastAddedStudentId)
+    ) {
+      setSelectedStudentIds((prev) => [...prev, lastAddedStudentId]);
       setLastAddedStudentId(null);
     }
   }, [lastAddedStudentId, students]);
@@ -136,28 +151,26 @@ export function SessionDialog({
     const [hours, minutes] = start.split(':').map(Number);
     const startDate = new Date();
     startDate.setHours(hours, minutes, 0, 0);
-    
+
     const endDate = new Date(startDate.getTime() + durationMinutes * 60000);
-    
+
     const endHours = endDate.getHours().toString().padStart(2, '0');
     const endMinutes = endDate.getMinutes().toString().padStart(2, '0');
-    
+
     return `${endHours}:${endMinutes}`;
   };
 
   const handleStudentToggle = (studentId: string) => {
-    setSelectedStudentIds(prev =>
+    setSelectedStudentIds((prev) =>
       prev.includes(studentId)
-        ? prev.filter(id => id !== studentId)
+        ? prev.filter((id) => id !== studentId)
         : [...prev, studentId]
     );
   };
 
   const handleGoalToggle = (goal: string) => {
-    setSelectedGoals(prev =>
-      prev.includes(goal)
-        ? prev.filter(g => g !== goal)
-        : [...prev, goal]
+    setSelectedGoals((prev) =>
+      prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
     );
   };
 
@@ -173,12 +186,12 @@ export function SessionDialog({
   const handleStudentAdded = (studentId?: string) => {
     const loadedStudents = getStudents();
     setStudents(loadedStudents);
-    
+
     // If studentId is provided, use it; otherwise find the most recently added student
     if (studentId) {
       setLastAddedStudentId(studentId);
     } else if (loadedStudents.length > 0) {
-      const newest = loadedStudents.reduce((prev, current) => 
+      const newest = loadedStudents.reduce((prev, current) =>
         new Date(current.createdAt) > new Date(prev.createdAt) ? current : prev
       );
       setLastAddedStudentId(newest.id);
@@ -186,7 +199,9 @@ export function SessionDialog({
   };
 
   const handleSave = () => {
-    const effectiveDate = sessionToEdit ? new Date(sessionToEdit.date) : selectedDate;
+    const effectiveDate = sessionToEdit
+      ? new Date(sessionToEdit.date)
+      : selectedDate;
     if (!effectiveDate || selectedStudentIds.length === 0) {
       alert('Please select at least one student');
       return;
@@ -201,7 +216,11 @@ export function SessionDialog({
       endTime,
       studentIds: selectedStudentIds,
       goals: selectedGoals,
-      pricePerStudent: sessionToEdit ? (sessionToEdit as any).pricePerStudent : (sessionType === 'individual' ? defaultIndividualCharge : defaultTeamCharge),
+      pricePerStudent: sessionToEdit
+        ? (sessionToEdit as any).pricePerStudent
+        : sessionType === 'individual'
+          ? defaultIndividualCharge
+          : defaultTeamCharge,
       status: sessionToEdit ? sessionToEdit.status : 'scheduled',
       balanceEntries: sessionToEdit ? sessionToEdit.balanceEntries || {} : {},
       notes,
@@ -227,24 +246,34 @@ export function SessionDialog({
 
   // Filter students based on search query - only search by name after 2+ characters
   const filteredAvailableStudents = students
-    .filter(student => !selectedStudentIds.includes(student.id))
-    .filter(student => 
-      studentSearchQuery.length < 2 || 
-      student.name.toLowerCase().includes(studentSearchQuery.toLowerCase())
+    .filter((student) => !selectedStudentIds.includes(student.id))
+    .filter(
+      (student) =>
+        studentSearchQuery.length < 2 ||
+        student.name.toLowerCase().includes(studentSearchQuery.toLowerCase())
     );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{sessionToEdit ? 'Edit Session' : 'Create New Session'}</DialogTitle>
+          <DialogTitle>
+            {sessionToEdit ? 'Edit Session' : 'Create New Session'}
+          </DialogTitle>
           <DialogDescription>
-            {(sessionToEdit ? new Date(sessionToEdit.date) : selectedDate) && (sessionToEdit ? new Date(sessionToEdit.date) : (selectedDate as Date)).toLocaleDateString(getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
+            {(sessionToEdit ? new Date(sessionToEdit.date) : selectedDate) &&
+              (sessionToEdit
+                ? new Date(sessionToEdit.date)
+                : (selectedDate as Date)
+              ).toLocaleDateString(
+                getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US',
+                {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                }
+              )}
           </DialogDescription>
         </DialogHeader>
 
@@ -289,7 +318,12 @@ export function SessionDialog({
           {/* Session Type */}
           <div className="space-y-2">
             <Label htmlFor="sessionType">Session Type</Label>
-            <Select value={sessionType} onValueChange={(value) => setSessionType(value as 'team' | 'individual')}>
+            <Select
+              value={sessionType}
+              onValueChange={(value) =>
+                setSessionType(value as 'team' | 'individual')
+              }
+            >
               <SelectTrigger id="sessionType">
                 <SelectValue placeholder={t('sessions.selectSessionType')} />
               </SelectTrigger>
@@ -341,7 +375,9 @@ export function SessionDialog({
                     </p>
                     <div className="space-y-2">
                       {selectedStudentIds.map((studentId) => {
-                        const student = students.find(s => s.id === studentId);
+                        const student = students.find(
+                          (s) => s.id === studentId
+                        );
                         if (!student) return null;
                         return (
                           <div
@@ -349,9 +385,12 @@ export function SessionDialog({
                             className="flex items-center justify-between bg-primary/10 rounded-md px-3 py-2 border border-primary/20"
                           >
                             <div className="flex-1">
-                              <p className="text-sm font-medium">{student.name}</p>
+                              <p className="text-sm font-medium">
+                                {student.name}
+                              </p>
                               <p className="text-xs text-muted-foreground">
-                                Balance: {formatBalanceAsSessionCount(student.balance)}
+                                Balance:{' '}
+                                {formatBalanceAsSessionCount(student.balance)}
                               </p>
                             </div>
                             <Button
@@ -362,7 +401,9 @@ export function SessionDialog({
                               className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
                             >
                               <X className="h-4 w-4" />
-                              <span className="sr-only">Remove {student.name}</span>
+                              <span className="sr-only">
+                                Remove {student.name}
+                              </span>
                             </Button>
                           </div>
                         );
@@ -397,7 +438,8 @@ export function SessionDialog({
                         <div className="flex-1">
                           <p className="text-sm font-medium">{student.name}</p>
                           <p className="text-xs text-muted-foreground">
-                            Balance: {formatBalanceAsSessionCount(student.balance)}
+                            Balance:{' '}
+                            {formatBalanceAsSessionCount(student.balance)}
                           </p>
                         </div>
                         <Button
@@ -414,16 +456,18 @@ export function SessionDialog({
                         </Button>
                       </div>
                     ))}
-                    {filteredAvailableStudents.length === 0 && studentSearchQuery.length > 0 && (
-                      <p className="text-sm text-muted-foreground text-center py-2">
-                        No students found matching "{studentSearchQuery}"
-                      </p>
-                    )}
-                    {filteredAvailableStudents.length === 0 && studentSearchQuery.length === 0 && (
-                      <p className="text-sm text-muted-foreground text-center py-2">
-                        All students are selected
-                      </p>
-                    )}
+                    {filteredAvailableStudents.length === 0 &&
+                      studentSearchQuery.length > 0 && (
+                        <p className="text-sm text-muted-foreground text-center py-2">
+                          No students found matching "{studentSearchQuery}"
+                        </p>
+                      )}
+                    {filteredAvailableStudents.length === 0 &&
+                      studentSearchQuery.length === 0 && (
+                        <p className="text-sm text-muted-foreground text-center py-2">
+                          All students are selected
+                        </p>
+                      )}
                   </div>
                 </div>
               </div>
@@ -470,10 +514,20 @@ export function SessionDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => { onOpenChange(false); if (sessionToEdit) { onCancelEdit && onCancelEdit(); } }}>
+          <Button
+            variant="outline"
+            onClick={() => {
+              onOpenChange(false);
+              if (sessionToEdit) {
+                onCancelEdit && onCancelEdit();
+              }
+            }}
+          >
             {sessionToEdit ? 'Close' : 'Cancel'}
           </Button>
-          <Button onClick={handleSave}>{sessionToEdit ? 'Save Changes' : 'Create Session'}</Button>
+          <Button onClick={handleSave}>
+            {sessionToEdit ? 'Save Changes' : 'Create Session'}
+          </Button>
         </DialogFooter>
       </DialogContent>
 
@@ -485,4 +539,3 @@ export function SessionDialog({
     </Dialog>
   );
 }
-

@@ -117,6 +117,7 @@
 ## Modal Dialogs (Overlays)
 
 ### 1. Add Balance Transaction Modal
+
 Triggered from Student Details → Balance [+] button
 
 ```
@@ -134,6 +135,7 @@ Triggered from Student Details → Balance [+] button
 ```
 
 ### 2. Add Note Modal
+
 Triggered from Student Details → Notes [+] button
 
 ```
@@ -153,6 +155,7 @@ Triggered from Student Details → Notes [+] button
 ```
 
 ### 3. Delete Confirmation Dialog
+
 Triggered from Student Details → Delete [🗑️] button
 
 ```
@@ -169,6 +172,7 @@ Triggered from Student Details → Delete [🗑️] button
 ## Action Flows
 
 ### Creating a Student
+
 ```
 Start at Students List
   ↓
@@ -190,6 +194,7 @@ New student appears in list
 ```
 
 ### Editing a Student
+
 ```
 Start at Students List
   ↓
@@ -217,6 +222,7 @@ Updated info displayed
 ```
 
 ### Adding Balance Transaction
+
 ```
 Start at Student Details
   ↓
@@ -249,6 +255,7 @@ New balance displayed
 ```
 
 ### Adding a Note
+
 ```
 Start at Student Details
   ↓
@@ -276,6 +283,7 @@ New note appears in list
 ```
 
 ### Deleting a Student
+
 ```
 Start at Student Details
   ↓
@@ -293,6 +301,7 @@ Student removed from list
 ```
 
 ### Searching Students
+
 ```
 Start at Students List
   ↓
@@ -373,21 +382,22 @@ New student visible
 
 ## Key Navigation Actions
 
-| From | Action | To |
-|------|--------|-----|
-| Students List | Tap card | Student Details |
-| Students List | Tap "Create New" | Create Student |
-| Student Details | Tap Edit [✏️] | Edit Student |
-| Student Details | Tap Delete [🗑️] | Delete confirmation → List |
-| Student Details | Tap [←] Back | Students List |
-| Create Student | Tap Save | List (with new student) |
-| Create Student | Tap [←] Back | Students List |
-| Edit Student | Tap Save | Student Details (updated) |
-| Edit Student | Tap [←] Back | Student Details |
+| From            | Action           | To                         |
+| --------------- | ---------------- | -------------------------- |
+| Students List   | Tap card         | Student Details            |
+| Students List   | Tap "Create New" | Create Student             |
+| Student Details | Tap Edit [✏️]    | Edit Student               |
+| Student Details | Tap Delete [🗑️]  | Delete confirmation → List |
+| Student Details | Tap [←] Back     | Students List              |
+| Create Student  | Tap Save         | List (with new student)    |
+| Create Student  | Tap [←] Back     | Students List              |
+| Edit Student    | Tap Save         | Student Details (updated)  |
+| Edit Student    | Tap [←] Back     | Student Details            |
 
 ## Screen Headers
 
 ### Students List
+
 ```
 ┌─────────────────────────────────┐
 │ Students                        │
@@ -395,6 +405,7 @@ New student visible
 ```
 
 ### Student Details
+
 ```
 ┌─────────────────────────────────┐
 │ [←] John Doe         [✏️] [🗑️] │
@@ -402,6 +413,7 @@ New student visible
 ```
 
 ### Create Student
+
 ```
 ┌─────────────────────────────────┐
 │ [←] New Student         [Create]│
@@ -409,6 +421,7 @@ New student visible
 ```
 
 ### Edit Student
+
 ```
 ┌─────────────────────────────────┐
 │ [←] Edit Student          [Save]│
@@ -418,19 +431,21 @@ New student visible
 ## Color Coding
 
 ### Balance Badges
+
 - **Red** (#dc2626): Positive balance (student owes sessions)
 - **Green** (#16a34a): Zero/negative balance (good standing)
 
 ### Status Badges (Sessions)
+
 - **Green** (#dcfce7 bg, #16a34a text): Completed
 - **Red** (#fee2e2 bg, #dc2626 text): Cancelled
 - **Blue** (#dbeafe bg, #2563eb text): Scheduled
 
 ### Goals Chips
+
 - **Unselected**: Gray background (#f3f4f6)
 - **Selected**: Indigo background (#eef2ff)
 
 ---
 
 This navigation structure ensures intuitive user flows and maintains consistency with mobile UI/UX best practices.
-

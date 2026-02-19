@@ -17,7 +17,7 @@ export default function NotFound() {
           <p className="text-center text-muted-foreground">
             The page you're looking for doesn't exist or has been moved.
           </p>
-          
+
           <div className="flex flex-col gap-2">
             <Button asChild className="w-full">
               <Link href="/">
@@ -25,7 +25,7 @@ export default function NotFound() {
                 Go to Home
               </Link>
             </Button>
-            
+
             <Button asChild variant="outline" className="w-full">
               <Link href="javascript:history.back()">
                 <ArrowLeft className="h-4 w-4 mr-2" />
