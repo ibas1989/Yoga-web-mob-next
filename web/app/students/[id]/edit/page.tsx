@@ -320,7 +320,15 @@ export default function EditStudentPage() {
                       {t('studentPages.currentBalance')}
                     </Label>
                     <div className="p-3 bg-gray-50 border border-gray-200 rounded-md">
-                      <p className="text-sm font-medium text-gray-700">
+                      <p
+                        className={`text-sm font-medium ${
+                          balance > 0
+                            ? 'text-green-600'
+                            : balance < 0
+                              ? 'text-red-600'
+                              : 'text-gray-500'
+                        }`}
+                      >
                         {balance > 0 ? `+${balance}` : balance}{' '}
                         {Math.abs(balance) === 1
                           ? t('calendar.sessions.session')

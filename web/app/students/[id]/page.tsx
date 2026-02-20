@@ -618,10 +618,10 @@ export default function StudentDetailsPage() {
                     <p
                       className={`text-sm font-medium ${
                         currentStudent.balance > 0
-                          ? 'text-red-600'
+                          ? 'text-green-600'
                           : currentStudent.balance < 0
-                            ? 'text-green-600'
-                            : 'text-gray-600'
+                            ? 'text-red-600'
+                            : 'text-gray-500'
                       }`}
                     >
                       {currentStudent.balance > 0

@@ -126,7 +126,7 @@ export function Calendar({
   };
 
   const currentYear = getYear(new Date());
-  const years = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i);
+  const years = Array.from({ length: 12 }, (_, i) => currentYear - 5 + i);
 
   const handleYearChange = (year: number) => {
     const updatedMonth = setYear(currentMonth, year);
@@ -171,6 +171,21 @@ export function Calendar({
     weeks.push(calendarDays.slice(i, i + 7));
   }
 
+  const openYearPicker = () => {
+    setShowMonthPicker(false);
+    setShowYearPicker(true);
+  };
+
+  const openMonthPicker = () => {
+    setShowYearPicker(false);
+    setShowMonthPicker(true);
+  };
+
+  const closePickers = () => {
+    setShowYearPicker(false);
+    setShowMonthPicker(false);
+  };
+
   return (
     <View style={styles.container}>
       {/* Navigation Header */}
@@ -185,15 +200,19 @@ export function Calendar({
 
         <View style={styles.selectors}>
           <TouchableOpacity
-            style={styles.selector}
-            onPress={() => setShowYearPicker(!showYearPicker)}
+            style={[styles.selector, showYearPicker && styles.selectorActive]}
+            onPress={() =>
+              showYearPicker ? closePickers() : openYearPicker()
+            }
           >
             <Text style={styles.selectorText}>{getYear(currentMonth)}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.selector}
-            onPress={() => setShowMonthPicker(!showMonthPicker)}
+            style={[styles.selector, showMonthPicker && styles.selectorActive]}
+            onPress={() =>
+              showMonthPicker ? closePickers() : openMonthPicker()
+            }
           >
             <Text style={styles.selectorText}>
               {months[currentMonth.getMonth()]}
@@ -210,58 +229,15 @@ export function Calendar({
         </TouchableOpacity>
       </View>
 
-      {/* Year Picker */}
-      {showYearPicker && (
-        <ScrollView style={styles.picker}>
-          {years.map((year) => (
-            <TouchableOpacity
-              key={year}
-              onPress={() => handleYearChange(year)}
-              style={styles.pickerItem}
-            >
-              <Text
-                style={[
-                  styles.pickerItemText,
-                  getYear(currentMonth) === year && styles.pickerItemSelected,
-                ]}
-              >
-                {year}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      )}
-
-      {/* Month Picker */}
-      {showMonthPicker && (
-        <ScrollView style={styles.picker}>
-          {months.map((month, index) => (
-            <TouchableOpacity
-              key={month}
-              onPress={() => handleMonthChange(index)}
-              style={styles.pickerItem}
-            >
-              <Text
-                style={[
-                  styles.pickerItemText,
-                  currentMonth.getMonth() === index &&
-                    styles.pickerItemSelected,
-                ]}
-              >
-                {month}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      )}
-
-      {/* Calendar Grid */}
-      <View
-        style={styles.calendarContainer}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-      >
+      {/* Content area: calendar + overlay dropdowns (dropdowns don't affect layout) */}
+      <View style={styles.contentWrapper}>
+        {/* Calendar Grid - always in same place */}
+        <View
+          style={styles.calendarContainer}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
         {/* Week Days Header */}
         <View style={styles.weekDaysRow}>
           {weekDays.map((day) => (
@@ -378,6 +354,76 @@ export function Calendar({
             })}
           </View>
         ))}
+        </View>
+
+        {/* Backdrop: tap outside to close dropdowns (no layout impact) */}
+        {(showYearPicker || showMonthPicker) && (
+          <TouchableOpacity
+            style={styles.pickerBackdrop}
+            activeOpacity={1}
+            onPress={closePickers}
+          />
+        )}
+
+        {/* Year Picker - dropdown overlay on top of calendar grid */}
+        {showYearPicker && (
+          <View style={styles.pickerDropdown} pointerEvents="box-none">
+            <View style={styles.pickerDropdownInner}>
+              <ScrollView
+                style={styles.pickerScroll}
+                keyboardShouldPersistTaps="handled"
+              >
+                {years.map((year) => (
+                  <TouchableOpacity
+                    key={year}
+                    onPress={() => handleYearChange(year)}
+                    style={styles.pickerItem}
+                  >
+                    <Text
+                      style={[
+                        styles.pickerItemText,
+                        getYear(currentMonth) === year &&
+                          styles.pickerItemSelected,
+                      ]}
+                    >
+                      {year}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          </View>
+        )}
+
+        {/* Month Picker - dropdown overlay on top of calendar grid */}
+        {showMonthPicker && (
+          <View style={styles.pickerDropdown} pointerEvents="box-none">
+            <View style={styles.pickerDropdownInner}>
+              <ScrollView
+                style={styles.pickerScroll}
+                keyboardShouldPersistTaps="handled"
+              >
+                {months.map((month, index) => (
+                  <TouchableOpacity
+                    key={month}
+                    onPress={() => handleMonthChange(index)}
+                    style={styles.pickerItem}
+                  >
+                    <Text
+                      style={[
+                        styles.pickerItemText,
+                        currentMonth.getMonth() === index &&
+                          styles.pickerItemSelected,
+                      ]}
+                    >
+                      {month}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -429,14 +475,41 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
-  picker: {
-    maxHeight: 200,
-    backgroundColor: '#fff',
+  selectorActive: {
+    backgroundColor: 'rgba(255, 255, 255, 1)',
+    borderWidth: 2,
+    borderColor: '#fff',
+  },
+  contentWrapper: {
+    flex: 1,
+    position: 'relative',
     marginHorizontal: 8,
-    marginBottom: 8,
+  },
+  pickerBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'transparent',
+    zIndex: 8,
+  },
+  pickerDropdown: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+  },
+  pickerDropdownInner: {
+    backgroundColor: '#fff',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#e5e5e5',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  pickerScroll: {
+    maxHeight: 12 * 44,
   },
   pickerItem: {
     padding: 12,
@@ -454,7 +527,9 @@ const styles = StyleSheet.create({
   calendarContainer: {
     flex: 1,
     backgroundColor: '#fff',
-    margin: 8,
+    marginTop: 0,
+    marginBottom: 8,
+    marginHorizontal: 0,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#e5e5e5',
