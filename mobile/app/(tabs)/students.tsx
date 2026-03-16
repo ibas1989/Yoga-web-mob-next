@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { useRouter, useNavigation } from 'expo-router';
+import { useRouter, useNavigation, useFocusEffect } from 'expo-router';
 import { Student } from '@shared/types';
 import { getStudents } from '../../src/lib/storage';
 import { formatBalanceForDisplay } from '@shared/utils/dateUtils';
@@ -23,11 +23,14 @@ export default function StudentsScreen() {
   const [students, setStudents] = useState<Student[]>([]);
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortMode, setSortMode] = useState<'name' | 'date'>('name');
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadStudents();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadStudents();
+    }, [])
+  );
 
   useEffect(() => {
     // Disable swipe back gesture on this tab screen
@@ -37,16 +40,30 @@ export default function StudentsScreen() {
   }, [navigation]);
 
   useEffect(() => {
-    // Filter students based on search query - only search by name after 2+ characters
-    if (searchQuery.length < 2) {
-      setFilteredStudents(students);
+    // Sort and filter students based on search query and sort mode
+    const sorted = [...students].sort((a, b) => {
+      if (sortMode === 'name') {
+        return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+      }
+      // sort by createdAt, newest first
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return bTime - aTime;
+    });
+
+    if (searchQuery.length === 0) {
+      setFilteredStudents(sorted);
     } else {
-      const filtered = students.filter((student) =>
-        student.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      const query = searchQuery.toLowerCase();
+      const filtered = sorted.filter((student) => {
+        const name = student.name.toLowerCase().trim();
+        // match from the beginning of any word in the name
+        const words = name.split(/\s+/);
+        return words.some((word) => word.startsWith(query));
+      });
       setFilteredStudents(filtered);
     }
-  }, [searchQuery, students]);
+  }, [searchQuery, students, sortMode]);
 
   const loadStudents = async () => {
     setIsLoading(true);
@@ -109,6 +126,42 @@ export default function StudentsScreen() {
               <Ionicons name="close-circle" size={20} color="#9ca3af" />
             </TouchableOpacity>
           )}
+        </View>
+
+        {/* Sort Options */}
+        <View style={styles.sortContainer}>
+          <TouchableOpacity
+            style={[
+              styles.sortButton,
+              sortMode === 'name' && styles.sortButtonActive,
+            ]}
+            onPress={() => setSortMode('name')}
+          >
+            <Text
+              style={[
+                styles.sortButtonText,
+                sortMode === 'name' && styles.sortButtonTextActive,
+              ]}
+            >
+              A-Z
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.sortButton,
+              sortMode === 'date' && styles.sortButtonActive,
+            ]}
+            onPress={() => setSortMode('date')}
+          >
+            <Text
+              style={[
+                styles.sortButtonText,
+                sortMode === 'date' && styles.sortButtonTextActive,
+              ]}
+            >
+              Date added
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Create New Button */}
@@ -343,5 +396,31 @@ const styles = StyleSheet.create({
     color: '#374151',
     fontSize: 16,
     fontWeight: '600',
+  },
+  sortContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginBottom: 12,
+  },
+  sortButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    marginRight: 8,
+    backgroundColor: '#f9fafb',
+  },
+  sortButtonActive: {
+    backgroundColor: '#4f46e5',
+    borderColor: '#4f46e5',
+  },
+  sortButtonText: {
+    fontSize: 14,
+    color: '#374151',
+    fontWeight: '500',
+  },
+  sortButtonTextActive: {
+    color: '#ffffff',
   },
 });
