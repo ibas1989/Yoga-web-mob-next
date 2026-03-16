@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -28,7 +28,7 @@ import { getSessions } from '../lib/storage';
 import { formatDateForUrl } from '@shared/utils/dateUtils';
 import { useRouter } from 'expo-router';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 interface CalendarProps {
   onDateSelect?: (date: Date) => void;
@@ -49,6 +49,7 @@ export function Calendar({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showYearPicker, setShowYearPicker] = useState(false);
   const [showMonthPicker, setShowMonthPicker] = useState(false);
+  const yearPickerRef = useRef<ScrollView | null>(null);
 
   useEffect(() => {
     loadSessions();
@@ -83,6 +84,14 @@ export function Calendar({
     if (onDateSelect) {
       onDateSelect(date);
     }
+  };
+
+  const goToToday = () => {
+    const today = new Date();
+    setCurrentMonth(startOfMonth(today));
+    setSelectedDate(today);
+    setShowYearPicker(false);
+    setShowMonthPicker(false);
   };
 
   const previousMonth = () => {
@@ -126,7 +135,30 @@ export function Calendar({
   };
 
   const currentYear = getYear(new Date());
-  const years = Array.from({ length: 12 }, (_, i) => currentYear - 5 + i);
+  const START_YEAR = 1970;
+  const END_YEAR = currentYear + 25;
+  const years = Array.from(
+    { length: END_YEAR - START_YEAR + 1 },
+    (_, i) => START_YEAR + i
+  );
+
+  useEffect(() => {
+    if (showYearPicker && yearPickerRef.current) {
+      const selectedYear = getYear(currentMonth);
+      const index = years.indexOf(selectedYear);
+      if (index !== -1) {
+        const VISIBLE_ITEMS = 7;
+        const offsetIndex = Math.max(
+          index - Math.floor(VISIBLE_ITEMS / 2),
+          0
+        );
+        yearPickerRef.current.scrollTo({
+          y: offsetIndex * YEAR_ITEM_HEIGHT,
+          animated: false,
+        });
+      }
+    }
+  }, [showYearPicker, currentMonth, years]);
 
   const handleYearChange = (year: number) => {
     const updatedMonth = setYear(currentMonth, year);
@@ -190,12 +222,8 @@ export function Calendar({
     <View style={styles.container}>
       {/* Navigation Header */}
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={previousMonth}
-          disabled={isTransitioning}
-          style={styles.navButton}
-        >
-          <Text style={styles.navButtonText}>‹</Text>
+        <TouchableOpacity style={styles.todayButton} onPress={goToToday}>
+          <Text style={styles.todayButtonText}>Today</Text>
         </TouchableOpacity>
 
         <View style={styles.selectors}>
@@ -219,14 +247,6 @@ export function Calendar({
             </Text>
           </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
-          onPress={nextMonth}
-          disabled={isTransitioning}
-          style={styles.navButton}
-        >
-          <Text style={styles.navButtonText}>›</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Content area: calendar + overlay dropdowns (dropdowns don't affect layout) */}
@@ -370,26 +390,34 @@ export function Calendar({
           <View style={styles.pickerDropdown} pointerEvents="box-none">
             <View style={styles.pickerDropdownInner}>
               <ScrollView
+                ref={yearPickerRef}
                 style={styles.pickerScroll}
                 keyboardShouldPersistTaps="handled"
               >
-                {years.map((year) => (
-                  <TouchableOpacity
-                    key={year}
-                    onPress={() => handleYearChange(year)}
-                    style={styles.pickerItem}
-                  >
-                    <Text
+                {years.map((year) => {
+                  const isSelectedYear = getYear(currentMonth) === year;
+                  const isCurrentYear = currentYear === year;
+
+                  return (
+                    <TouchableOpacity
+                      key={year}
+                      onPress={() => handleYearChange(year)}
                       style={[
-                        styles.pickerItemText,
-                        getYear(currentMonth) === year &&
-                          styles.pickerItemSelected,
+                        styles.pickerItem,
+                        isCurrentYear && styles.pickerItemCurrentYear,
                       ]}
                     >
-                      {year}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                      <Text
+                        style={[
+                          styles.pickerItemText,
+                          isSelectedYear && styles.pickerItemSelected,
+                        ]}
+                      >
+                        {year}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
               </ScrollView>
             </View>
           </View>
@@ -403,23 +431,30 @@ export function Calendar({
                 style={styles.pickerScroll}
                 keyboardShouldPersistTaps="handled"
               >
-                {months.map((month, index) => (
-                  <TouchableOpacity
-                    key={month}
-                    onPress={() => handleMonthChange(index)}
-                    style={styles.pickerItem}
-                  >
-                    <Text
+                {months.map((month, index) => {
+                  const isSelectedMonth = currentMonth.getMonth() === index;
+                  const isCurrentMonth = new Date().getMonth() === index;
+
+                  return (
+                    <TouchableOpacity
+                      key={month}
+                      onPress={() => handleMonthChange(index)}
                       style={[
-                        styles.pickerItemText,
-                        currentMonth.getMonth() === index &&
-                          styles.pickerItemSelected,
+                        styles.pickerItem,
+                        isCurrentMonth && styles.pickerItemCurrentMonth,
                       ]}
                     >
-                      {month}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                      <Text
+                        style={[
+                          styles.pickerItemText,
+                          isSelectedMonth && styles.pickerItemSelected,
+                        ]}
+                      >
+                        {month}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
               </ScrollView>
             </View>
           </View>
@@ -432,6 +467,8 @@ export function Calendar({
 // Calculate exact inner width of the calendar container: screen width
 // minus horizontal margins (8 * 2) and the container border (1 * 2)
 const cellSize = (width - 18) / 7;
+const YEAR_ITEM_HEIGHT = 56;
+const PICKER_MAX_HEIGHT = height * 0.6;
 
 const styles = StyleSheet.create({
   container: {
@@ -475,6 +512,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
+  todayButton: {
+    marginLeft: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.6)',
+  },
+  todayButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#fff',
+  },
   selectorActive: {
     backgroundColor: 'rgba(255, 255, 255, 1)',
     borderWidth: 2,
@@ -509,10 +560,13 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   pickerScroll: {
-    maxHeight: 12 * 44,
+    maxHeight: PICKER_MAX_HEIGHT,
   },
   pickerItem: {
-    padding: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    height: YEAR_ITEM_HEIGHT,
+    justifyContent: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
   },
@@ -523,6 +577,12 @@ const styles = StyleSheet.create({
   pickerItemSelected: {
     fontWeight: 'bold',
     color: '#4f46e5',
+  },
+  pickerItemCurrentYear: {
+    backgroundColor: 'rgba(79, 70, 229, 0.12)',
+  },
+  pickerItemCurrentMonth: {
+    backgroundColor: 'rgba(79, 70, 229, 0.12)',
   },
   calendarContainer: {
     flex: 1,

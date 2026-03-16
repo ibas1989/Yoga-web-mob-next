@@ -108,7 +108,7 @@ export default function TabsLayout() {
           paddingVertical: 8,
         },
         headerStyle: {
-          backgroundColor: '#10b981',
+          backgroundColor: '#4f46e5',
         },
         headerTintColor: '#ffffff',
         headerTitleStyle: {
