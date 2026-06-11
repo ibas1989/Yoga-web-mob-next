@@ -25,19 +25,17 @@ export function useStudents() {
   }, [loadStudents]);
 
   const updateStudent = useCallback((updatedStudent: Student) => {
-    setStudents((prevStudents) =>
-      prevStudents.map((s) => (s.id === updatedStudent.id ? updatedStudent : s))
+    setStudents(prevStudents => 
+      prevStudents.map(s => s.id === updatedStudent.id ? updatedStudent : s)
     );
   }, []);
 
   const addStudent = useCallback((newStudent: Student) => {
-    setStudents((prevStudents) => [...prevStudents, newStudent]);
+    setStudents(prevStudents => [...prevStudents, newStudent]);
   }, []);
 
   const removeStudent = useCallback((studentId: string) => {
-    setStudents((prevStudents) =>
-      prevStudents.filter((s) => s.id !== studentId)
-    );
+    setStudents(prevStudents => prevStudents.filter(s => s.id !== studentId));
   }, []);
 
   // Use refs to store the latest functions to avoid stale closures
@@ -63,11 +61,11 @@ export function useStudents() {
         loadStudentsRef.current();
       }
     };
-
+    
     const handleStudentsUpdated = () => {
       loadStudentsRef.current();
     };
-
+    
     const handleStudentUpdated = (event: CustomEvent) => {
       const { studentId, student } = event.detail;
       updateStudentRef.current(student);
@@ -82,37 +80,19 @@ export function useStudents() {
       const { studentId } = event.detail;
       removeStudentRef.current(studentId);
     };
-
+    
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('studentsUpdated', handleStudentsUpdated);
-    window.addEventListener(
-      'studentUpdated',
-      handleStudentUpdated as EventListener
-    );
-    window.addEventListener(
-      'studentAdded',
-      handleStudentAdded as EventListener
-    );
-    window.addEventListener(
-      'studentDeleted',
-      handleStudentDeleted as EventListener
-    );
-
+    window.addEventListener('studentUpdated', handleStudentUpdated as EventListener);
+    window.addEventListener('studentAdded', handleStudentAdded as EventListener);
+    window.addEventListener('studentDeleted', handleStudentDeleted as EventListener);
+    
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('studentsUpdated', handleStudentsUpdated);
-      window.removeEventListener(
-        'studentUpdated',
-        handleStudentUpdated as EventListener
-      );
-      window.removeEventListener(
-        'studentAdded',
-        handleStudentAdded as EventListener
-      );
-      window.removeEventListener(
-        'studentDeleted',
-        handleStudentDeleted as EventListener
-      );
+      window.removeEventListener('studentUpdated', handleStudentUpdated as EventListener);
+      window.removeEventListener('studentAdded', handleStudentAdded as EventListener);
+      window.removeEventListener('studentDeleted', handleStudentDeleted as EventListener);
     };
   }, []); // Empty dependency array to prevent re-registration
 
@@ -123,6 +103,6 @@ export function useStudents() {
     refreshStudents,
     updateStudent,
     addStudent,
-    removeStudent,
+    removeStudent
   };
 }

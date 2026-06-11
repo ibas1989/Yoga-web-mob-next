@@ -7,12 +7,7 @@ import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Session, Student } from '@shared/types';
 import { getSessions, getStudents } from '@/lib/storage';
-import {
-  formatDate,
-  formatTime,
-  formatTimeString,
-  formatDateLocalized,
-} from '@shared/utils/dateUtils';
+import { formatDate, formatTime, formatTimeString, formatDateLocalized } from '@shared/utils/dateUtils';
 import { isSessionEndTimePassed } from '@/lib/utils';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
@@ -35,12 +30,12 @@ export function TasksView() {
 
   useEffect(() => {
     loadTasks();
-
+    
     // Listen for all session-related events to refresh tasks
     const handleSessionChanged = () => {
       loadTasks();
     };
-
+    
     if (typeof window !== 'undefined') {
       // Listen to all session change events
       window.addEventListener('sessionCreated', handleSessionChanged);
@@ -50,7 +45,7 @@ export function TasksView() {
       window.addEventListener('sessionDeleted', handleSessionChanged);
       window.addEventListener('sessionChanged', handleSessionChanged);
       window.addEventListener('taskListUpdate', handleSessionChanged);
-
+      
       return () => {
         window.removeEventListener('sessionCreated', handleSessionChanged);
         window.removeEventListener('sessionUpdated', handleSessionChanged);
@@ -69,55 +64,53 @@ export function TasksView() {
       const sessions = getSessions();
       const students = getStudents();
       const now = new Date();
-
+      
       // Filter sessions that are scheduled and whose end time has passed
-      const overdueSessions = sessions.filter(
-        (session) =>
-          session.status === 'scheduled' && isSessionEndTimePassed(session)
+      const overdueSessions = sessions.filter(session => 
+        session.status === 'scheduled' && 
+        isSessionEndTimePassed(session)
       );
 
       // Convert sessions to tasks
-      const taskList: Task[] = overdueSessions.map((session) => {
-        const sessionStudents = students.filter((student) =>
+      const taskList: Task[] = overdueSessions.map(session => {
+        const sessionStudents = students.filter(student => 
           session.studentIds.includes(student.id)
         );
-
+        
         // Get the correct Russian form for "студент" based on count
         let studentForm = '';
         if (getCurrentLanguage() === 'ru') {
           studentForm = pluralize(
             sessionStudents.length,
-            'студентом', // 1 студентом (instrumental singular)
-            'студентами', // 2+ студентами (instrumental plural)
-            'студентами' // 5+ студентами (instrumental plural)
+            'студентом',      // 1 студентом (instrumental singular)
+            'студентами',     // 2+ студентами (instrumental plural)
+            'студентами'      // 5+ студентами (instrumental plural)
           );
         } else {
           studentForm = pluralize(
             sessionStudents.length,
-            'student', // 1 student
-            'students' // 2+ students
+            'student',        // 1 student
+            'students'        // 2+ students
           );
         }
 
         return {
           id: `task-${session.id}`,
           sessionId: session.id,
-          sessionName: t('tasks.sessionWithStudents', {
+          sessionName: t('tasks.sessionWithStudents', { 
             count: sessionStudents.length,
-            studentForm: studentForm,
+            studentForm: studentForm
           }),
           scheduledDate: new Date(session.date),
           scheduledTime: session.startTime,
-          studentNames: sessionStudents.map((s) => s.name),
-          summary: t('tasks.conductSession'),
+          studentNames: sessionStudents.map(s => s.name),
+          summary: t('tasks.conductSession')
         };
       });
 
       // Sort by date (oldest first)
-      taskList.sort(
-        (a, b) => a.scheduledDate.getTime() - b.scheduledDate.getTime()
-      );
-
+      taskList.sort((a, b) => a.scheduledDate.getTime() - b.scheduledDate.getTime());
+      
       setTasks(taskList);
     } catch (error) {
       console.error('Error loading tasks:', error);
@@ -132,9 +125,7 @@ export function TasksView() {
 
   const handleCompleteTask = (task: Task) => {
     // Navigate to the session details page with return URL to Tasks tab
-    router.push(
-      `/sessions/${task.sessionId}?returnTo=${encodeURIComponent('/?view=tasks')}`
-    );
+    router.push(`/sessions/${task.sessionId}?returnTo=${encodeURIComponent('/?view=tasks')}`);
   };
 
   const handleCloseTaskDetails = () => {
@@ -148,16 +139,14 @@ export function TasksView() {
         <div className="sticky top-0 z-50 bg-white border-b border-gray-200 p-4 shadow-sm">
           <h2 className="text-lg font-semibold">{t('tasks.title')}</h2>
         </div>
-
+        
         {/* Content */}
         <div className="p-4">
           <Card>
             <CardContent className="pt-6">
               <div className="text-center py-12">
                 <Loader2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground animate-spin" />
-                <h3 className="text-base font-semibold mb-2">
-                  {t('tasks.loading')}
-                </h3>
+                <h3 className="text-base font-semibold mb-2">{t('tasks.loading')}</h3>
                 <p className="text-sm text-muted-foreground">
                   {t('tasks.loadingDescription')}
                 </p>
@@ -178,7 +167,7 @@ export function TasksView() {
           {t('tasks.description')}
         </p>
       </div>
-
+      
       {/* Content */}
       <div className="p-4">
         {tasks.length === 0 ? (
@@ -186,9 +175,7 @@ export function TasksView() {
             <CardContent className="pt-6">
               <div className="text-center py-12">
                 <CheckSquare className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-base font-semibold mb-2">
-                  {t('tasks.noPendingTasks')}
-                </h3>
+                <h3 className="text-base font-semibold mb-2">{t('tasks.noPendingTasks')}</h3>
                 <p className="text-sm text-muted-foreground">
                   {t('tasks.allSessionsUpToDate')}
                 </p>
@@ -198,8 +185,8 @@ export function TasksView() {
         ) : (
           <div className="space-y-3">
             {tasks.map((task) => (
-              <div
-                key={task.id}
+              <div 
+                key={task.id} 
                 className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
                 onClick={() => handleTaskClick(task)}
               >
@@ -215,23 +202,11 @@ export function TasksView() {
                       <div className="flex flex-col space-y-1 text-sm text-gray-500 mt-1">
                         <div className="flex items-center space-x-1">
                           <Calendar className="h-3 w-3" />
-                          <span>
-                            {t('tasks.date')}:{' '}
-                            {formatDateLocalized(
-                              task.scheduledDate,
-                              getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US'
-                            )}
-                          </span>
+                          <span>{t('tasks.date')}: {formatDateLocalized(task.scheduledDate, getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US')}</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <Clock className="h-3 w-3" />
-                          <span>
-                            {t('tasks.time')}:{' '}
-                            {formatTimeString(
-                              task.scheduledTime,
-                              getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US'
-                            )}
-                          </span>
+                          <span>{t('tasks.time')}: {formatTimeString(task.scheduledTime, getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US')}</span>
                         </div>
                       </div>
                     </div>
@@ -254,9 +229,7 @@ export function TasksView() {
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">
-                  {t('tasks.taskDetails')}
-                </h3>
+                <h3 className="text-lg font-semibold">{t('tasks.taskDetails')}</h3>
                 <button
                   onClick={handleCloseTaskDetails}
                   className="text-gray-400 hover:text-gray-600"
@@ -264,26 +237,14 @@ export function TasksView() {
                   ✕
                 </button>
               </div>
-
+              
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-2">
-                    {selectedTask.sessionName}
-                  </h4>
+                  <h4 className="font-medium text-gray-900 mb-2">{selectedTask.sessionName}</h4>
                   <div className="text-sm text-gray-600 space-y-1">
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4" />
-                      <span>
-                        {formatDateLocalized(
-                          selectedTask.scheduledDate,
-                          getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US'
-                        )}{' '}
-                        {t('common.at')}{' '}
-                        {formatTimeString(
-                          selectedTask.scheduledTime,
-                          getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US'
-                        )}
-                      </span>
+                      <span>{formatDateLocalized(selectedTask.scheduledDate, getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US')} {t('common.at')} {formatTimeString(selectedTask.scheduledTime, getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US')}</span>
                     </div>
                     {selectedTask.studentNames.length > 0 && (
                       <div className="flex items-center space-x-2">
@@ -293,16 +254,12 @@ export function TasksView() {
                     )}
                   </div>
                 </div>
-
+                
                 <div className="border-t pt-4">
-                  <h5 className="font-medium text-gray-900 mb-2">
-                    {t('tasks.whatToDo')}
-                  </h5>
-                  <p className="text-sm text-gray-600">
-                    {selectedTask.summary}
-                  </p>
+                  <h5 className="font-medium text-gray-900 mb-2">{t('tasks.whatToDo')}</h5>
+                  <p className="text-sm text-gray-600">{selectedTask.summary}</p>
                 </div>
-
+                
                 <div className="flex space-x-3 pt-4">
                   <Button
                     onClick={() => handleCompleteTask(selectedTask)}

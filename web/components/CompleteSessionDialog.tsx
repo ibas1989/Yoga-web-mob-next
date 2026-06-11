@@ -56,9 +56,9 @@ export function CompleteSessionDialog({
   if (!session) return null;
 
   const toggleStudent = (studentId: string) => {
-    setSelectedStudentIds((prev) => {
+    setSelectedStudentIds(prev => {
       if (prev.includes(studentId)) {
-        return prev.filter((id) => id !== studentId);
+        return prev.filter(id => id !== studentId);
       } else {
         return [...prev, studentId];
       }
@@ -69,7 +69,7 @@ export function CompleteSessionDialog({
     if (studentId) {
       setIsAddingStudent(true);
       // Add student to selected list
-      setSelectedStudentIds((prev) => {
+      setSelectedStudentIds(prev => {
         if (!prev.includes(studentId)) {
           return [...prev, studentId];
         }
@@ -99,41 +99,31 @@ export function CompleteSessionDialog({
 
   // Get session deduction from settings
   const settings = getSettings();
-  const sessionDeduction =
-    session.sessionType === 'individual'
-      ? settings.defaultIndividualSessionCharge
-      : settings.defaultTeamSessionCharge;
-  const originalAttendees = allStudents.filter((s) =>
-    session.studentIds.includes(s.id)
-  );
-  const addedStudents = allStudents.filter(
-    (s) =>
-      selectedStudentIds.includes(s.id) && !session.studentIds.includes(s.id)
+  const sessionDeduction = session.sessionType === 'individual' 
+    ? settings.defaultIndividualSessionCharge 
+    : settings.defaultTeamSessionCharge;
+  const originalAttendees = allStudents.filter(s => session.studentIds.includes(s.id));
+  const addedStudents = allStudents.filter(s => 
+    selectedStudentIds.includes(s.id) && !session.studentIds.includes(s.id)
   );
 
   return (
     <>
-      <Dialog
-        open={open}
-        onOpenChange={(newOpen) => {
-          // Prevent closing the dialog when AddStudentDialog is open or when adding a student
-          if (!newOpen && (showAddStudentDialog || isAddingStudent)) {
-            return;
-          }
-          // Only allow closing if we're not in the middle of adding a student
-          onOpenChange(newOpen);
-        }}
-      >
+      <Dialog open={open} onOpenChange={(newOpen) => {
+        // Prevent closing the dialog when AddStudentDialog is open or when adding a student
+        if (!newOpen && (showAddStudentDialog || isAddingStudent)) {
+          return;
+        }
+        // Only allow closing if we're not in the middle of adding a student
+        onOpenChange(newOpen);
+      }}>
         <DialogContent className="max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t('completeSession.title')}</DialogTitle>
             <DialogDescription>
-              {t('completeSession.description', {
-                count: sessionDeduction,
-                sessionText:
-                  sessionDeduction === 1
-                    ? t('common.session')
-                    : t('common.sessions'),
+              {t('completeSession.description', { 
+                count: sessionDeduction, 
+                sessionText: sessionDeduction === 1 ? t('common.session') : t('common.sessions') 
               })}
             </DialogDescription>
           </DialogHeader>
@@ -143,18 +133,12 @@ export function CompleteSessionDialog({
             <Card className="bg-blue-50 border-blue-200">
               <CardContent className="p-4">
                 <p className="text-sm font-medium text-blue-900">
-                  {t('completeSession.sessionType')}:{' '}
-                  {session.sessionType === 'team'
-                    ? t('sessions.team')
-                    : t('sessions.individual')}
+                  {t('completeSession.sessionType')}: {session.sessionType === 'team' ? t('sessions.team') : t('sessions.individual')}
                 </p>
                 <p className="text-xs text-blue-700 mt-1">
-                  {t('completeSession.eachAttendeeDeducted', {
-                    count: sessionDeduction,
-                    sessionText:
-                      sessionDeduction === 1
-                        ? t('common.session')
-                        : t('common.sessions'),
+                  {t('completeSession.eachAttendeeDeducted', { 
+                    count: sessionDeduction, 
+                    sessionText: sessionDeduction === 1 ? t('common.session') : t('common.sessions') 
                   })}
                 </p>
               </CardContent>
@@ -164,19 +148,14 @@ export function CompleteSessionDialog({
             {originalAttendees.length > 0 && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium">
-                    {t('completeSession.plannedAttendees')}
-                  </Label>
+                  <Label className="text-sm font-medium">{t('completeSession.plannedAttendees')}</Label>
                   <span className="text-xs text-muted-foreground">
                     {t('completeSession.uncheckIfNotAttended')}
                   </span>
                 </div>
                 <div className="space-y-2">
                   {originalAttendees.map((student) => (
-                    <Card
-                      key={student.id}
-                      className="hover:shadow-sm transition-shadow"
-                    >
+                    <Card key={student.id} className="hover:shadow-sm transition-shadow">
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
                           <Checkbox
@@ -192,15 +171,10 @@ export function CompleteSessionDialog({
                               {student.name}
                             </Label>
                             <p className="text-xs text-muted-foreground">
-                              {t('completeSession.currentBalance')}:{' '}
-                              {student.balance}{' '}
-                              {Math.abs(student.balance) === 1
-                                ? t('common.session')
-                                : t('common.sessions')}
+                              {t('completeSession.currentBalance')}: {student.balance} {Math.abs(student.balance) === 1 ? t('common.session') : t('common.sessions')}
                               {selectedStudentIds.includes(student.id) && (
                                 <span className="ml-2 text-orange-600 font-medium">
-                                  → {t('completeSession.after')}:{' '}
-                                  {student.balance - sessionDeduction}
+                                  → {t('completeSession.after')}: {student.balance - sessionDeduction}
                                 </span>
                               )}
                             </p>
@@ -226,10 +200,7 @@ export function CompleteSessionDialog({
                 </Label>
                 <div className="space-y-2">
                   {addedStudents.map((student) => (
-                    <Card
-                      key={student.id}
-                      className="border-green-300 bg-green-50"
-                    >
+                    <Card key={student.id} className="border-green-300 bg-green-50">
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
                           <Checkbox
@@ -245,14 +216,9 @@ export function CompleteSessionDialog({
                               {student.name}
                             </Label>
                             <p className="text-xs text-muted-foreground">
-                              {t('completeSession.currentBalance')}:{' '}
-                              {student.balance}{' '}
-                              {Math.abs(student.balance) === 1
-                                ? t('common.session')
-                                : t('common.sessions')}
+                              {t('completeSession.currentBalance')}: {student.balance} {Math.abs(student.balance) === 1 ? t('common.session') : t('common.sessions')}
                               <span className="ml-2 text-orange-600 font-medium">
-                                → {t('completeSession.after')}:{' '}
-                                {student.balance - sessionDeduction}
+                                → {t('completeSession.after')}: {student.balance - sessionDeduction}
                               </span>
                             </p>
                           </div>
@@ -280,12 +246,8 @@ export function CompleteSessionDialog({
               <CardContent className="p-4">
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">
-                      {t('completeSession.totalAttendees')}:
-                    </span>
-                    <span className="font-medium">
-                      {selectedStudentIds.length}
-                    </span>
+                    <span className="text-muted-foreground">{t('completeSession.totalAttendees')}:</span>
+                    <span className="font-medium">{selectedStudentIds.length}</span>
                   </div>
                 </div>
               </CardContent>
@@ -296,7 +258,7 @@ export function CompleteSessionDialog({
             <Button variant="outline" onClick={handleCancel}>
               {t('common.cancel')}
             </Button>
-            <Button
+            <Button 
               className="bg-green-600 hover:bg-green-700"
               onClick={handleConfirm}
               disabled={selectedStudentIds.length === 0}
@@ -319,3 +281,4 @@ export function CompleteSessionDialog({
     </>
   );
 }
+

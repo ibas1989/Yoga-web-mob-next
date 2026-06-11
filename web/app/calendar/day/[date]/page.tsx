@@ -4,14 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { format, parseISO, isSameDay } from 'date-fns';
 import { ru, enUS } from 'date-fns/locale';
-import {
-  ArrowLeft,
-  Clock,
-  Users,
-  CheckCircle,
-  XCircle,
-  Calendar as CalendarIcon,
-} from 'lucide-react';
+import { ArrowLeft, Clock, Users, CheckCircle, XCircle, Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Session, Student } from '@shared/types';
@@ -26,20 +19,17 @@ export default function CalendarDayViewPage() {
   const params = useParams();
   const dateParam = params.date as string;
   const { t, getCurrentLanguage } = useTranslation();
-
+  
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [daySessions, setDaySessions] = useState<Session[]>([]);
 
   // Mobile swipe navigation for day changes
-  const swipeRef = useDayNavigationSwipe(
-    selectedDate || new Date(),
-    (newDate) => {
-      const dateStr = formatDateForUrl(newDate);
-      router.push(`/calendar/day/${dateStr}`);
-    }
-  );
+  const swipeRef = useDayNavigationSwipe(selectedDate || new Date(), (newDate) => {
+    const dateStr = formatDateForUrl(newDate);
+    router.push(`/calendar/day/${dateStr}`);
+  });
 
   useEffect(() => {
     if (dateParam) {
@@ -58,12 +48,12 @@ export default function CalendarDayViewPage() {
   const loadData = (date: Date) => {
     const allSessions = getSessions();
     const allStudents = getStudents();
-
+    
     setSessions(allSessions);
     setStudents(allStudents);
-
+    
     // Filter sessions for the selected date
-    const filteredSessions = allSessions.filter((session) =>
+    const filteredSessions = allSessions.filter(session => 
       isSameDay(new Date(session.date), date)
     );
     setDaySessions(filteredSessions);
@@ -89,32 +79,25 @@ export default function CalendarDayViewPage() {
   };
 
   // Calculate statistics
-  const scheduledCount = daySessions.filter(
-    (s) => s.status === 'scheduled'
-  ).length;
-  const completedCount = daySessions.filter(
-    (s) => s.status === 'completed'
-  ).length;
-  const cancelledCount = daySessions.filter(
-    (s) => s.status === 'cancelled'
-  ).length;
-
+  const scheduledCount = daySessions.filter(s => s.status === 'scheduled').length;
+  const completedCount = daySessions.filter(s => s.status === 'completed').length;
+  const cancelledCount = daySessions.filter(s => s.status === 'cancelled').length;
+  
   // Get unique student IDs from all sessions
-  const uniqueStudentIds = new Set(daySessions.flatMap((s) => s.studentIds));
+  const uniqueStudentIds = new Set(daySessions.flatMap(s => s.studentIds));
   const studentCount = uniqueStudentIds.size;
 
   const handleBackToCalendar = () => {
     router.push('/?view=calendar');
   };
 
+
   const handleTimeSlotClick = (timeSlot: string) => {
     if (!selectedDate) return;
-
+    
     // Use local date formatting to avoid UTC conversion issues
     const dateStr = formatDateForUrl(selectedDate);
-    router.push(
-      `/sessions/new?date=${dateStr}&time=${timeSlot}&returnTo=${encodeURIComponent(`/calendar/day/${dateStr}`)}`
-    );
+    router.push(`/sessions/new?date=${dateStr}&time=${timeSlot}&returnTo=${encodeURIComponent(`/calendar/day/${dateStr}`)}`);
   };
 
   const handleSessionClick = (session: Session) => {
@@ -122,17 +105,14 @@ export default function CalendarDayViewPage() {
     // Use local date formatting to avoid UTC conversion issues
     const dateStr = formatDateForUrl(selectedDate);
     // Pass return URL so session details can navigate back to day view
-    router.push(
-      `/sessions/${session.id}?returnTo=${encodeURIComponent(`/calendar/day/${dateStr}`)}`
-    );
+    router.push(`/sessions/${session.id}?returnTo=${encodeURIComponent(`/calendar/day/${dateStr}`)}`);
   };
+
 
   // Single-block rendering: sessions will be placed once using grid rows
   const sortedDaySessions = daySessions
     .slice()
-    .sort((a, b) =>
-      a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0
-    );
+    .sort((a, b) => (a.startTime < b.startTime ? -1 : a.startTime > b.startTime ? 1 : 0));
 
   const getStatusColor = (status: Session['status']) => {
     switch (status) {
@@ -169,10 +149,7 @@ export default function CalendarDayViewPage() {
   }
 
   return (
-    <div
-      className="min-h-screen bg-background touch-manipulation"
-      ref={swipeRef}
-    >
+    <div className="min-h-screen bg-background touch-manipulation" ref={swipeRef}>
       {/* Header Section - Fixed at top of screen */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-background border-b shadow-sm">
         <div className="container mx-auto px-4 py-3">
@@ -184,27 +161,21 @@ export default function CalendarDayViewPage() {
               className="gap-2 flex-shrink-0"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">
-                {t('calendarDay.backToCalendar')}
-              </span>
+              <span className="hidden sm:inline">{t('calendarDay.backToCalendar')}</span>
               <span className="sm:hidden">{t('calendarDay.back')}</span>
             </Button>
             <div className="text-center flex-1 min-w-0">
               <h1 className="text-xl sm:text-2xl font-bold leading-tight">
-                <div className="capitalize">
-                  {format(selectedDate, 'EEEE', {
-                    locale: getCurrentLanguage() === 'ru' ? ru : enUS,
-                  })}
-                </div>
+                <div className="capitalize">{format(selectedDate, 'EEEE', { locale: getCurrentLanguage() === 'ru' ? ru : enUS })}</div>
                 <div className="text-lg sm:text-xl capitalize">
-                  {getCurrentLanguage() === 'ru'
+                  {getCurrentLanguage() === 'ru' 
                     ? format(selectedDate, 'd MMMM, yyyy', { locale: ru })
-                    : format(selectedDate, 'MMMM d, yyyy', { locale: enUS })}
+                    : format(selectedDate, 'MMMM d, yyyy', { locale: enUS })
+                  }
                 </div>
               </h1>
             </div>
-            <div className="flex-shrink-0 w-24"></div>{' '}
-            {/* Spacer for balance */}
+            <div className="flex-shrink-0 w-24"></div> {/* Spacer for balance */}
           </div>
 
           {/* Day Summary Section */}
@@ -213,9 +184,7 @@ export default function CalendarDayViewPage() {
               <CardContent className="p-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-muted-foreground">
-                      {t('calendarDay.totalSessions')}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{t('calendarDay.totalSessions')}</p>
                     <p className="text-lg font-bold">{daySessions.length}</p>
                   </div>
                   <CalendarIcon className="h-5 w-5 text-muted-foreground opacity-50" />
@@ -227,12 +196,8 @@ export default function CalendarDayViewPage() {
               <CardContent className="p-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-muted-foreground">
-                      {t('calendarDay.scheduled')}
-                    </p>
-                    <p className="text-lg font-bold text-gray-600">
-                      {scheduledCount}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{t('calendarDay.scheduled')}</p>
+                    <p className="text-lg font-bold text-gray-600">{scheduledCount}</p>
                   </div>
                   <Clock className="h-5 w-5 text-gray-600 opacity-50" />
                 </div>
@@ -243,12 +208,8 @@ export default function CalendarDayViewPage() {
               <CardContent className="p-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-muted-foreground">
-                      {t('calendarDay.completed')}
-                    </p>
-                    <p className="text-lg font-bold text-green-600">
-                      {completedCount}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{t('calendarDay.completed')}</p>
+                    <p className="text-lg font-bold text-green-600">{completedCount}</p>
                   </div>
                   <CheckCircle className="h-5 w-5 text-green-600 opacity-50" />
                 </div>
@@ -259,12 +220,8 @@ export default function CalendarDayViewPage() {
               <CardContent className="p-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-muted-foreground">
-                      {t('calendarDay.cancelled')}
-                    </p>
-                    <p className="text-lg font-bold text-red-600">
-                      {cancelledCount}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{t('calendarDay.cancelled')}</p>
+                    <p className="text-lg font-bold text-red-600">{cancelledCount}</p>
                   </div>
                   <XCircle className="h-5 w-5 text-red-600 opacity-50" />
                 </div>
@@ -288,25 +245,19 @@ export default function CalendarDayViewPage() {
                     <div
                       key={timeSlot}
                       className={cn(
-                        'flex min-h-[60px] transition-colors hover:bg-muted/20',
-                        isHourMark && 'border-t-2 border-primary/20'
+                        "flex min-h-[60px] transition-colors hover:bg-muted/20",
+                        isHourMark && "border-t-2 border-primary/20"
                       )}
                     >
                       {/* Time Label */}
-                      <div
-                        className={cn(
-                          'w-16 sm:w-20 flex-shrink-0 p-2 sm:p-3 border-r bg-muted/30 flex items-center justify-center',
-                          isHourMark && 'font-semibold bg-muted/50'
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            'text-xs sm:text-sm',
-                            isHourMark
-                              ? 'text-foreground font-medium'
-                              : 'text-muted-foreground'
-                          )}
-                        >
+                      <div className={cn(
+                        "w-16 sm:w-20 flex-shrink-0 p-2 sm:p-3 border-r bg-muted/30 flex items-center justify-center",
+                        isHourMark && "font-semibold bg-muted/50"
+                      )}>
+                        <span className={cn(
+                          "text-xs sm:text-sm",
+                          isHourMark ? "text-foreground font-medium" : "text-muted-foreground"
+                        )}>
                           {timeSlot}
                         </span>
                       </div>
@@ -314,9 +265,7 @@ export default function CalendarDayViewPage() {
                       <div
                         className="flex-1 p-2 cursor-pointer hover:bg-accent/30 transition-colors rounded-sm"
                         onClick={() => handleTimeSlotClick(timeSlot)}
-                        title={t('calendarDay.clickToAddSession', {
-                          time: timeSlot,
-                        })}
+                        title={t('calendarDay.clickToAddSession', { time: timeSlot })}
                       />
                     </div>
                   );
@@ -338,19 +287,13 @@ export default function CalendarDayViewPage() {
                 {/* session blocks placed directly in grid column 2 */}
                 {sortedDaySessions.map((session) => {
                   const { rowStart, rowSpan } = getGridPosition(session);
-                  const sessionStudents = students.filter((s) =>
-                    session.studentIds.includes(s.id)
-                  );
+                  const sessionStudents = students.filter(s => session.studentIds.includes(s.id));
                   return (
                     <div
                       key={session.id}
-                      style={{
-                        gridColumn: 2,
-                        gridRow: `${rowStart} / span ${rowSpan}`,
-                        pointerEvents: 'auto',
-                      }}
+                      style={{ gridColumn: 2, gridRow: `${rowStart} / span ${rowSpan}`, pointerEvents: 'auto' }}
                       className={cn(
-                        'm-2 p-2 sm:p-3 rounded-lg border-l-4 cursor-pointer transition-all shadow-sm',
+                        "m-2 p-2 sm:p-3 rounded-lg border-l-4 cursor-pointer transition-all shadow-sm",
                         getStatusColor(session.status)
                       )}
                       onClick={(e) => {
@@ -367,12 +310,10 @@ export default function CalendarDayViewPage() {
                               {session.startTime} - {session.endTime}
                             </span>
                           </div>
-                          <span
-                            className={cn(
-                              'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium',
-                              'bg-white/20 backdrop-blur-sm'
-                            )}
-                          >
+                          <span className={cn(
+                            "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+                            "bg-white/20 backdrop-blur-sm"
+                          )}>
                             {getStatusIcon(session.status)}
                             {t(`calendarDay.status.${session.status}`)}
                           </span>
@@ -381,23 +322,17 @@ export default function CalendarDayViewPage() {
                         {/* Details */}
                         <div className="flex-1 min-w-0">
                           <p className="text-xs opacity-90 mb-1">
-                            {session.sessionType === 'team'
-                              ? t('sessionDetails.team')
-                              : t('sessionDetails.individual')}{' '}
-                            {t('calendarDay.session')}
+                            {session.sessionType === 'team' ? t('sessionDetails.team') : t('sessionDetails.individual')} {t('calendarDay.session')}
                           </p>
                           <div className="flex items-center gap-1 text-xs opacity-90">
                             <Users className="h-3 w-3" />
                             <span>
-                              {sessionStudents.length}{' '}
-                              {sessionStudents.length === 1
-                                ? t('calendarDay.attendee')
-                                : t('calendarDay.attendees')}
+                              {sessionStudents.length} {sessionStudents.length === 1 ? t('calendarDay.attendee') : t('calendarDay.attendees')}
                             </span>
                           </div>
                           {sessionStudents.length > 0 && (
                             <p className="text-xs mt-1 opacity-80 truncate">
-                              {sessionStudents.map((s) => s.name).join(', ')}
+                              {sessionStudents.map(s => s.name).join(', ')}
                             </p>
                           )}
                         </div>
@@ -413,3 +348,4 @@ export default function CalendarDayViewPage() {
     </div>
   );
 }
+

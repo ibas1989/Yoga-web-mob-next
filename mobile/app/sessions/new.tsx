@@ -7,8 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
-  Modal,
-  FlatList,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -17,64 +16,6 @@ import { getStudents, getSettings, saveSession } from '../../src/lib/storage';
 import { formatDateForUrl, parseDateFromUrl } from '@shared/utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 import { AddStudentModal } from '../../src/components/AddStudentModal';
-
-// Custom Picker Modal Component
-function PickerModal({
-  visible,
-  options,
-  selectedValue,
-  onSelect,
-  onClose,
-  title,
-}: {
-  visible: boolean;
-  options: Array<{ value: string; label: string }>;
-  selectedValue: string;
-  onSelect: (value: string) => void;
-  onClose: () => void;
-  title: string;
-}) {
-  return (
-    <Modal visible={visible} transparent animationType="slide">
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>{title}</Text>
-            <TouchableOpacity onPress={onClose}>
-              <Text style={styles.modalClose}>✕</Text>
-            </TouchableOpacity>
-          </View>
-          <FlatList
-            data={options}
-            keyExtractor={(item) => item.value}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={[
-                  styles.modalOption,
-                  item.value === selectedValue && styles.modalOptionSelected,
-                ]}
-                onPress={() => {
-                  onSelect(item.value);
-                  onClose();
-                }}
-              >
-                <Text
-                  style={[
-                    styles.modalOptionText,
-                    item.value === selectedValue &&
-                      styles.modalOptionTextSelected,
-                  ]}
-                >
-                  {item.label}
-                </Text>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-      </View>
-    </Modal>
-  );
-}
 
 export default function NewSessionScreen() {
   const {
@@ -157,6 +98,12 @@ export default function NewSessionScreen() {
     setAvailableGoals(settings.availableGoals);
     setDefaultTeamCharge(settings.defaultTeamSessionCharge ?? 1);
     setDefaultIndividualCharge(settings.defaultIndividualSessionCharge ?? 2);
+  };
+
+  const closeAllDropdowns = () => {
+    setShowTimeModal(false);
+    setShowDurationModal(false);
+    setShowTypeModal(false);
   };
 
   const calculateEndTime = (start: string, durationMinutes: number): string => {
@@ -302,61 +249,180 @@ export default function NewSessionScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.content}>
-        {/* Date */}
-        <View style={styles.section}>
-          <Text style={styles.label}>{t('sessions.sessionDate')}</Text>
-          <Text style={styles.dateText}>
-            {selectedDate.toLocaleDateString()}
-          </Text>
-        </View>
-
-        {/* Time */}
-        <View style={styles.section}>
-          <Text style={styles.label}>{t('sessions.startTime')}</Text>
-          <TouchableOpacity
-            style={styles.pickerButton}
-            onPress={() => setShowTimeModal(true)}
+      <TouchableWithoutFeedback onPress={closeAllDropdowns}>
+        <View style={styles.contentWrapper}>
+          <ScrollView
+            style={styles.content}
+            keyboardShouldPersistTaps="handled"
           >
-            <Text style={styles.pickerButtonText}>{startTime}</Text>
-            <Text style={styles.pickerArrow}>▼</Text>
-          </TouchableOpacity>
-        </View>
+            {/* Date */}
+            <View style={styles.section}>
+              <Text style={styles.label}>{t('sessions.sessionDate')}</Text>
+              <Text style={styles.dateText}>
+                {selectedDate.toLocaleDateString()}
+              </Text>
+            </View>
 
-        {/* Duration */}
-        <View style={styles.section}>
-          <Text style={styles.label}>{t('sessions.duration')}</Text>
-          <TouchableOpacity
-            style={styles.pickerButton}
-            onPress={() => setShowDurationModal(true)}
-          >
-            <Text style={styles.pickerButtonText}>
-              {durationOptions.find((o) => o.value === duration)?.label}
-            </Text>
-            <Text style={styles.pickerArrow}>▼</Text>
-          </TouchableOpacity>
-          <Text style={styles.helperText}>
-            {t('sessions.endTime')}:{' '}
-            {calculateEndTime(startTime, parseInt(duration))}
-          </Text>
-        </View>
+            {/* Time */}
+            <View style={styles.section}>
+              <Text style={styles.label}>{t('sessions.startTime')}</Text>
+              <TouchableOpacity
+                style={styles.pickerButton}
+                onPress={() => setShowTimeModal((prev) => !prev)}
+              >
+                <Text style={styles.pickerButtonText}>{startTime}</Text>
+                <Text style={styles.pickerArrow}>▼</Text>
+              </TouchableOpacity>
+              {showTimeModal && (
+                <View style={styles.dropdown}>
+                  <ScrollView
+                    style={styles.dropdownScroll}
+                    nestedScrollEnabled
+                  >
+                    {timeOptions.map((item) => {
+                      const isSelected = item.value === startTime;
+                      return (
+                        <TouchableOpacity
+                          key={item.value}
+                          style={[
+                            styles.dropdownOption,
+                            isSelected && styles.dropdownOptionSelected,
+                          ]}
+                          onPress={() => {
+                            setStartTime(item.value);
+                            setShowTimeModal(false);
+                          }}
+                        >
+                          <Text
+                            style={[
+                              styles.dropdownOptionText,
+                              isSelected && styles.dropdownOptionTextSelected,
+                            ]}
+                          >
+                            {item.label}
+                          </Text>
+                          {isSelected && (
+                            <Text style={styles.dropdownCheckmark}>✓</Text>
+                          )}
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+              )}
+            </View>
 
-        {/* Session Type */}
-        <View style={styles.section}>
-          <Text style={styles.label}>{t('sessions.sessionType')}</Text>
-          <TouchableOpacity
-            style={styles.pickerButton}
-            onPress={() => setShowTypeModal(true)}
-          >
-            <Text style={styles.pickerButtonText}>
-              {sessionTypeOptions.find((o) => o.value === sessionType)?.label}
-            </Text>
-            <Text style={styles.pickerArrow}>▼</Text>
-          </TouchableOpacity>
-        </View>
+            {/* Duration */}
+            <View style={styles.section}>
+              <Text style={styles.label}>{t('sessions.duration')}</Text>
+              <TouchableOpacity
+                style={styles.pickerButton}
+                onPress={() => setShowDurationModal((prev) => !prev)}
+              >
+                <Text style={styles.pickerButtonText}>
+                  {durationOptions.find((o) => o.value === duration)?.label}
+                </Text>
+                <Text style={styles.pickerArrow}>▼</Text>
+              </TouchableOpacity>
+              {showDurationModal && (
+                <View style={styles.dropdown}>
+                  <ScrollView
+                    style={styles.dropdownScroll}
+                    nestedScrollEnabled
+                  >
+                    {durationOptions.map((item) => {
+                      const isSelected = item.value === duration;
+                      return (
+                        <TouchableOpacity
+                          key={item.value}
+                          style={[
+                            styles.dropdownOption,
+                            isSelected && styles.dropdownOptionSelected,
+                          ]}
+                          onPress={() => {
+                            setDuration(item.value);
+                            setShowDurationModal(false);
+                          }}
+                        >
+                          <Text
+                            style={[
+                              styles.dropdownOptionText,
+                              isSelected && styles.dropdownOptionTextSelected,
+                            ]}
+                          >
+                            {item.label}
+                          </Text>
+                          {isSelected && (
+                            <Text style={styles.dropdownCheckmark}>✓</Text>
+                          )}
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+              )}
+              <Text style={styles.helperText}>
+                {t('sessions.endTime')}:{' '}
+                {calculateEndTime(startTime, parseInt(duration))}
+              </Text>
+            </View>
 
-        {/* Students */}
-        <View style={styles.section}>
+            {/* Session Type */}
+            <View style={styles.section}>
+              <Text style={styles.label}>{t('sessions.sessionType')}</Text>
+              <TouchableOpacity
+                style={styles.pickerButton}
+                onPress={() => setShowTypeModal((prev) => !prev)}
+              >
+                <Text style={styles.pickerButtonText}>
+                  {
+                    sessionTypeOptions.find((o) => o.value === sessionType)
+                      ?.label
+                  }
+                </Text>
+                <Text style={styles.pickerArrow}>▼</Text>
+              </TouchableOpacity>
+              {showTypeModal && (
+                <View style={styles.dropdown}>
+                  <ScrollView
+                    style={styles.dropdownScroll}
+                    nestedScrollEnabled
+                  >
+                    {sessionTypeOptions.map((item) => {
+                      const isSelected = item.value === sessionType;
+                      return (
+                        <TouchableOpacity
+                          key={item.value}
+                          style={[
+                            styles.dropdownOption,
+                            isSelected && styles.dropdownOptionSelected,
+                          ]}
+                          onPress={() => {
+                            setSessionType(item.value as 'team' | 'individual');
+                            setShowTypeModal(false);
+                          }}
+                        >
+                          <Text
+                            style={[
+                              styles.dropdownOptionText,
+                              isSelected && styles.dropdownOptionTextSelected,
+                            ]}
+                          >
+                            {item.label}
+                          </Text>
+                          {isSelected && (
+                            <Text style={styles.dropdownCheckmark}>✓</Text>
+                          )}
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+              )}
+            </View>
+
+            {/* Students */}
+            <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.label}>
               {t('sessions.attendeesLabel')} ({selectedStudentIds.length})
@@ -408,74 +474,49 @@ export default function NewSessionScreen() {
           )}
         </View>
 
-        {/* Goals */}
-        <View style={styles.section}>
-          <Text style={styles.label}>{t('sessions.sessionGoalsLabel')}</Text>
-          <View style={styles.goalsContainer}>
-            {availableGoals.map((goal) => (
-              <TouchableOpacity
-                key={goal}
-                style={[
-                  styles.goalChip,
-                  selectedGoals.includes(goal) && styles.goalChipSelected,
-                ]}
-                onPress={() => toggleGoal(goal)}
-              >
-                <Text
-                  style={[
-                    styles.goalChipText,
-                    selectedGoals.includes(goal) && styles.goalChipTextSelected,
-                  ]}
-                >
-                  {goal}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+            {/* Goals */}
+            <View style={styles.section}>
+              <Text style={styles.label}>{t('sessions.sessionGoalsLabel')}</Text>
+              <View style={styles.goalsContainer}>
+                {availableGoals.map((goal) => (
+                  <TouchableOpacity
+                    key={goal}
+                    style={[
+                      styles.goalChip,
+                      selectedGoals.includes(goal) && styles.goalChipSelected,
+                    ]}
+                    onPress={() => toggleGoal(goal)}
+                  >
+                    <Text
+                      style={[
+                        styles.goalChipText,
+                        selectedGoals.includes(goal) &&
+                          styles.goalChipTextSelected,
+                      ]}
+                    >
+                      {goal}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            {/* Notes */}
+            <View style={styles.section}>
+              <Text style={styles.label}>{t('sessions.notesOptional')}</Text>
+              <TextInput
+                style={styles.textArea}
+                multiline
+                numberOfLines={4}
+                value={notes}
+                onChangeText={setNotes}
+                placeholder={t('sessions.addNotesPlaceholder')}
+                placeholderTextColor="#999"
+              />
+            </View>
+          </ScrollView>
         </View>
-
-        {/* Notes */}
-        <View style={styles.section}>
-          <Text style={styles.label}>{t('sessions.notesOptional')}</Text>
-          <TextInput
-            style={styles.textArea}
-            multiline
-            numberOfLines={4}
-            value={notes}
-            onChangeText={setNotes}
-            placeholder={t('sessions.addNotesPlaceholder')}
-            placeholderTextColor="#999"
-          />
-        </View>
-      </ScrollView>
-
-      {/* Modals */}
-      <PickerModal
-        visible={showTimeModal}
-        options={timeOptions}
-        selectedValue={startTime}
-        onSelect={setStartTime}
-        onClose={() => setShowTimeModal(false)}
-        title={t('sessions.selectStartTime')}
-      />
-
-      <PickerModal
-        visible={showDurationModal}
-        options={durationOptions}
-        selectedValue={duration}
-        onSelect={setDuration}
-        onClose={() => setShowDurationModal(false)}
-        title={t('sessions.selectDuration')}
-      />
-
-      <PickerModal
-        visible={showTypeModal}
-        options={sessionTypeOptions}
-        selectedValue={sessionType}
-        onSelect={setSessionType as any}
-        onClose={() => setShowTypeModal(false)}
-        title={t('sessions.selectSessionType')}
-      />
+      </TouchableWithoutFeedback>
 
       <AddStudentModal
         visible={showAddStudentModal}
@@ -526,6 +567,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   content: {
+    flex: 1,
+  },
+  contentWrapper: {
     flex: 1,
   },
   section: {
@@ -689,49 +733,46 @@ const styles = StyleSheet.create({
     minHeight: 100,
     textAlignVertical: 'top',
   },
-  // Modal styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
+  // Inline dropdown styles
+  dropdown: {
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#e5e5e5',
+    borderRadius: 8,
     backgroundColor: '#fff',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    maxHeight: '70%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
+    maxHeight: 200,
   },
-  modalHeader: {
+  dropdownScroll: {
+    borderRadius: 8,
+  },
+  dropdownOption: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e5e5',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-  },
-  modalClose: {
-    fontSize: 24,
-    color: '#999',
-  },
-  modalOption: {
-    padding: 16,
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#f3f4f6',
   },
-  modalOptionSelected: {
-    backgroundColor: '#4f46e5',
+  dropdownOptionSelected: {
+    backgroundColor: '#eef2ff',
   },
-  modalOptionText: {
-    fontSize: 16,
+  dropdownOptionText: {
+    fontSize: 15,
     color: '#333',
   },
-  modalOptionTextSelected: {
+  dropdownOptionTextSelected: {
     color: '#4f46e5',
     fontWeight: '600',
+  },
+  dropdownCheckmark: {
+    fontSize: 16,
+    color: '#4f46e5',
+    marginLeft: 12,
   },
 });

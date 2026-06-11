@@ -7,8 +7,8 @@ const nextConfig = {
   generateEtags: false,
   poweredByHeader: false,
   compress: true,
-  // Fix workspace root warning
-  outputFileTracingRoot: require('path').join(__dirname),
+  // Monorepo: trace files from repo root so shared/ is included
+  outputFileTracingRoot: require('path').join(__dirname, '..'),
   // Ensure proper static file serving
   staticPageGenerationTimeout: 1000,
   compiler: {
@@ -17,14 +17,7 @@ const nextConfig = {
   // Fix for Next.js 15 static file serving
   experimental: {
     externalDir: true,
-    optimizePackageImports: [
-      'lucide-react',
-      '@radix-ui/react-dialog',
-      '@radix-ui/react-select',
-      '@radix-ui/react-checkbox',
-      '@radix-ui/react-label',
-      '@radix-ui/react-slot',
-    ],
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-checkbox', '@radix-ui/react-label', '@radix-ui/react-slot'],
   },
   // Fix static asset serving issues
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
@@ -103,6 +96,6 @@ const nextConfig = {
     }
     return [];
   },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

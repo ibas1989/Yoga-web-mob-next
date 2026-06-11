@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { useRouter, useNavigation } from 'expo-router';
+import { useRouter, useFocusEffect, useNavigation } from 'expo-router';
 import { Student } from '@shared/types';
 import { getStudents } from '../../src/lib/storage';
 import { formatBalanceForDisplay } from '@shared/utils/dateUtils';
@@ -23,9 +23,10 @@ export default function StudentsScreen() {
   const [students, setStudents] = useState<Student[]>([]);
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [sortMode, setSortMode] = useState<'name' | 'date'>('name');
 
   useEffect(() => {
+    // Initial load when the Students tab screen is first mounted.
     loadStudents();
   }, []);
 
@@ -37,19 +38,41 @@ export default function StudentsScreen() {
   }, [navigation]);
 
   useEffect(() => {
-    // Filter students based on search query - only search by name after 2+ characters
-    if (searchQuery.length < 2) {
-      setFilteredStudents(students);
+    // Sort and filter students based on search query and sort mode
+    const sorted = [...students].sort((a, b) => {
+      if (sortMode === 'name') {
+        return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+      }
+      // sort by createdAt, newest first
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return bTime - aTime;
+    });
+
+    if (searchQuery.length === 0) {
+      setFilteredStudents(sorted);
     } else {
-      const filtered = students.filter((student) =>
-        student.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      const query = searchQuery.toLowerCase();
+      const filtered = sorted.filter((student) => {
+        const name = student.name.toLowerCase().trim();
+        // match from the beginning of any word in the name
+        const words = name.split(/\s+/);
+        return words.some((word) => word.startsWith(query));
+      });
       setFilteredStudents(filtered);
     }
-  }, [searchQuery, students]);
+  }, [searchQuery, students, sortMode]);
+
+  // Reload students whenever the screen comes into focus.
+  // This ensures that data restored from backup (or other tabs)
+  // is immediately reflected when navigating back to Students.
+  useFocusEffect(
+    useCallback(() => {
+      loadStudents();
+    }, [])
+  );
 
   const loadStudents = async () => {
-    setIsLoading(true);
     try {
       const studentsData = await getStudents();
       setStudents(studentsData);
@@ -58,7 +81,6 @@ export default function StudentsScreen() {
       console.error('Error loading students:', error);
       Alert.alert(t('students.errorLoading'), 'Failed to load students');
     } finally {
-      setIsLoading(false);
     }
   };
 
@@ -75,15 +97,6 @@ export default function StudentsScreen() {
     if (balance < 0) return '#dc2626'; // red for negative values
     return '#6b7280'; // grey for zero
   };
-
-  if (isLoading) {
-    return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#4f46e5" />
-        <Text style={styles.loadingText}>{t('students.loading')}</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -111,6 +124,42 @@ export default function StudentsScreen() {
           )}
         </View>
 
+        {/* Sort Options */}
+        <View style={styles.sortContainer}>
+          <TouchableOpacity
+            style={[
+              styles.sortButton,
+              sortMode === 'name' && styles.sortButtonActive,
+            ]}
+            onPress={() => setSortMode('name')}
+          >
+            <Text
+              style={[
+                styles.sortButtonText,
+                sortMode === 'name' && styles.sortButtonTextActive,
+              ]}
+            >
+              A-Z
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.sortButton,
+              sortMode === 'date' && styles.sortButtonActive,
+            ]}
+            onPress={() => setSortMode('date')}
+          >
+            <Text
+              style={[
+                styles.sortButtonText,
+                sortMode === 'date' && styles.sortButtonTextActive,
+              ]}
+            >
+              Date added
+            </Text>
+          </TouchableOpacity>
+        </View>
+
         {/* Create New Button */}
         <TouchableOpacity style={styles.createButton} onPress={handleCreateNew}>
           <Ionicons name="add" size={24} color="#fff" />
@@ -124,16 +173,16 @@ export default function StudentsScreen() {
           <View style={styles.emptyContainer}>
             <Ionicons name="people-outline" size={64} color="#9ca3af" />
             <Text style={styles.emptyTitle}>
-              {searchQuery.length >= 2
+              {searchQuery.length > 0
                 ? t('students.noStudentsFound')
                 : t('students.noStudents')}
             </Text>
             <Text style={styles.emptySubtitle}>
-              {searchQuery.length >= 2
+              {searchQuery.length > 0
                 ? t('students.noStudentsFoundDescription')
                 : t('students.noStudentsDescription')}
             </Text>
-            {searchQuery.length >= 2 ? (
+            {searchQuery.length > 0 ? (
               <TouchableOpacity
                 style={styles.clearButton}
                 onPress={() => setSearchQuery('')}
@@ -343,5 +392,31 @@ const styles = StyleSheet.create({
     color: '#374151',
     fontSize: 16,
     fontWeight: '600',
+  },
+  sortContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    marginBottom: 12,
+  },
+  sortButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    marginRight: 8,
+    backgroundColor: '#f9fafb',
+  },
+  sortButtonActive: {
+    backgroundColor: '#4f46e5',
+    borderColor: '#4f46e5',
+  },
+  sortButtonText: {
+    fontSize: 14,
+    color: '#374151',
+    fontWeight: '500',
+  },
+  sortButtonTextActive: {
+    color: '#ffffff',
   },
 });

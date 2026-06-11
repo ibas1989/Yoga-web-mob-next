@@ -11,6 +11,7 @@ import {
   formatBalanceAsInteger,
   generateTransactionReason,
 } from '@shared/utils/dateUtils';
+import { dispatchSessionEvent } from './eventSystem';
 
 const STUDENTS_KEY = 'yoga_tracker_students';
 const SESSIONS_KEY = 'yoga_tracker_sessions';
@@ -138,6 +139,17 @@ export const saveSession = async (session: Session): Promise<void> => {
     }
 
     await AsyncStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+
+    // Notify listeners that sessions (and therefore pending tasks) may have changed
+    const timestamp = new Date().toISOString();
+    dispatchSessionEvent('sessionChanged', {
+      sessionId: session.id,
+      session,
+      timestamp,
+    });
+    dispatchSessionEvent('taskListUpdate', {
+      timestamp,
+    });
   } catch (error) {
     console.error('Error saving session:', error);
     throw error;
@@ -149,6 +161,16 @@ export const deleteSession = async (sessionId: string): Promise<void> => {
     const sessions = await getSessions();
     const filtered = sessions.filter((s) => s.id !== sessionId);
     await AsyncStorage.setItem(SESSIONS_KEY, JSON.stringify(filtered));
+
+    // Notify listeners that a session was deleted, which may affect pending tasks
+    const timestamp = new Date().toISOString();
+    dispatchSessionEvent('sessionDeleted', {
+      sessionId,
+      timestamp,
+    });
+    dispatchSessionEvent('taskListUpdate', {
+      timestamp,
+    });
   } catch (error) {
     console.error('Error deleting session:', error);
     throw error;

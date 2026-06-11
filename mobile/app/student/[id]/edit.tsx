@@ -349,7 +349,19 @@ export default function EditStudentScreen() {
                 <Text style={styles.label}>
                   {t('studentPages.currentBalance')}
                 </Text>
-                <Text style={styles.balanceValue}>
+                <Text
+                  style={[
+                    styles.balanceValue,
+                    {
+                      color:
+                        originalStudent.balance > 0
+                          ? '#16a34a'
+                          : originalStudent.balance < 0
+                            ? '#dc2626'
+                            : '#6b7280',
+                    },
+                  ]}
+                >
                   {originalStudent.balance > 0 ? '+' : ''}
                   {originalStudent.balance}{' '}
                   {Math.abs(originalStudent.balance) === 1

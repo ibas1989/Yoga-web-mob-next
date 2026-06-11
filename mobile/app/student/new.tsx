@@ -179,7 +179,11 @@ export default function NewStudentScreen() {
             if (returnTo) {
               router.push(returnTo as any);
             } else {
-              router.back();
+              // After creating from Students tab, go to a fresh
+              // instance of the Students screen so the new student
+              // is visible without triggering a focus-based reload
+              // (avoids any blink on swipe-back).
+              router.replace('/(tabs)/students' as any);
             }
           },
         },

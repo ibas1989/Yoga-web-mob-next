@@ -108,7 +108,7 @@ export default function TabsLayout() {
           paddingVertical: 8,
         },
         headerStyle: {
-          backgroundColor: '#10b981',
+          backgroundColor: '#4f46e5',
         },
         headerTintColor: '#ffffff',
         headerTitleStyle: {
@@ -118,7 +118,7 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="calendar"
         options={{
           title: t('navigation.calendar'),
           headerTitle: t('navigation.calendar'),

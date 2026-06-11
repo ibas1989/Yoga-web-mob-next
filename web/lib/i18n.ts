@@ -12,17 +12,20 @@ i18n
     resources: translationResources,
     fallbackLng: 'en',
     debug: process.env.NODE_ENV === 'development',
-
+    
     interpolation: {
       escapeValue: false, // React already does escaping
     },
-
+    
     detection: {
-      order: safeStorage.isAvailable()
-        ? ['localStorage', 'navigator', 'htmlTag']
-        : ['navigator', 'htmlTag'],
+      order: safeStorage.isAvailable() ? ['localStorage', 'navigator', 'htmlTag'] : ['navigator', 'htmlTag'],
       caches: safeStorage.isAvailable() ? ['localStorage'] : [],
+    },
+
+    react: {
+      useSuspense: false,
     },
   });
 
 export default i18n;
+

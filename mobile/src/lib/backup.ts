@@ -5,6 +5,7 @@ import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import { getStudents, getSessions, getSettings, saveSettings } from './storage';
 import { Student, Session, AppSettings } from '@shared/types';
+import { dispatchSessionEvent } from './eventSystem';
 
 export interface BackupData {
   version: string;
@@ -196,6 +197,15 @@ export const restoreBackup = async (
 
     // Store settings
     await saveSettings(backup.settings);
+
+    // Notify the app that sessions/tasks have changed so UI (e.g. bottom bar badge)
+    // and task lists can refresh immediately after restore.
+    dispatchSessionEvent('taskListUpdate', {
+      message: 'Backup restored',
+      overdueCount: undefined,
+      overdueSessions: undefined,
+      timestamp: new Date().toISOString(),
+    });
 
     return {
       success: true,

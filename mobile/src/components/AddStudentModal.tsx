@@ -13,7 +13,7 @@ import {
   Platform,
 } from 'react-native';
 import { Student } from '@shared/types';
-import { saveStudent, getStudents, getSettings } from '../lib/storage';
+import { saveStudent, getStudents, getSettings, getSessions } from '../lib/storage';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -34,6 +34,9 @@ export function AddStudentModal({
   const [mode, setMode] = useState<'select' | 'create'>('select');
   const [allStudents, setAllStudents] = useState<Student[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [lastSessionTimestamps, setLastSessionTimestamps] = useState<
+    Record<string, number>
+  >({});
 
   // Create form fields
   const [name, setName] = useState('');
@@ -57,6 +60,32 @@ export function AddStudentModal({
 
     const settings = await getSettings();
     setAvailableGoals(settings.availableGoals);
+
+    // Build a map of studentId -> latest session timestamp
+    try {
+      const sessions = await getSessions();
+      const timestamps: Record<string, number> = {};
+
+      sessions.forEach((session) => {
+        if (!session.studentIds || !session.createdAt) {
+          return;
+        }
+
+        // Use createdAt to represent when students were actually added/saved to this session
+        const time = new Date(session.createdAt).getTime();
+
+        session.studentIds.forEach((studentId: string) => {
+          if (!timestamps[studentId] || time > timestamps[studentId]) {
+            timestamps[studentId] = time;
+          }
+        });
+      });
+
+      setLastSessionTimestamps(timestamps);
+    } catch (error) {
+      // If sessions fail to load, we simply skip sorting by recency
+      console.error('Failed to load sessions for student sorting', error);
+    }
   };
 
   const resetForm = () => {
@@ -106,9 +135,25 @@ export function AddStudentModal({
     (s) => !existingStudentIds.includes(s.id)
   );
 
-  const filteredStudents = availableStudents.filter((s) =>
-    s.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredStudents = availableStudents
+    .filter((s) =>
+      s.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      const aTime = lastSessionTimestamps[a.id];
+      const bTime = lastSessionTimestamps[b.id];
+
+      // Students who have attended previous sessions should appear first
+      if (aTime && bTime) {
+        return bTime - aTime; // Most recent first
+      }
+
+      if (aTime && !bTime) return -1;
+      if (!aTime && bTime) return 1;
+
+      // Fallback: alphabetical by name
+      return a.name.localeCompare(b.name);
+    });
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>

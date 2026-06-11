@@ -2,104 +2,52 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import {
-  Edit,
-  User,
-  Phone,
-  Wallet,
-  Target,
-  Calendar,
-  Clock,
-  Plus,
-  Trash2,
-  Weight,
-  Ruler,
-  Cake,
-  FileText,
-  Loader2,
-  Edit2,
-  Save,
-  X,
-  StickyNote,
-} from 'lucide-react';
+import { Edit, User, Phone, Wallet, Target, Calendar, Clock, Plus, Trash2, Weight, Ruler, Cake, FileText, Loader2, Edit2, Save, X, StickyNote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ContextualBar } from '@/components/ui/contextual-bar';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label as UILabel } from '@/components/ui/label';
-import {
-  Student,
-  Session,
-  StudentNote,
-  BalanceTransaction,
-} from '@shared/types';
-import {
-  getStudents,
-  getSessions,
-  addBalanceTransaction,
-  addStudentNote,
-  updateStudentNote,
-  deleteStudentNote,
-  deleteStudent,
-} from '@/lib/storage';
+import { Student, Session, StudentNote, BalanceTransaction } from '@shared/types';
+import { getStudents, getSessions, addBalanceTransaction, addStudentNote, updateStudentNote, deleteStudentNote, deleteStudent } from '@/lib/storage';
 import { useStudent } from '@/lib/hooks/useStudent';
 import { SessionDetailsDialog } from '@/components/SessionDetailsDialog';
 import { TransactionDetailsDialog } from '@/components/TransactionDetailsDialog';
 import { NoteDetailsDialog } from '@/components/ui/note-details-dialog';
-import {
-  DeleteConfirmationDialog,
-  UpdateConfirmationDialog,
-} from '@/components/ui/confirmation-dialog';
+import { DeleteConfirmationDialog, UpdateConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { NewNoteDialog } from '@/components/NewNoteDialog';
-import {
-  formatBalanceForDisplay,
-  getAgeInYearsAndMonths,
-  getMemberSinceAge,
-  getSessionTypeDisplayName,
-  getSessionCount,
-  getAgeInYearsAndMonthsTranslated,
-  getMemberSinceAgeTranslated,
-  formatDateLocalized,
-} from '@shared/utils/dateUtils';
+import { formatBalanceForDisplay, getAgeInYearsAndMonths, getMemberSinceAge, getSessionTypeDisplayName, getSessionCount, getAgeInYearsAndMonthsTranslated, getMemberSinceAgeTranslated, formatDateLocalized } from '@shared/utils/dateUtils';
 
 // Custom formatting functions for the new layout
 const formatDateForTable = (date: Date | string | null | undefined, t: any) => {
   if (!date) return { dayMonth: t('validation.notSpecified'), year: '' };
   const dateObj = date instanceof Date ? date : new Date(date);
-  if (isNaN(dateObj.getTime()))
-    return { dayMonth: t('validation.invalidDate'), year: '' };
-
+  if (isNaN(dateObj.getTime())) return { dayMonth: t('validation.invalidDate'), year: '' };
+  
   const day = dateObj.getDate();
   const month = dateObj.toLocaleDateString('en-US', { month: 'short' });
   const year = dateObj.getFullYear();
-
+  
   return {
     dayMonth: `${day} ${month}`,
-    year: year.toString(),
+    year: year.toString()
   };
 };
 
 const formatTimeForTable = (timeString: string | null | undefined, t: any) => {
-  if (!timeString)
-    return { startTime: t('validation.notSpecified'), endTime: '' };
-
+  if (!timeString) return { startTime: t('validation.notSpecified'), endTime: '' };
+  
   if (timeString.includes('-')) {
     const [start, end] = timeString.split(' - ');
     return {
       startTime: start || t('validation.notSpecified'),
-      endTime: end || '',
+      endTime: end || ''
     };
   } else {
     return {
       startTime: timeString,
-      endTime: '',
+      endTime: ''
     };
   }
 };
@@ -112,29 +60,26 @@ export default function StudentDetailsPage() {
   const params = useParams();
   const studentId = params.id as string;
 
-  const {
-    student: currentStudent,
-    sessions: studentSessions,
-    isLoading: studentLoading,
+  const { 
+    student: currentStudent, 
+    sessions: studentSessions, 
+    isLoading: studentLoading, 
     error: studentError,
-    forceRefresh,
+    forceRefresh
   } = useStudent(studentId);
 
   // Mobile swipe navigation - swipe right to go back
   const swipeRef = useMobileSwipe({
-    onSwipeRight: () => router.push('/?view=students'),
+    onSwipeRight: () => router.push('/?view=students')
   });
 
-  const [showSessionDetailsDialog, setShowSessionDetailsDialog] =
-    useState(false);
+  const [showSessionDetailsDialog, setShowSessionDetailsDialog] = useState(false);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
-  const [showTransactionDetailsDialog, setShowTransactionDetailsDialog] =
-    useState(false);
-  const [selectedTransaction, setSelectedTransaction] =
-    useState<BalanceTransaction | null>(null);
+  const [showTransactionDetailsDialog, setShowTransactionDetailsDialog] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<BalanceTransaction | null>(null);
   const [showNoteDetailsDialog, setShowNoteDetailsDialog] = useState(false);
   const [selectedNote, setSelectedNote] = useState<any>(null);
-
+  
   // Note management states
   const [showNewNoteModal, setShowNewNoteModal] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
@@ -144,19 +89,17 @@ export default function StudentDetailsPage() {
   const [noteToDelete, setNoteToDelete] = useState<string | null>(null);
   const [noteToUpdate, setNoteToUpdate] = useState<string | null>(null);
   const [isNoteSaving, setIsNoteSaving] = useState(false);
-
+  
   // Balance transaction states
-  const [showBalanceTransactionDialog, setShowBalanceTransactionDialog] =
-    useState(false);
+  const [showBalanceTransactionDialog, setShowBalanceTransactionDialog] = useState(false);
   const [transactionAmount, setTransactionAmount] = useState('');
   const [transactionReason, setTransactionReason] = useState('');
   const [isBalanceSaving, setIsBalanceSaving] = useState(false);
-
+  
   // Student deletion states
-  const [showDeleteStudentConfirm, setShowDeleteStudentConfirm] =
-    useState(false);
+  const [showDeleteStudentConfirm, setShowDeleteStudentConfirm] = useState(false);
   const [isDeletingStudent, setIsDeletingStudent] = useState(false);
-
+  
   // Pagination states
   const [sessionPage, setSessionPage] = useState(1);
   const [balanceTransactionPage, setBalanceTransactionPage] = useState(1);
@@ -192,12 +135,12 @@ export default function StudentDetailsPage() {
 
   const confirmDeleteStudent = async () => {
     if (!currentStudent) return;
-
+    
     setIsDeletingStudent(true);
     try {
       // Delete the student (this will also remove all associated records)
       deleteStudent(currentStudent.id);
-
+      
       // Navigate back to students list
       router.push('/?view=students');
     } catch (error) {
@@ -263,6 +206,7 @@ export default function StudentDetailsPage() {
     }
   };
 
+
   const getPaginatedSessions = () => {
     const startIndex = (sessionPage - 1) * sessionsPerPage;
     const endIndex = startIndex + sessionsPerPage;
@@ -271,8 +215,8 @@ export default function StudentDetailsPage() {
 
   const getPaginatedBalanceTransactions = () => {
     if (!currentStudent?.balanceTransactions) return [];
-    const sortedTransactions = [...currentStudent.balanceTransactions].sort(
-      (a, b) => b.date.getTime() - a.date.getTime()
+    const sortedTransactions = [...currentStudent.balanceTransactions].sort((a, b) => 
+      b.date.getTime() - a.date.getTime()
     );
     const startIndex = (balanceTransactionPage - 1) * transactionsPerPage;
     const endIndex = startIndex + transactionsPerPage;
@@ -285,15 +229,13 @@ export default function StudentDetailsPage() {
 
   const getTotalTransactionPages = () => {
     if (!currentStudent?.balanceTransactions) return 0;
-    return Math.ceil(
-      currentStudent.balanceTransactions.length / transactionsPerPage
-    );
+    return Math.ceil(currentStudent.balanceTransactions.length / transactionsPerPage);
   };
 
   // Note management handlers
   const handleNewNoteSave = async (content: string) => {
     if (!content.trim() || !currentStudent) return;
-
+    
     setIsNoteSaving(true);
     try {
       addStudentNote(currentStudent.id, content.trim());
@@ -305,6 +247,7 @@ export default function StudentDetailsPage() {
       setIsNoteSaving(false);
     }
   };
+
 
   const handleEditNote = (noteId: string, content: string) => {
     setEditingNoteId(noteId);
@@ -363,24 +306,19 @@ export default function StudentDetailsPage() {
 
   // Balance transaction handlers
   const handleAddBalanceTransaction = () => {
-    if (
-      !currentStudent ||
-      !transactionAmount.trim() ||
-      !transactionReason.trim()
-    )
-      return;
-
+    if (!currentStudent || !transactionAmount.trim() || !transactionReason.trim()) return;
+    
     const amount = parseInt(transactionAmount);
     if (isNaN(amount)) return;
-
+    
     setIsBalanceSaving(true);
     try {
       addBalanceTransaction(currentStudent.id, amount, transactionReason);
-
+      
       setTransactionAmount('');
       setTransactionReason('');
       setShowBalanceTransactionDialog(false);
-
+      
       // Force refresh to show the updated balance and transaction history
       setTimeout(() => {
         forceRefresh();
@@ -391,10 +329,7 @@ export default function StudentDetailsPage() {
   };
 
   // Utility functions for note truncation
-  const truncateToLines = (
-    text: string,
-    maxLines: number = 3
-  ): { truncated: string; isTruncated: boolean } => {
+  const truncateToLines = (text: string, maxLines: number = 3): { truncated: string; isTruncated: boolean } => {
     const lines = text.split('\n');
     if (lines.length <= maxLines) {
       return { truncated: text, isTruncated: false };
@@ -403,14 +338,13 @@ export default function StudentDetailsPage() {
     return { truncated: truncatedLines.join('\n'), isTruncated: true };
   };
 
+
   if (studentLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground animate-spin" />
-          <h3 className="text-lg font-semibold mb-2">
-            {t('studentDetails.loadingStudentDetails')}
-          </h3>
+          <h3 className="text-lg font-semibold mb-2">{t('studentDetails.loadingStudentDetails')}</h3>
           <p className="text-sm text-muted-foreground">
             {t('studentDetails.pleaseWaitFetchStudent')}
           </p>
@@ -426,9 +360,9 @@ export default function StudentDetailsPage() {
         <div className="sticky top-0 z-40 bg-background border-b safe-top-bar">
           <div className="container mx-auto px-4 pb-3">
             <div className="flex items-center justify-between">
-              <Button
-                variant="ghost"
-                size="sm"
+              <Button 
+                variant="ghost" 
+                size="sm" 
                 onClick={() => router.push('/?view=students')}
                 className="flex items-center gap-2"
               >
@@ -445,17 +379,12 @@ export default function StudentDetailsPage() {
               <CardContent className="pt-6">
                 <div className="text-center py-12">
                   <p className="text-muted-foreground">
-                    {studentError
-                      ? `Error: ${studentError}`
-                      : t('studentDetails.studentNotFound')}
+                    {studentError ? `Error: ${studentError}` : t('studentDetails.studentNotFound')}
                   </p>
                   <p className="text-sm text-muted-foreground mt-2">
                     {t('studentDetails.studentId')}: {studentId}
                   </p>
-                  <Button
-                    onClick={() => router.push('/?view=students')}
-                    className="mt-4"
-                  >
+                  <Button onClick={() => router.push('/?view=students')} className="mt-4">
                     {t('studentDetails.returnToStudents')}
                   </Button>
                 </div>
@@ -473,18 +402,18 @@ export default function StudentDetailsPage() {
       <div className="sticky top-0 z-40 bg-background border-b safe-top-bar">
         <div className="container mx-auto px-4 pb-3">
           <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
+            <Button 
+              variant="ghost" 
+              size="sm" 
               onClick={() => router.push('/?view=students')}
               className="flex items-center gap-2"
             >
               ← {t('studentDetails.back')}
             </Button>
             <div className="flex items-center gap-2">
-              <Button
-                variant="destructive"
-                size="sm"
+              <Button 
+                variant="destructive" 
+                size="sm" 
                 onClick={handleDeleteStudent}
                 disabled={isDeletingStudent}
               >
@@ -514,678 +443,428 @@ export default function StudentDetailsPage() {
               <h1 className="text-xl font-semibold">{currentStudent.name}</h1>
             </div>
           </div>
-          <div className="max-w-5xl mx-auto space-y-6">
-            {/* Personal Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  {t('studentDetails.personalInformation')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
-                      {t('studentDetails.name')}
-                    </Label>
-                    <p className="text-sm">{currentStudent.name}</p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
-                      {t('studentDetails.phone')}
-                    </Label>
-                    <p className="text-sm flex items-center">
-                      <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
-                      {currentStudent.phone || t('studentDetails.noPhone')}
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
-                      {t('studentDetails.weight')}
-                    </Label>
-                    <p className="text-sm flex items-center">
-                      <Weight className="h-4 w-4 mr-2 text-muted-foreground" />
-                      {currentStudent.weight
-                        ? `${currentStudent.weight} ${t('common.kg')}`
-                        : t('studentDetails.notSpecified')}
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
-                      {t('studentDetails.height')}
-                    </Label>
-                    <p className="text-sm flex items-center">
-                      <Ruler className="h-4 w-4 mr-2 text-muted-foreground" />
-                      {currentStudent.height
-                        ? `${currentStudent.height} ${t('common.cm')}`
-                        : t('studentDetails.notSpecified')}
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
-                      {t('studentDetails.age')}
-                    </Label>
-                    <p className="text-sm">
-                      {getAgeInYearsAndMonthsTranslated(
-                        currentStudent.birthday,
-                        t
-                      )}
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
-                      {t('studentDetails.birthday')}
-                    </Label>
-                    <p className="text-sm flex items-center">
-                      <Cake className="h-4 w-4 mr-2 text-muted-foreground" />
-                      {currentStudent.birthday
-                        ? formatDateLocalized(
-                            currentStudent.birthday,
-                            getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US'
-                          )
-                        : t('studentDetails.notSpecified')}
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
-                      {t('studentDetails.memberSince')}
-                    </Label>
-                    <p className="text-sm flex items-center">
-                      <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                      {currentStudent.memberSince
-                        ? formatDateLocalized(
-                            currentStudent.memberSince,
-                            getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US'
-                          )
-                        : t('studentDetails.notSpecified')}
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
-                      {t('studentDetails.memberSinceAge')}
-                    </Label>
-                    <p className="text-sm">
-                      {getMemberSinceAgeTranslated(
-                        currentStudent.memberSince,
-                        t
-                      )}
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
-                      {t('studentDetails.currentBalance')}
-                    </Label>
-                    <p
-                      className={`text-sm font-medium ${
-                        currentStudent.balance > 0
-                          ? 'text-red-600'
-                          : currentStudent.balance < 0
-                            ? 'text-green-600'
-                            : 'text-gray-600'
-                      }`}
-                    >
-                      {currentStudent.balance > 0
-                        ? `+${formatBalanceForDisplay(currentStudent.balance)}`
-                        : formatBalanceForDisplay(currentStudent.balance)}{' '}
-                      {Math.abs(currentStudent.balance) === 1
-                        ? t('calendar.sessions.session')
-                        : t('calendar.sessions.sessions')}
-                    </p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowBalanceTransactionDialog(true)}
-                      className="mt-2"
-                      disabled={isBalanceSaving}
-                    >
-                      {isBalanceSaving ? (
-                        <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                      ) : (
-                        <Plus className="h-3 w-3 mr-1" />
-                      )}
-                      {t('studentDetails.addBalanceTransaction')}
-                    </Button>
-                  </div>
+        <div className="max-w-5xl mx-auto space-y-6">
+          {/* Personal Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">{t('studentDetails.personalInformation')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">{t('studentDetails.name')}</Label>
+                  <p className="text-sm">{currentStudent.name}</p>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Description */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center">
-                  <FileText className="h-5 w-5 mr-2" />
-                  {t('studentDetails.description')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="max-h-[200px] overflow-y-auto border rounded-md p-3 bg-gray-50">
-                  <p className="text-sm text-gray-700 whitespace-pre-wrap break-words">
-                    {currentStudent.description ||
-                      t('studentDetails.noDescriptionProvided')}
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">{t('studentDetails.phone')}</Label>
+                  <p className="text-sm flex items-center">
+                    <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
+                    {currentStudent.phone || t('studentDetails.noPhone')}
                   </p>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Notes */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center">
-                  <StickyNote className="h-5 w-5 mr-2" />
-                  {t('studentDetails.notes')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Add New Note Button */}
-                <div className="flex justify-start">
-                  <Button
-                    onClick={() => setShowNewNoteModal(true)}
-                    className="flex items-center gap-2"
-                    disabled={isNoteSaving}
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">{t('studentDetails.weight')}</Label>
+                  <p className="text-sm flex items-center">
+                    <Weight className="h-4 w-4 mr-2 text-muted-foreground" />
+                    {currentStudent.weight ? `${currentStudent.weight} ${t('common.kg')}` : t('studentDetails.notSpecified')}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">{t('studentDetails.height')}</Label>
+                  <p className="text-sm flex items-center">
+                    <Ruler className="h-4 w-4 mr-2 text-muted-foreground" />
+                    {currentStudent.height ? `${currentStudent.height} ${t('common.cm')}` : t('studentDetails.notSpecified')}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">{t('studentDetails.age')}</Label>
+                  <p className="text-sm">
+                    {getAgeInYearsAndMonthsTranslated(currentStudent.birthday, t)}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">{t('studentDetails.birthday')}</Label>
+                  <p className="text-sm flex items-center">
+                    <Cake className="h-4 w-4 mr-2 text-muted-foreground" />
+                    {currentStudent.birthday ? formatDateLocalized(currentStudent.birthday, getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US') : t('studentDetails.notSpecified')}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">{t('studentDetails.memberSince')}</Label>
+                  <p className="text-sm flex items-center">
+                    <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                    {currentStudent.memberSince ? formatDateLocalized(currentStudent.memberSince, getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US') : t('studentDetails.notSpecified')}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">{t('studentDetails.memberSinceAge')}</Label>
+                  <p className="text-sm">
+                    {getMemberSinceAgeTranslated(currentStudent.memberSince, t)}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-muted-foreground">{t('studentDetails.currentBalance')}</Label>
+                  <p className={`text-sm font-medium ${
+                    currentStudent.balance > 0 ? 'text-red-600' : currentStudent.balance < 0 ? 'text-green-600' : 'text-gray-600'
+                  }`}>
+                    {currentStudent.balance > 0 ? `+${formatBalanceForDisplay(currentStudent.balance)}` : formatBalanceForDisplay(currentStudent.balance)} {Math.abs(currentStudent.balance) === 1 ? t('calendar.sessions.session') : t('calendar.sessions.sessions')}
+                  </p>
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setShowBalanceTransactionDialog(true)}
+                    className="mt-2"
+                    disabled={isBalanceSaving}
                   >
-                    <Plus className="h-4 w-4" />
-                    {t('studentDetails.addNote')}
+                    {isBalanceSaving ? (
+                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    ) : (
+                      <Plus className="h-3 w-3 mr-1" />
+                    )}
+                    {t('studentDetails.addBalanceTransaction')}
                   </Button>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
 
-                {/* Notes List */}
-                <div className="space-y-3">
-                  {currentStudent.notes.length > 0 ? (
-                    currentStudent.notes
-                      .sort(
-                        (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
-                      )
-                      .map((note) => (
-                        <div
-                          key={note.id}
-                          className="border rounded-lg p-3 bg-gray-50"
-                        >
-                          {editingNoteId === note.id ? (
-                            <div className="space-y-2">
-                              <textarea
-                                id="edit-note-content"
-                                name="edit-note-content"
-                                value={editingNoteContent}
-                                onChange={(e) =>
-                                  setEditingNoteContent(e.target.value)
-                                }
-                                className="w-full min-h-[60px] px-3 py-2 border border-input bg-background rounded-md text-sm"
-                                placeholder={t(
-                                  'studentDetails.editNoteContent'
+          {/* Description */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center">
+                <FileText className="h-5 w-5 mr-2" />
+                {t('studentDetails.description')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="max-h-[200px] overflow-y-auto border rounded-md p-3 bg-gray-50">
+                <p className="text-sm text-gray-700 whitespace-pre-wrap break-words">
+                  {currentStudent.description || t('studentDetails.noDescriptionProvided')}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Notes */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center">
+                <StickyNote className="h-5 w-5 mr-2" />
+                {t('studentDetails.notes')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Add New Note Button */}
+              <div className="flex justify-start">
+                <Button 
+                  onClick={() => setShowNewNoteModal(true)}
+                  className="flex items-center gap-2"
+                  disabled={isNoteSaving}
+                >
+                  <Plus className="h-4 w-4" />
+                  {t('studentDetails.addNote')}
+                </Button>
+              </div>
+
+              {/* Notes List */}
+              <div className="space-y-3">
+                {currentStudent.notes.length > 0 ? (
+                  currentStudent.notes
+                    .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+                    .map((note) => (
+                      <div key={note.id} className="border rounded-lg p-3 bg-gray-50">
+                        {editingNoteId === note.id ? (
+                          <div className="space-y-2">
+                            <textarea
+                              id="edit-note-content"
+                              name="edit-note-content"
+                              value={editingNoteContent}
+                              onChange={(e) => setEditingNoteContent(e.target.value)}
+                              className="w-full min-h-[60px] px-3 py-2 border border-input bg-background rounded-md text-sm"
+                              placeholder={t('studentDetails.editNoteContent')}
+                            />
+                            <div className="flex space-x-2">
+                              <Button size="sm" onClick={handleSaveNote} disabled={isNoteSaving}>
+                                {isNoteSaving ? (
+                                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                                ) : (
+                                  <Save className="h-3 w-3 mr-1" />
                                 )}
-                              />
-                              <div className="flex space-x-2">
-                                <Button
-                                  size="sm"
-                                  onClick={handleSaveNote}
-                                  disabled={isNoteSaving}
-                                >
-                                  {isNoteSaving ? (
-                                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                                  ) : (
-                                    <Save className="h-3 w-3 mr-1" />
-                                  )}
-                                  {t('studentDetails.save')}
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={handleCancelEditNote}
-                                  disabled={isNoteSaving}
-                                >
-                                  <X className="h-3 w-3 mr-1" />
-                                  {t('studentDetails.cancel')}
-                                </Button>
-                              </div>
+                                {t('studentDetails.save')}
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={handleCancelEditNote} disabled={isNoteSaving}>
+                                <X className="h-3 w-3 mr-1" />
+                                {t('studentDetails.cancel')}
+                              </Button>
                             </div>
-                          ) : (
-                            <div className="space-y-3">
-                              {/* Note content with 3-line truncation */}
-                              <div
-                                className="text-sm text-gray-700 cursor-pointer hover:bg-gray-100 p-3 rounded transition-colors min-h-[60px]"
-                                onClick={() => handleNoteClick(note)}
-                              >
-                                <div className="whitespace-pre-wrap break-words">
-                                  {(() => {
-                                    const { truncated, isTruncated } =
-                                      truncateToLines(note.content, 3);
-
-                                    return (
-                                      <>
-                                        {truncated}
-                                        {isTruncated && (
-                                          <div className="text-blue-600 text-xs mt-2 font-medium">
-                                            {t(
-                                              'studentDetails.clickToViewFull'
-                                            )}
-                                          </div>
-                                        )}
-                                      </>
-                                    );
-                                  })()}
-                                </div>
-                              </div>
-
-                              {/* Created and Updated dates */}
-                              <div className="text-right">
-                                <p className="text-xs text-muted-foreground">
-                                  {t('studentDetails.created')}:{' '}
-                                  {formatDate(note.timestamp)} {t('common.at')}{' '}
-                                  {formatTime(note.timestamp)}
-                                </p>
-                                {note.updatedAt && (
-                                  <p className="text-xs text-muted-foreground">
-                                    {t('studentDetails.updated')}:{' '}
-                                    {formatDate(note.updatedAt)}{' '}
-                                    {t('common.at')}{' '}
-                                    {formatTime(note.updatedAt)}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))
-                  ) : (
-                    <p className="text-sm text-muted-foreground text-center py-4">
-                      {t('studentDetails.noNotesYet')}
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Goals */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center">
-                  <Target className="h-5 w-5 mr-2" />
-                  {t('studentDetails.goalsFocusAreas')}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {currentStudent.goals && currentStudent.goals.length > 0 ? (
-                    currentStudent.goals.map((goal) => (
-                      <span
-                        key={goal}
-                        className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary"
-                      >
-                        {goal}
-                      </span>
-                    ))
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      {t('studentDetails.noGoalsSet')}
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Balance Transaction History */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center">
-                  <Wallet className="h-5 w-5 mr-2" />
-                  {t('studentDetails.balanceTransactionHistory')} (
-                  {currentStudent.balanceTransactions?.length || 0})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {currentStudent.balanceTransactions &&
-                currentStudent.balanceTransactions.length > 0 ? (
-                  <div className="space-y-4">
-                    <div className="overflow-x-auto">
-                      <table className="w-full border-collapse">
-                        <thead>
-                          <tr className="border-b">
-                            <th className="text-top text-left p-3 font-medium">
-                              {t('studentDetails.dateTime')}
-                            </th>
-                            <th className="text-top text-center p-3 font-medium">
-                              {t('studentDetails.changeAmount')}
-                            </th>
-                            <th className="text-top text-center p-3 font-medium">
-                              {t('studentDetails.updatedBalance')}
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {getPaginatedBalanceTransactions().map(
-                            (transaction) => (
-                              <tr
-                                key={transaction.id}
-                                className="border-b hover:bg-gray-50 transition-colors cursor-pointer"
-                                onClick={() =>
-                                  handleTransactionClick(transaction)
-                                }
-                              >
-                                <td className="p-3 text-left">
-                                  <div className="space-y-1">
-                                    <div className="flex items-center text-sm">
-                                      <Calendar
-                                        className="mr-1 text-muted-foreground flex-shrink-0"
-                                        style={{
-                                          width: '16px',
-                                          height: '16px',
-                                          minWidth: '16px',
-                                          minHeight: '16px',
-                                          maxWidth: '16px',
-                                          maxHeight: '16px',
-                                        }}
-                                      />
-                                      <div className="flex flex-col">
-                                        <span>
-                                          {
-                                            formatDateForTable(
-                                              transaction.date,
-                                              t
-                                            ).dayMonth
-                                          }
-                                        </span>
-                                        <span className="text-muted-foreground text-xs">
-                                          {
-                                            formatDateForTable(
-                                              transaction.date,
-                                              t
-                                            ).year
-                                          }
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <div className="flex items-center text-sm text-muted-foreground">
-                                      <Clock
-                                        className="mr-1 text-muted-foreground flex-shrink-0"
-                                        style={{
-                                          width: '16px',
-                                          height: '16px',
-                                          minWidth: '16px',
-                                          minHeight: '16px',
-                                          maxWidth: '16px',
-                                          maxHeight: '16px',
-                                        }}
-                                      />
-                                      <div className="flex flex-col">
-                                        <span>
-                                          {
-                                            formatTimeForTable(
-                                              formatTime(transaction.date),
-                                              t
-                                            ).startTime
-                                          }
-                                        </span>
-                                        {formatTimeForTable(
-                                          formatTime(transaction.date),
-                                          t
-                                        ).endTime && (
-                                          <span className="text-xs">
-                                            {
-                                              formatTimeForTable(
-                                                formatTime(transaction.date),
-                                                t
-                                              ).endTime
-                                            }
-                                          </span>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td className="p-3 text-center">
-                                  <span
-                                    className={`text-sm font-medium ${
-                                      transaction.changeAmount > 0
-                                        ? 'text-green-600'
-                                        : 'text-red-600'
-                                    }`}
-                                  >
-                                    {transaction.changeAmount > 0
-                                      ? `+${transaction.changeAmount}`
-                                      : transaction.changeAmount}{' '}
-                                    {Math.abs(transaction.changeAmount) === 1
-                                      ? t('calendar.sessions.session')
-                                      : t('calendar.sessions.sessions')}
-                                  </span>
-                                </td>
-                                <td className="p-3 text-center">
-                                  <span
-                                    className={`text-sm font-medium ${
-                                      transaction.balanceAfter > 0
-                                        ? 'text-green-600'
-                                        : transaction.balanceAfter < 0
-                                          ? 'text-red-600'
-                                          : 'text-gray-600'
-                                    }`}
-                                  >
-                                    {transaction.balanceAfter > 0
-                                      ? `+${transaction.balanceAfter}`
-                                      : transaction.balanceAfter}{' '}
-                                    {Math.abs(transaction.balanceAfter) === 1
-                                      ? t('calendar.sessions.session')
-                                      : t('calendar.sessions.sessions')}
-                                  </span>
-                                </td>
-                              </tr>
-                            )
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    {/* Pagination for Balance Transactions */}
-                    {getTotalTransactionPages() > 1 && (
-                      <div className="flex items-center justify-center">
-                        <div className="flex space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              setBalanceTransactionPage((prev) =>
-                                Math.max(1, prev - 1)
-                              )
-                            }
-                            disabled={balanceTransactionPage === 1}
-                          >
-                            ←
-                          </Button>
-                          <span className="text-sm text-muted-foreground px-2 py-1">
-                            {t('studentDetails.page')} {balanceTransactionPage}{' '}
-                            {t('studentDetails.of')}{' '}
-                            {getTotalTransactionPages()}
-                          </span>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              setBalanceTransactionPage((prev) =>
-                                Math.min(getTotalTransactionPages(), prev + 1)
-                              )
-                            }
-                            disabled={
-                              balanceTransactionPage ===
-                              getTotalTransactionPages()
-                            }
-                          >
-                            →
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground text-center py-8">
-                    {t('studentDetails.noBalanceTransactions')}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Session History */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center">
-                  <Calendar className="h-5 w-5 mr-2" />
-                  {t('studentDetails.sessionHistory')} ({studentSessions.length}
-                  )
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {studentSessions.length > 0 ? (
-                  <div className="space-y-4">
-                    <div className="overflow-x-auto">
-                      <table className="w-full border-collapse">
-                        <thead>
-                          <tr className="border-b">
-                            <th className="text-top text-left p-3 font-medium">
-                              {t('studentDetails.dateTime')}
-                            </th>
-                            <th className="text-top text-center p-3 font-medium">
-                              {t('studentDetails.sessionType')}
-                            </th>
-                            <th className="text-top text-center p-3 font-medium">
-                              {t('studentDetails.status')}
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {getPaginatedSessions().map((session) => (
-                            <tr
-                              key={session.id}
-                              className="border-b hover:bg-gray-50 transition-colors cursor-pointer"
-                              onClick={() => handleSessionClick(session)}
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            {/* Note content with 3-line truncation */}
+                            <div 
+                              className="text-sm text-gray-700 cursor-pointer hover:bg-gray-100 p-3 rounded transition-colors min-h-[60px]"
+                              onClick={() => handleNoteClick(note)}
                             >
-                              <td className="p-3 text-left">
-                                <div className="space-y-1">
-                                  <div className="flex items-center text-sm">
-                                    <Calendar
-                                      className="mr-1 text-muted-foreground flex-shrink-0"
-                                      style={{
-                                        width: '16px',
-                                        height: '16px',
-                                        minWidth: '16px',
-                                        minHeight: '16px',
-                                        maxWidth: '16px',
-                                        maxHeight: '16px',
-                                      }}
-                                    />
-                                    <div className="flex flex-col">
-                                      <span>
-                                        {
-                                          formatDateForTable(session.date, t)
-                                            .dayMonth
-                                        }
-                                      </span>
-                                      <span className="text-muted-foreground text-xs">
-                                        {
-                                          formatDateForTable(session.date, t)
-                                            .year
-                                        }
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center text-sm text-muted-foreground">
-                                    <Clock
-                                      className="mr-1 text-muted-foreground flex-shrink-0"
-                                      style={{
-                                        width: '16px',
-                                        height: '16px',
-                                        minWidth: '16px',
-                                        minHeight: '16px',
-                                        maxWidth: '16px',
-                                        maxHeight: '16px',
-                                      }}
-                                    />
-                                    <div className="flex flex-col">
-                                      <span>
-                                        {
-                                          formatTimeForTable(
-                                            `${session.startTime} - ${session.endTime}`,
-                                            t
-                                          ).startTime
-                                        }
-                                      </span>
-                                      {formatTimeForTable(
-                                        `${session.startTime} - ${session.endTime}`,
-                                        t
-                                      ).endTime && (
-                                        <span className="text-xs">
-                                          {
-                                            formatTimeForTable(
-                                              `${session.startTime} - ${session.endTime}`,
-                                              t
-                                            ).endTime
-                                          }
-                                        </span>
+                              <div className="whitespace-pre-wrap break-words">
+                                {(() => {
+                                  const { truncated, isTruncated } = truncateToLines(note.content, 3);
+                                  
+                                  return (
+                                    <>
+                                      {truncated}
+                                      {isTruncated && (
+                                        <div className="text-blue-600 text-xs mt-2 font-medium">
+                                          {t('studentDetails.clickToViewFull')}
+                                        </div>
                                       )}
-                                    </div>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="p-3 text-center">
-                                <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700">
-                                  {getSessionTypeDisplayName(
-                                    session.sessionType,
-                                    t
-                                  )}
-                                </span>
-                              </td>
-                              <td className="p-3 text-center">
-                                <span
-                                  className={`px-2 py-1 rounded-full text-xs font-medium ${getSessionStatusColor(session.status)}`}
-                                >
-                                  {t(`sessionDetails.${session.status}`)}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    {/* Pagination for Sessions */}
-                    {getTotalSessionPages() > 1 && (
-                      <div className="flex items-center justify-center">
-                        <div className="flex space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              setSessionPage((prev) => Math.max(1, prev - 1))
-                            }
-                            disabled={sessionPage === 1}
-                          >
-                            ←
-                          </Button>
-                          <span className="text-sm text-muted-foreground px-2 py-1">
-                            {t('studentDetails.page')} {sessionPage}{' '}
-                            {t('studentDetails.of')} {getTotalSessionPages()}
-                          </span>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              setSessionPage((prev) =>
-                                Math.min(getTotalSessionPages(), prev + 1)
-                              )
-                            }
-                            disabled={sessionPage === getTotalSessionPages()}
-                          >
-                            →
-                          </Button>
-                        </div>
+                                    </>
+                                  );
+                                })()}
+                              </div>
+                            </div>
+                            
+                            {/* Created and Updated dates */}
+                            <div className="text-right">
+                              <p className="text-xs text-muted-foreground">
+                                {t('studentDetails.created')}: {formatDate(note.timestamp)} {t('common.at')} {formatTime(note.timestamp)}
+                              </p>
+                              {note.updatedAt && (
+                                <p className="text-xs text-muted-foreground">
+                                  {t('studentDetails.updated')}: {formatDate(note.updatedAt)} {t('common.at')} {formatTime(note.updatedAt)}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
+                    ))
                 ) : (
-                  <p className="text-sm text-muted-foreground text-center py-8">
-                    {t('studentDetails.noSessionsRecorded')}
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    {t('studentDetails.noNotesYet')}
                   </p>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Goals */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center">
+                <Target className="h-5 w-5 mr-2" />
+                {t('studentDetails.goalsFocusAreas')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {currentStudent.goals && currentStudent.goals.length > 0 ? (
+                  currentStudent.goals.map((goal) => (
+                    <span
+                      key={goal}
+                      className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary"
+                    >
+                      {goal}
+                    </span>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">{t('studentDetails.noGoalsSet')}</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Balance Transaction History */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center">
+                <Wallet className="h-5 w-5 mr-2" />
+                {t('studentDetails.balanceTransactionHistory')} ({currentStudent.balanceTransactions?.length || 0})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {currentStudent.balanceTransactions && currentStudent.balanceTransactions.length > 0 ? (
+                <div className="space-y-4">
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-top text-left p-3 font-medium">{t('studentDetails.dateTime')}</th>
+                          <th className="text-top text-center p-3 font-medium">{t('studentDetails.changeAmount')}</th>
+                          <th className="text-top text-center p-3 font-medium">{t('studentDetails.updatedBalance')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {getPaginatedBalanceTransactions().map((transaction) => (
+                          <tr key={transaction.id} className="border-b hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => handleTransactionClick(transaction)}>
+                            <td className="p-3 text-left">
+                              <div className="space-y-1">
+                                <div className="flex items-center text-sm">
+                                  <Calendar className="mr-1 text-muted-foreground flex-shrink-0" style={{ width: '16px', height: '16px', minWidth: '16px', minHeight: '16px', maxWidth: '16px', maxHeight: '16px' }} />
+                                  <div className="flex flex-col">
+                                    <span>{formatDateForTable(transaction.date, t).dayMonth}</span>
+                                    <span className="text-muted-foreground text-xs">{formatDateForTable(transaction.date, t).year}</span>
+                                  </div>
+                                </div>
+                                <div className="flex items-center text-sm text-muted-foreground">
+                                  <Clock className="mr-1 text-muted-foreground flex-shrink-0" style={{ width: '16px', height: '16px', minWidth: '16px', minHeight: '16px', maxWidth: '16px', maxHeight: '16px' }} />
+                                  <div className="flex flex-col">
+                                    <span>{formatTimeForTable(formatTime(transaction.date), t).startTime}</span>
+                                    {formatTimeForTable(formatTime(transaction.date), t).endTime && (
+                                      <span className="text-xs">{formatTimeForTable(formatTime(transaction.date), t).endTime}</span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="p-3 text-center">
+                              <span className={`text-sm font-medium ${
+                                transaction.changeAmount > 0 ? 'text-green-600' : 'text-red-600'
+                              }`}>
+                                {transaction.changeAmount > 0 ? `+${transaction.changeAmount}` : transaction.changeAmount} {Math.abs(transaction.changeAmount) === 1 ? t('calendar.sessions.session') : t('calendar.sessions.sessions')}
+                              </span>
+                            </td>
+                            <td className="p-3 text-center">
+                              <span className={`text-sm font-medium ${
+                                transaction.balanceAfter > 0 ? 'text-green-600' : transaction.balanceAfter < 0 ? 'text-red-600' : 'text-gray-600'
+                              }`}>
+                                {transaction.balanceAfter > 0 ? `+${transaction.balanceAfter}` : transaction.balanceAfter} {Math.abs(transaction.balanceAfter) === 1 ? t('calendar.sessions.session') : t('calendar.sessions.sessions')}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  {/* Pagination for Balance Transactions */}
+                  {getTotalTransactionPages() > 1 && (
+                    <div className="flex items-center justify-center">
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setBalanceTransactionPage(prev => Math.max(1, prev - 1))}
+                          disabled={balanceTransactionPage === 1}
+                        >
+                          ←
+                        </Button>
+                        <span className="text-sm text-muted-foreground px-2 py-1">
+                          {t('studentDetails.page')} {balanceTransactionPage} {t('studentDetails.of')} {getTotalTransactionPages()}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setBalanceTransactionPage(prev => Math.min(getTotalTransactionPages(), prev + 1))}
+                          disabled={balanceTransactionPage === getTotalTransactionPages()}
+                        >
+                          →
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-8">{t('studentDetails.noBalanceTransactions')}</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Session History */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center">
+                <Calendar className="h-5 w-5 mr-2" />
+                {t('studentDetails.sessionHistory')} ({studentSessions.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {studentSessions.length > 0 ? (
+                <div className="space-y-4">
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-top text-left p-3 font-medium">{t('studentDetails.dateTime')}</th>
+                          <th className="text-top text-center p-3 font-medium">{t('studentDetails.sessionType')}</th>
+                          <th className="text-top text-center p-3 font-medium">{t('studentDetails.status')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {getPaginatedSessions().map((session) => (
+                          <tr 
+                            key={session.id} 
+                            className="border-b hover:bg-gray-50 transition-colors cursor-pointer"
+                            onClick={() => handleSessionClick(session)}
+                          >
+                            <td className="p-3 text-left">
+                              <div className="space-y-1">
+                                <div className="flex items-center text-sm">
+                                  <Calendar className="mr-1 text-muted-foreground flex-shrink-0" style={{ width: '16px', height: '16px', minWidth: '16px', minHeight: '16px', maxWidth: '16px', maxHeight: '16px' }} />
+                                  <div className="flex flex-col">
+                                    <span>{formatDateForTable(session.date, t).dayMonth}</span>
+                                    <span className="text-muted-foreground text-xs">{formatDateForTable(session.date, t).year}</span>
+                                  </div>
+                                </div>
+                                <div className="flex items-center text-sm text-muted-foreground">
+                                  <Clock className="mr-1 text-muted-foreground flex-shrink-0" style={{ width: '16px', height: '16px', minWidth: '16px', minHeight: '16px', maxWidth: '16px', maxHeight: '16px' }} />
+                                  <div className="flex flex-col">
+                                    <span>{formatTimeForTable(`${session.startTime} - ${session.endTime}`, t).startTime}</span>
+                                    {formatTimeForTable(`${session.startTime} - ${session.endTime}`, t).endTime && (
+                                      <span className="text-xs">{formatTimeForTable(`${session.startTime} - ${session.endTime}`, t).endTime}</span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="p-3 text-center">
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700">
+                                {getSessionTypeDisplayName(session.sessionType, t)}
+                              </span>
+                            </td>
+                            <td className="p-3 text-center">
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getSessionStatusColor(session.status)}`}>
+                                {t(`sessionDetails.${session.status}`)}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  {/* Pagination for Sessions */}
+                  {getTotalSessionPages() > 1 && (
+                    <div className="flex items-center justify-center">
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSessionPage(prev => Math.max(1, prev - 1))}
+                          disabled={sessionPage === 1}
+                        >
+                          ←
+                        </Button>
+                        <span className="text-sm text-muted-foreground px-2 py-1">
+                          {t('studentDetails.page')} {sessionPage} {t('studentDetails.of')} {getTotalSessionPages()}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSessionPage(prev => Math.min(getTotalSessionPages(), prev + 1))}
+                          disabled={sessionPage === getTotalSessionPages()}
+                        >
+                          →
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-8">{t('studentDetails.noSessionsRecorded')}</p>
+              )}
+            </CardContent>
+          </Card>
           </div>
         </main>
       </div>
@@ -1251,32 +930,24 @@ export default function StudentDetailsPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-lg max-w-md w-full mx-4">
             <div className="p-6">
-              <h3 className="text-lg font-semibold mb-4">
-                {t('studentDetails.addBalanceTransactionTitle')}
-              </h3>
+              <h3 className="text-lg font-semibold mb-4">{t('studentDetails.addBalanceTransactionTitle')}</h3>
               <div className="space-y-4">
                 <div>
-                  <UILabel htmlFor="transactionAmount">
-                    {t('studentDetails.amount')}
-                  </UILabel>
+                  <UILabel htmlFor="transactionAmount">{t('studentDetails.amount')}</UILabel>
                   <Input
                     id="transactionAmount"
                     type="number"
                     step="1"
                     value={transactionAmount}
                     onChange={(e) => setTransactionAmount(e.target.value)}
-                    placeholder={t(
-                      'studentDetails.enterAmountPositiveNegative'
-                    )}
+                    placeholder={t('studentDetails.enterAmountPositiveNegative')}
                   />
                   <p className="text-xs text-muted-foreground mt-1">
                     {t('studentDetails.amountHelpText')}
                   </p>
                 </div>
                 <div>
-                  <UILabel htmlFor="transactionReason">
-                    {t('studentDetails.reasonDescription')}
-                  </UILabel>
+                  <UILabel htmlFor="transactionReason">{t('studentDetails.reasonDescription')}</UILabel>
                   <Input
                     id="transactionReason"
                     value={transactionReason}
@@ -1299,15 +970,9 @@ export default function StudentDetailsPage() {
                 </Button>
                 <Button
                   onClick={handleAddBalanceTransaction}
-                  disabled={
-                    !transactionAmount.trim() ||
-                    !transactionReason.trim() ||
-                    isBalanceSaving
-                  }
+                  disabled={!transactionAmount.trim() || !transactionReason.trim() || isBalanceSaving}
                 >
-                  {isBalanceSaving ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : null}
+                  {isBalanceSaving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
                   {t('studentDetails.addTransaction')}
                 </Button>
               </div>
@@ -1320,16 +985,7 @@ export default function StudentDetailsPage() {
 }
 
 // Add this helper component at the bottom of the file for consistent labeling
-function Label({
-  children,
-  className = '',
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <label className={`block text-sm font-medium ${className}`}>
-      {children}
-    </label>
-  );
+function Label({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return <label className={`block text-sm font-medium ${className}`}>{children}</label>;
 }
+

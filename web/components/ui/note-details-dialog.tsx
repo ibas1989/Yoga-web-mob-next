@@ -2,17 +2,7 @@
 
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import {
-  FileText,
-  Calendar,
-  Clock,
-  Edit2,
-  Trash2,
-  Save,
-  X,
-  Loader2,
-  AlertTriangle,
-} from 'lucide-react';
+import { FileText, Calendar, Clock, Edit2, Trash2, Save, X, Loader2, AlertTriangle } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -49,8 +39,7 @@ export function NoteDetailsDialog({
   const [editContent, setEditContent] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showUnsavedChangesConfirm, setShowUnsavedChangesConfirm] =
-    useState(false);
+  const [showUnsavedChangesConfirm, setShowUnsavedChangesConfirm] = useState(false);
   const [localNote, setLocalNote] = useState<StudentNote | null>(note);
   const [forceDialogOpen, setForceDialogOpen] = useState(true);
   const [preventClose, setPreventClose] = useState(false);
@@ -71,10 +60,10 @@ export function NoteDetailsDialog({
     }
   }, [open]);
 
+
   if (!localNote) return null;
 
-  const hasUnsavedChanges =
-    isEditing && editContent.trim() !== localNote.content.trim();
+  const hasUnsavedChanges = isEditing && editContent.trim() !== localNote.content.trim();
 
   const handleEdit = () => {
     setEditContent(localNote.content);
@@ -83,22 +72,22 @@ export function NoteDetailsDialog({
 
   const handleSave = async () => {
     if (!localNote || !editContent.trim()) return;
-
+    
     setIsSaving(true);
     try {
       updateStudentNote(studentId, localNote.id, editContent.trim());
-
+      
       // Update local note immediately for instant UI feedback
       const updatedNote = {
         ...localNote,
         content: editContent.trim(),
-        updatedAt: new Date(),
+        updatedAt: new Date()
       };
       setLocalNote(updatedNote);
-
+      
       // Notify parent component about the note change
       onNoteChanged?.(updatedNote);
-
+      
       setIsEditing(false);
       setEditContent('');
       onNoteUpdated?.();
@@ -114,7 +103,7 @@ export function NoteDetailsDialog({
 
   const handleDelete = async () => {
     if (!localNote) return;
-
+    
     setIsSaving(true);
     try {
       deleteStudentNote(studentId, localNote.id);
@@ -151,7 +140,7 @@ export function NoteDetailsDialog({
       setPreventClose(false);
       return;
     }
-
+    
     // If dialog is trying to close and we have unsaved changes
     if (!newOpen && hasUnsavedChanges && !showUnsavedChangesConfirm) {
       // Show confirmation dialog instead of closing
@@ -159,70 +148,66 @@ export function NoteDetailsDialog({
       // Don't call onOpenChange(false) - prevent the dialog from closing
       return;
     }
-
+    
     // For all other cases, use the default behavior
     onOpenChange(newOpen);
   };
 
   // Validate and clean the content
-  const rawContent =
-    localNote.content && typeof localNote.content === 'string'
-      ? localNote.content.trim()
-      : 'No content available';
-
+  const rawContent = localNote.content && typeof localNote.content === 'string' 
+    ? localNote.content.trim() 
+    : 'No content available';
+  
   // Check for garbled/repeated patterns (like the screenshot shows)
   const isGarbledContent = (content: string) => {
     if (content === 'No content available') return false;
-
+    
     // Check for repeated character patterns (like "nwefnlkdnkeqrwnsdakognqveokwasd" repeated)
     const repeatedPattern = /^(.{1,20})\1{3,}$/;
     return repeatedPattern.test(content);
   };
-
-  const cleanContent = isGarbledContent(rawContent)
+  
+  const cleanContent = isGarbledContent(rawContent) 
     ? 'Content appears to be corrupted. Please edit this note to fix the content.'
     : rawContent;
 
   const formatDate = (date: Date | string | null | undefined) => {
     if (!date) return t('studentDetails.notSpecified');
-
+    
     // Convert to Date object if it's a string
     const dateObj = date instanceof Date ? date : new Date(date);
-
+    
     // Check if the date is valid
     if (isNaN(dateObj.getTime())) return t('validation.invalidDate');
-
+    
     const locale = getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US';
     return dateObj.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'long',
-      day: 'numeric',
+      day: 'numeric'
     });
   };
 
   const formatTime = (date: Date | string | null | undefined) => {
     if (!date) return t('studentDetails.notSpecified');
-
+    
     // Convert to Date object if it's a string
     const dateObj = date instanceof Date ? date : new Date(date);
-
+    
     // Check if the date is valid
     if (isNaN(dateObj.getTime())) return t('validation.invalidTime');
-
+    
     const locale = getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US';
     return dateObj.toLocaleTimeString(locale, {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: false,
+      hour12: false
     });
   };
 
   return (
     <>
-      <Dialog
-        open={open && forceDialogOpen}
-        onOpenChange={handleDialogOpenChange}
-      >
+      <Dialog open={open && forceDialogOpen} onOpenChange={handleDialogOpenChange}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
           <DialogHeader>
             <DialogTitle>{t('studentDetails.noteDetails')}</DialogTitle>
@@ -256,9 +241,8 @@ export function NoteDetailsDialog({
                   {cleanContent}
                   {cleanContent.includes('corrupted') && (
                     <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
-                      <strong>⚠️ Content Issue Detected:</strong> This note
-                      appears to have corrupted content. Please edit the note to
-                      restore proper content.
+                      <strong>⚠️ Content Issue Detected:</strong> This note appears to have corrupted content. 
+                      Please edit the note to restore proper content.
                     </div>
                   )}
                 </div>
@@ -267,21 +251,18 @@ export function NoteDetailsDialog({
 
             {/* Created timestamp */}
             <div className="text-xs text-muted-foreground">
-              {t('studentDetails.created')}: {formatDate(localNote.timestamp)}{' '}
-              {t('common.at')} {formatTime(localNote.timestamp)}
+              {t('studentDetails.created')}: {formatDate(localNote.timestamp)} {t('common.at')} {formatTime(localNote.timestamp)}
               {localNote.updatedAt && (
                 <div className="mt-1">
-                  {t('studentDetails.updated')}:{' '}
-                  {formatDate(localNote.updatedAt)} {t('common.at')}{' '}
-                  {formatTime(localNote.updatedAt)}
+                  {t('studentDetails.updated')}: {formatDate(localNote.updatedAt)} {t('common.at')} {formatTime(localNote.updatedAt)}
                 </div>
               )}
             </div>
           </div>
 
           <div className="flex justify-between pt-4 border-t">
-            <Button
-              variant="destructive"
+            <Button 
+              variant="destructive" 
               onClick={() => setShowDeleteConfirm(true)}
               disabled={isSaving}
               className="flex items-center gap-2"
@@ -289,7 +270,7 @@ export function NoteDetailsDialog({
               <Trash2 className="h-4 w-4" />
               {t('common.delete')}
             </Button>
-            <Button
+            <Button 
               onClick={isEditing ? handleSave : handleEdit}
               disabled={isSaving || (isEditing && !editContent.trim())}
               className="flex items-center gap-2"
@@ -304,7 +285,7 @@ export function NoteDetailsDialog({
               {isEditing ? t('common.save') : t('common.edit')}
             </Button>
           </div>
-        </DialogContent>
+      </DialogContent>
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
@@ -334,15 +315,12 @@ export function NoteDetailsDialog({
       />
 
       {/* Unsaved Changes Confirmation Dialog */}
-      <Dialog
-        open={showUnsavedChangesConfirm}
-        onOpenChange={(newOpen) => {
-          // Only close the confirmation dialog if it's being closed explicitly (e.g., clicking outside)
-          if (!newOpen) {
-            setShowUnsavedChangesConfirm(false);
-          }
-        }}
-      >
+      <Dialog open={showUnsavedChangesConfirm} onOpenChange={(newOpen) => {
+        // Only close the confirmation dialog if it's being closed explicitly (e.g., clicking outside)
+        if (!newOpen) {
+          setShowUnsavedChangesConfirm(false);
+        }
+      }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">

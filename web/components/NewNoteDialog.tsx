@@ -3,13 +3,7 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import { Button } from './ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from './ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
 import { ConfirmationDialog } from './ui/confirmation-dialog';
 import { useTranslation } from '../lib/hooks/useTranslation';
 
@@ -20,16 +14,10 @@ interface NewNoteDialogProps {
   isLoading?: boolean;
 }
 
-export function NewNoteDialog({
-  open,
-  onOpenChange,
-  onSave,
-  isLoading = false,
-}: NewNoteDialogProps) {
+export function NewNoteDialog({ open, onOpenChange, onSave, isLoading = false }: NewNoteDialogProps) {
   const { t } = useTranslation();
   const [noteContent, setNoteContent] = useState('');
-  const [showUnsavedChangesConfirm, setShowUnsavedChangesConfirm] =
-    useState(false);
+  const [showUnsavedChangesConfirm, setShowUnsavedChangesConfirm] = useState(false);
 
   const hasUnsavedChanges = noteContent.trim().length > 0;
 
@@ -49,7 +37,7 @@ export function NewNoteDialog({
 
   const handleSave = async () => {
     if (!noteContent.trim()) return;
-
+    
     try {
       await onSave(noteContent.trim());
       setNoteContent('');
@@ -72,9 +60,7 @@ export function NewNoteDialog({
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
           <DialogHeader>
-            <DialogTitle className="text-center">
-              {t('newNoteDialog.title')}
-            </DialogTitle>
+            <DialogTitle className="text-center">{t('newNoteDialog.title')}</DialogTitle>
             <DialogDescription>
               {t('newNoteDialog.description')}
             </DialogDescription>
@@ -94,15 +80,13 @@ export function NewNoteDialog({
                 disabled={isLoading}
               />
               <div className="text-right text-xs text-muted-foreground">
-                {t('newNoteDialog.characterCount', {
-                  count: noteContent.length,
-                })}
+                {t('newNoteDialog.characterCount', { count: noteContent.length })}
               </div>
             </div>
           </div>
 
           <div className="flex justify-end pt-4 border-t">
-            <Button
+            <Button 
               onClick={handleSave}
               disabled={!noteContent.trim() || isLoading}
               className="ml-auto"

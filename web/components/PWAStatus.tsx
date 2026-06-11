@@ -6,14 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Wifi, WifiOff, Download, Smartphone } from 'lucide-react';
 
 export function PWAStatus() {
-  const {
-    isOnline,
-    isInstalled,
-    canInstall,
-    isIOS,
+  const { 
+    isOnline, 
+    isInstalled, 
+    canInstall, 
+    isIOS, 
     isStandalone,
     requestNotificationPermission,
-    showNotification,
+    showNotification 
   } = usePWA();
 
   const handleRequestNotification = async () => {
@@ -29,13 +29,11 @@ export function PWAStatus() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">Connection Status</span>
-        <div
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            isOnline
-              ? 'bg-green-100 text-green-800'
-              : 'bg-gray-100 text-gray-800'
-          }`}
-        >
+        <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+          isOnline 
+            ? 'bg-green-100 text-green-800' 
+            : 'bg-gray-100 text-gray-800'
+        }`}>
           {isOnline ? (
             <>
               <Wifi className="h-3 w-3 mr-1 inline" />
@@ -52,13 +50,11 @@ export function PWAStatus() {
 
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">App Status</span>
-        <div
-          className={`px-2 py-1 rounded-full text-xs font-medium ${
-            isInstalled
-              ? 'bg-blue-100 text-blue-800'
-              : 'bg-orange-100 text-orange-800'
-          }`}
-        >
+        <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+          isInstalled 
+            ? 'bg-blue-100 text-blue-800' 
+            : 'bg-orange-100 text-orange-800'
+        }`}>
           {isInstalled ? (
             <>
               <Smartphone className="h-3 w-3 mr-1 inline" />
@@ -76,18 +72,19 @@ export function PWAStatus() {
       {!isInstalled && (
         <div className="p-3 bg-blue-50 rounded-lg">
           <p className="text-sm text-blue-800 mb-2">
-            {isIOS
+            {isIOS 
               ? "Install this app on your device for a better experience. Tap the Share button and select 'Add to Home Screen'."
-              : 'Install this app on your device for offline access and better performance.'}
+              : "Install this app on your device for offline access and better performance."
+            }
           </p>
         </div>
       )}
 
       <div className="space-y-2">
-        <Button
+        <Button 
           onClick={handleRequestNotification}
-          variant="outline"
-          size="sm"
+          variant="outline" 
+          size="sm" 
           className="w-full"
         >
           Enable Notifications

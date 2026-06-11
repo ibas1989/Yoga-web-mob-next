@@ -1,7 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent } from './ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+} from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -75,8 +78,10 @@ export function AddStudentDialog({
   };
 
   const handleGoalToggle = (goal: string) => {
-    setSelectedGoals((prev) =>
-      prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
+    setSelectedGoals(prev =>
+      prev.includes(goal)
+        ? prev.filter(g => g !== goal)
+        : [...prev, goal]
     );
   };
 
@@ -143,11 +148,9 @@ export function AddStudentDialog({
   };
 
   // Filter students that aren't already in the session - only search by name after 2+ characters
-  const availableStudents = allStudents.filter(
-    (s) =>
-      !existingStudentIds.includes(s.id) &&
-      (searchTerm.length < 2 ||
-        s.name.toLowerCase().includes(searchTerm.toLowerCase()))
+  const availableStudents = allStudents.filter(s => 
+    !existingStudentIds.includes(s.id) &&
+    (searchTerm.length < 2 || s.name.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
@@ -157,9 +160,9 @@ export function AddStudentDialog({
         <div className="sticky top-0 z-40 bg-background border-b safe-top-bar">
           <div className="container mx-auto px-4 pb-3">
             <div className="flex items-center justify-between">
-              <Button
-                variant="ghost"
-                size="sm"
+              <Button 
+                variant="ghost" 
+                size="sm" 
                 onClick={() => onOpenChange(false)}
                 className="flex items-center gap-2"
               >
@@ -186,213 +189,198 @@ export function AddStudentDialog({
         <div className="pt-20">
           {/* Mode Toggle */}
           <div className="flex gap-2 border-b pb-4 px-4">
-            <Button
-              variant={mode === 'select' ? 'default' : 'outline'}
-              onClick={() => setMode('select')}
-              className="flex-1"
-            >
-              <Users className="h-4 w-4 mr-2" />
-              {t('studentForm.selectExisting')}
-            </Button>
-            <Button
-              variant={mode === 'create' ? 'default' : 'outline'}
-              onClick={() => setMode('create')}
-              className="flex-1"
-            >
-              <UserPlus className="h-4 w-4 mr-2" />
-              {t('studentForm.createNew')}
-            </Button>
+          <Button
+            variant={mode === 'select' ? 'default' : 'outline'}
+            onClick={() => setMode('select')}
+            className="flex-1"
+          >
+            <Users className="h-4 w-4 mr-2" />
+            {t('studentForm.selectExisting')}
+          </Button>
+          <Button
+            variant={mode === 'create' ? 'default' : 'outline'}
+            onClick={() => setMode('create')}
+            className="flex-1"
+          >
+            <UserPlus className="h-4 w-4 mr-2" />
+            {t('studentForm.createNew')}
+          </Button>
           </div>
 
           <div className="flex-1 overflow-y-auto px-1">
-            {mode === 'select' ? (
-              <div className="space-y-4 py-4">
-                {/* Search */}
-                <div className="space-y-2">
-                  <Label htmlFor="search">
-                    {t('studentForm.searchStudents')}
-                  </Label>
-                  <Input
-                    id="search"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder={t('studentForm.searchByName')}
-                  />
-                </div>
+          {mode === 'select' ? (
+            <div className="space-y-4 py-4">
+              {/* Search */}
+              <div className="space-y-2">
+                <Label htmlFor="search">{t('studentForm.searchStudents')}</Label>
+                <Input
+                  id="search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder={t('studentForm.searchByName')}
+                />
+              </div>
 
-                {/* Student List */}
-                <div className="space-y-2">
-                  {availableStudents.length === 0 ? (
-                    <Card>
-                      <CardContent className="p-6 text-center">
-                        <p className="text-sm text-muted-foreground">
-                          {searchTerm
-                            ? t('studentForm.noStudentsFound')
-                            : t('studentForm.noAvailableStudents')}
-                        </p>
+              {/* Student List */}
+              <div className="space-y-2">
+                {availableStudents.length === 0 ? (
+                  <Card>
+                    <CardContent className="p-6 text-center">
+                      <p className="text-sm text-muted-foreground">
+                        {searchTerm ? t('studentForm.noStudentsFound') : t('studentForm.noAvailableStudents')}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  availableStudents.map((student) => (
+                    <Card 
+                      key={student.id} 
+                      className="hover:shadow-sm transition-shadow cursor-pointer"
+                      onClick={() => handleSelectStudent(student.id)}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium">{student.name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {t('studentForm.currentBalance')}: {student.balance} {Math.abs(student.balance) === 1 ? t('common.session') : t('common.sessions')}
+                            </p>
+                          </div>
+                          <Button size="sm" variant="outline">
+                            {t('studentForm.add')}
+                          </Button>
+                        </div>
                       </CardContent>
                     </Card>
-                  ) : (
-                    availableStudents.map((student) => (
-                      <Card
-                        key={student.id}
-                        className="hover:shadow-sm transition-shadow cursor-pointer"
-                        onClick={() => handleSelectStudent(student.id)}
-                      >
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="text-sm font-medium">
-                                {student.name}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {t('studentForm.currentBalance')}:{' '}
-                                {student.balance}{' '}
-                                {Math.abs(student.balance) === 1
-                                  ? t('common.session')
-                                  : t('common.sessions')}
-                              </p>
-                            </div>
-                            <Button size="sm" variant="outline">
-                              {t('studentForm.add')}
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))
-                  )}
-                </div>
+                  ))
+                )}
               </div>
-            ) : (
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">{t('studentForm.nameRequired')}</Label>
-                  <Input
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder={t('studentForm.namePlaceholder')}
-                  />
-                </div>
+            </div>
+          ) : (
+            <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">{t('studentForm.nameRequired')}</Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t('studentForm.namePlaceholder')}
+              />
+            </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="phone">{t('studentForm.phone')}</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder={t('studentForm.phonePlaceholder')}
-                  />
-                </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">{t('studentForm.phone')}</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder={t('studentForm.phonePlaceholder')}
+              />
+            </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="balance">
-                    {t('studentForm.initialBalance')}
-                  </Label>
-                  <Input
-                    id="balance"
-                    type="number"
-                    step="1"
-                    value={balanceInputValue}
-                    onChange={handleBalanceChange}
-                    onFocus={handleBalanceFocus}
-                    onBlur={handleBalanceBlur}
-                    placeholder="0"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {t('studentForm.balanceHelpText')}
-                  </p>
-                </div>
+            <div className="space-y-2">
+              <Label htmlFor="balance">{t('studentForm.initialBalance')}</Label>
+              <Input
+                id="balance"
+                type="number"
+                step="1"
+                value={balanceInputValue}
+                onChange={handleBalanceChange}
+                onFocus={handleBalanceFocus}
+                onBlur={handleBalanceBlur}
+                placeholder="0"
+              />
+              <p className="text-xs text-muted-foreground">
+                {t('studentForm.balanceHelpText')}
+              </p>
+            </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="weight">{t('studentForm.weight')}</Label>
-                    <Input
-                      id="weight"
-                      type="number"
-                      step="0.1"
-                      value={weight}
-                      onChange={(e) => setWeight(e.target.value)}
-                      placeholder={t('studentForm.weightPlaceholder')}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="height">{t('studentForm.height')}</Label>
-                    <Input
-                      id="height"
-                      type="number"
-                      step="0.1"
-                      value={height}
-                      onChange={(e) => setHeight(e.target.value)}
-                      placeholder={t('studentForm.heightPlaceholder')}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="age">{t('studentForm.age')}</Label>
-                    <Input
-                      id="age"
-                      type="number"
-                      value={age}
-                      onChange={(e) => setAge(e.target.value)}
-                      placeholder={t('studentForm.agePlaceholder')}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="birthday">
-                      {t('studentForm.birthday')}
-                    </Label>
-                    <Input
-                      id="birthday"
-                      type="date"
-                      value={birthday}
-                      onChange={(e) => setBirthday(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="description">
-                    {t('studentForm.description')}
-                  </Label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder={t('studentForm.descriptionPlaceholder')}
-                    className="w-full min-h-[80px] px-3 py-2 border border-input bg-background rounded-md text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>{t('studentForm.studentGoals')}</Label>
-                  <div className="border rounded-md p-4 space-y-3 max-h-48 overflow-y-auto">
-                    {availableGoals.map((goal) => (
-                      <div key={goal} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`goal-${goal}`}
-                          checked={selectedGoals.includes(goal)}
-                          onCheckedChange={() => handleGoalToggle(goal)}
-                        />
-                        <label
-                          htmlFor={`goal-${goal}`}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                        >
-                          {goal}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="weight">{t('studentForm.weight')}</Label>
+                <Input
+                  id="weight"
+                  type="number"
+                  step="0.1"
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
+                  placeholder={t('studentForm.weightPlaceholder')}
+                />
               </div>
-            )}
+              <div className="space-y-2">
+                <Label htmlFor="height">{t('studentForm.height')}</Label>
+                <Input
+                  id="height"
+                  type="number"
+                  step="0.1"
+                  value={height}
+                  onChange={(e) => setHeight(e.target.value)}
+                  placeholder={t('studentForm.heightPlaceholder')}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="age">{t('studentForm.age')}</Label>
+                <Input
+                  id="age"
+                  type="number"
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                  placeholder={t('studentForm.agePlaceholder')}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="birthday">{t('studentForm.birthday')}</Label>
+                <Input
+                  id="birthday"
+                  type="date"
+                  value={birthday}
+                  onChange={(e) => setBirthday(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">{t('studentForm.description')}</Label>
+              <textarea
+                id="description"
+                name="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder={t('studentForm.descriptionPlaceholder')}
+                className="w-full min-h-[80px] px-3 py-2 border border-input bg-background rounded-md text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t('studentForm.studentGoals')}</Label>
+              <div className="border rounded-md p-4 space-y-3 max-h-48 overflow-y-auto">
+                {availableGoals.map((goal) => (
+                  <div key={goal} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`goal-${goal}`}
+                      checked={selectedGoals.includes(goal)}
+                      onCheckedChange={() => handleGoalToggle(goal)}
+                    />
+                    <label
+                      htmlFor={`goal-${goal}`}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      {goal}
+                    </label>
+                  </div>
+                ))}
+              </div>
+              </div>
+            </div>
+          )}
           </div>
         </div>
       </DialogContent>
     </Dialog>
   );
 }
+

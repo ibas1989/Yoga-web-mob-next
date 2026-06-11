@@ -2,14 +2,7 @@
 
 import React from 'react';
 import { format } from 'date-fns';
-import {
-  Clock,
-  Calendar as CalendarIcon,
-  Wallet,
-  FileText,
-  TrendingUp,
-  TrendingDown,
-} from 'lucide-react';
+import { Clock, Calendar as CalendarIcon, Wallet, FileText, TrendingUp, TrendingDown } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -37,21 +30,15 @@ export function TransactionDetailsDialog({
   const { t, getCurrentLanguage } = useTranslation();
   if (!transaction) return null;
 
-  const getTransactionTypeBadge = (
-    type: BalanceTransaction['transactionType']
-  ) => {
+  const getTransactionTypeBadge = (type: BalanceTransaction['transactionType']) => {
     const styles = {
       added: 'bg-green-100 text-green-700 border border-green-300',
       deducted: 'bg-red-100 text-red-700 border border-red-300',
     };
 
     return (
-      <span
-        className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${styles[type]}`}
-      >
-        {type === 'added'
-          ? t('transactionDetails.added')
-          : t('transactionDetails.deducted')}
+      <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${styles[type]}`}>
+        {type === 'added' ? t('transactionDetails.added') : t('transactionDetails.deducted')}
       </span>
     );
   };
@@ -81,19 +68,14 @@ export function TransactionDetailsDialog({
             <div className="flex items-start gap-3">
               <CalendarIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium">
-                  {t('transactionDetails.date')}
-                </p>
+                <p className="text-sm font-medium">{t('transactionDetails.date')}</p>
                 <p className="text-sm text-muted-foreground">
-                  {new Date(transaction.date).toLocaleDateString(
-                    getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US',
-                    {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    }
-                  )}
+                  {new Date(transaction.date).toLocaleDateString(getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
                 </p>
               </div>
             </div>
@@ -101,18 +83,13 @@ export function TransactionDetailsDialog({
             <div className="flex items-start gap-3">
               <Clock className="h-5 w-5 text-muted-foreground mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium">
-                  {t('transactionDetails.time')}
-                </p>
+                <p className="text-sm font-medium">{t('transactionDetails.time')}</p>
                 <p className="text-sm text-muted-foreground">
-                  {new Date(transaction.date).toLocaleTimeString(
-                    getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US',
-                    {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      hour12: false,
-                    }
-                  )}
+                  {new Date(transaction.date).toLocaleTimeString(getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                  })}
                 </p>
               </div>
             </div>
@@ -129,13 +106,9 @@ export function TransactionDetailsDialog({
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium">
-                      {t('transactionDetails.transactionType')}
-                    </p>
+                    <p className="text-sm font-medium">{t('transactionDetails.transactionType')}</p>
                     <p className="text-sm text-muted-foreground">
-                      {transaction.transactionType === 'added'
-                        ? t('transactionDetails.balanceAdded')
-                        : t('transactionDetails.balanceDeducted')}
+                      {transaction.transactionType === 'added' ? t('transactionDetails.balanceAdded') : t('transactionDetails.balanceDeducted')}
                     </p>
                   </div>
                   <div className="ml-3 shrink-0">
@@ -148,18 +121,9 @@ export function TransactionDetailsDialog({
             <div className="flex items-start gap-3">
               <Wallet className="h-5 w-5 text-muted-foreground mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium">
-                  {t('transactionDetails.changeAmount')}
-                </p>
-                <p
-                  className={`text-sm font-medium ${getChangeAmountColor(transaction.changeAmount)}`}
-                >
-                  {transaction.changeAmount > 0
-                    ? `+${transaction.changeAmount}`
-                    : transaction.changeAmount}{' '}
-                  {Math.abs(transaction.changeAmount) === 1
-                    ? t('transactionDetails.session')
-                    : t('transactionDetails.sessions')}
+                <p className="text-sm font-medium">{t('transactionDetails.changeAmount')}</p>
+                <p className={`text-sm font-medium ${getChangeAmountColor(transaction.changeAmount)}`}>
+                  {transaction.changeAmount > 0 ? `+${transaction.changeAmount}` : transaction.changeAmount} {Math.abs(transaction.changeAmount) === 1 ? t('transactionDetails.session') : t('transactionDetails.sessions')}
                 </p>
               </div>
             </div>
@@ -169,9 +133,7 @@ export function TransactionDetailsDialog({
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-muted-foreground" />
-              <p className="text-sm font-medium">
-                {t('transactionDetails.reasonDescription')}
-              </p>
+              <p className="text-sm font-medium">{t('transactionDetails.reasonDescription')}</p>
             </div>
             <Card className="ml-7">
               <CardContent className="p-4">
@@ -181,17 +143,11 @@ export function TransactionDetailsDialog({
                     const currentLanguage = getCurrentLanguage();
                     if (currentLanguage === 'ru' && transaction.reasonRu) {
                       return transaction.reasonRu;
-                    } else if (
-                      currentLanguage === 'en' &&
-                      transaction.reasonEn
-                    ) {
+                    } else if (currentLanguage === 'en' && transaction.reasonEn) {
                       return transaction.reasonEn;
                     }
                     // Fallback to the default reason field
-                    return (
-                      transaction.reason ||
-                      t('transactionDetails.noDescriptionProvided')
-                    );
+                    return transaction.reason || t('transactionDetails.noDescriptionProvided');
                   })()}
                 </p>
               </CardContent>
@@ -202,21 +158,12 @@ export function TransactionDetailsDialog({
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Wallet className="h-5 w-5 text-muted-foreground" />
-              <p className="text-sm font-medium">
-                {t('transactionDetails.updatedBalance')}
-              </p>
+              <p className="text-sm font-medium">{t('transactionDetails.updatedBalance')}</p>
             </div>
             <Card className="ml-7">
               <CardContent className="p-4">
-                <p
-                  className={`text-sm font-medium ${getBalanceAfterColor(transaction.balanceAfter)}`}
-                >
-                  {transaction.balanceAfter > 0
-                    ? `+${transaction.balanceAfter}`
-                    : transaction.balanceAfter}{' '}
-                  {Math.abs(transaction.balanceAfter) === 1
-                    ? t('transactionDetails.session')
-                    : t('transactionDetails.sessions')}
+                <p className={`text-sm font-medium ${getBalanceAfterColor(transaction.balanceAfter)}`}>
+                  {transaction.balanceAfter > 0 ? `+${transaction.balanceAfter}` : transaction.balanceAfter} {Math.abs(transaction.balanceAfter) === 1 ? t('transactionDetails.session') : t('transactionDetails.sessions')}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {t('transactionDetails.balanceAfterTransaction')}

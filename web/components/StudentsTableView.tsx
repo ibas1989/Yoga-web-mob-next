@@ -2,18 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Plus,
-  Search,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-  User,
-  Phone,
-  Target,
-  Calendar,
-  Clock,
-} from 'lucide-react';
+import { Plus, Search, ArrowUpDown, ArrowUp, ArrowDown, User, Phone, Target, Calendar, Clock } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
@@ -58,20 +47,15 @@ export function StudentsTableView() {
 
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) return <ArrowUpDown className="h-4 w-4" />;
-    return sortDirection === 'asc' ? (
-      <ArrowUp className="h-4 w-4" />
-    ) : (
-      <ArrowDown className="h-4 w-4" />
-    );
+    return sortDirection === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />;
   };
 
   const filteredAndSortedStudents = useMemo(() => {
-    let filtered =
-      searchTerm.length < 2
-        ? students
-        : students.filter((student) =>
-            student.name.toLowerCase().includes(searchTerm.toLowerCase())
-          );
+    let filtered = searchTerm.length < 2 
+      ? students 
+      : students.filter(student =>
+          student.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
 
     filtered.sort((a, b) => {
       let aValue: any;
@@ -119,24 +103,20 @@ export function StudentsTableView() {
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString(
-      getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US',
-      {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      }
-    );
+    return date.toLocaleDateString(getCurrentLanguage() === 'ru' ? 'ru-RU' : 'en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
   };
 
   const calculateTimeSinceCreated = (createdAt: Date) => {
     const now = new Date();
-    const diffInMonths =
-      (now.getFullYear() - createdAt.getFullYear()) * 12 +
-      (now.getMonth() - createdAt.getMonth());
+    const diffInMonths = (now.getFullYear() - createdAt.getFullYear()) * 12 + 
+                        (now.getMonth() - createdAt.getMonth());
     const years = Math.floor(diffInMonths / 12);
     const months = diffInMonths % 12;
-
+    
     if (years > 0 && months > 0) {
       return `${years}y ${months}m`;
     } else if (years > 0) {
@@ -204,7 +184,7 @@ export function StudentsTableView() {
                   <table className="w-full">
                     <thead className="border-b">
                       <tr>
-                        <th
+                        <th 
                           className="text-left p-4 font-medium cursor-pointer hover:bg-gray-50"
                           onClick={() => handleSort('name')}
                         >
@@ -213,7 +193,7 @@ export function StudentsTableView() {
                             {getSortIcon('name')}
                           </div>
                         </th>
-                        <th
+                        <th 
                           className="text-left p-4 font-medium cursor-pointer hover:bg-gray-50"
                           onClick={() => handleSort('balance')}
                         >
@@ -222,7 +202,7 @@ export function StudentsTableView() {
                             {getSortIcon('balance')}
                           </div>
                         </th>
-                        <th
+                        <th 
                           className="text-left p-4 font-medium cursor-pointer hover:bg-gray-50"
                           onClick={() => handleSort('sessions')}
                         >
@@ -231,7 +211,7 @@ export function StudentsTableView() {
                             {getSortIcon('sessions')}
                           </div>
                         </th>
-                        <th
+                        <th 
                           className="text-left p-4 font-medium cursor-pointer hover:bg-gray-50"
                           onClick={() => handleSort('createdAt')}
                         >
@@ -245,8 +225,8 @@ export function StudentsTableView() {
                     </thead>
                     <tbody>
                       {currentStudents.map((student) => (
-                        <tr
-                          key={student.id}
+                        <tr 
+                          key={student.id} 
                           className="border-b hover:bg-gray-50 cursor-pointer transition-colors"
                           onClick={() => handleStudentClick(student)}
                         >
@@ -264,12 +244,8 @@ export function StudentsTableView() {
                             </div>
                           </td>
                           <td className="p-4">
-                            <span
-                              className={`px-2 py-1 rounded-full text-sm font-medium ${getBalanceColor(student.balance)}`}
-                            >
-                              {student.balance > 0
-                                ? `+${student.balance}`
-                                : student.balance}
+                            <span className={`px-2 py-1 rounded-full text-sm font-medium ${getBalanceColor(student.balance)}`}>
+                              {student.balance > 0 ? `+${student.balance}` : student.balance}
                             </span>
                           </td>
                           <td className="p-4">
@@ -290,9 +266,7 @@ export function StudentsTableView() {
                             </div>
                           </td>
                           <td className="p-4">
-                            <p className="text-sm">
-                              {formatDate(student.createdAt)}
-                            </p>
+                            <p className="text-sm">{formatDate(student.createdAt)}</p>
                           </td>
                           <td className="p-4">
                             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
@@ -317,8 +291,8 @@ export function StudentsTableView() {
           <div className="md:hidden">
             <div className="grid gap-4">
               {currentStudents.map((student) => (
-                <Card
-                  key={student.id}
+                <Card 
+                  key={student.id} 
                   className="hover:shadow-md transition-shadow cursor-pointer"
                   onClick={() => handleStudentClick(student)}
                 >
@@ -335,15 +309,11 @@ export function StudentsTableView() {
                           </p>
                         </div>
                       </div>
-                      <span
-                        className={`px-2 py-1 rounded-full text-sm font-medium ${getBalanceColor(student.balance)}`}
-                      >
-                        {student.balance > 0
-                          ? `+${student.balance}`
-                          : student.balance}
+                      <span className={`px-2 py-1 rounded-full text-sm font-medium ${getBalanceColor(student.balance)}`}>
+                        {student.balance > 0 ? `+${student.balance}` : student.balance}
                       </span>
                     </div>
-
+                    
                     {student.goals.length > 0 && (
                       <div className="flex flex-wrap gap-1 mb-3">
                         {student.goals.slice(0, 3).map((goal) => (
@@ -378,9 +348,7 @@ export function StudentsTableView() {
           {totalPages > 1 && (
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
-                Showing {startIndex + 1} to{' '}
-                {Math.min(endIndex, filteredAndSortedStudents.length)} of{' '}
-                {filteredAndSortedStudents.length} students
+                Showing {startIndex + 1} to {Math.min(endIndex, filteredAndSortedStudents.length)} of {filteredAndSortedStudents.length} students
               </p>
               <div className="flex items-center space-x-2">
                 <Button
@@ -397,9 +365,7 @@ export function StudentsTableView() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    setCurrentPage(Math.min(totalPages, currentPage + 1))
-                  }
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
                 >
                   Next

@@ -228,9 +228,9 @@ export default function StudentDetailsScreen() {
   };
 
   const getBalanceColor = (balance: number) => {
-    if (balance > 0) return '#dc2626'; // red for owed sessions
-    if (balance < 0) return '#16a34a'; // green for credit
-    return '#16a34a'; // green for zero balance
+    if (balance > 0) return '#16a34a'; // green for positive
+    if (balance < 0) return '#dc2626'; // red for negative
+    return '#6b7280'; // grey for zero
   };
 
   const getStatusColor = (status: string) => {
