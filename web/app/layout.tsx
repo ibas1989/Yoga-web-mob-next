@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { BottomNavigationWithParams } from '@/components/ui/bottom-navigation';
-import { ClientBody } from '@/components/ClientBody';
+import { ClientHydrationSetup } from '@/components/ClientBody';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
 import { I18nProvider } from '@/components/I18nProvider';
@@ -79,22 +79,23 @@ export default function RootLayout({
           content="black-translucent"
         />
       </head>
-      <ClientBody className={inter.className}>
-        <I18nProvider>
-          <ErrorBoundary>
-            <Suspense
-              fallback={
-                <div className="fixed bottom-0 left-0 right-0 h-[88px] bg-background border-t" />
-              }
-            >
-              <BottomNavigationWithParams />
-            </Suspense>
-            {/* Add bottom padding to account for fixed bottom navigation (88px height) */}
-            <div className="pb-[88px]">{children}</div>
-            <PWAInstallPrompt />
-          </ErrorBoundary>
-        </I18nProvider>
-      </ClientBody>
+      <body className={inter.className} suppressHydrationWarning>
+        <ClientHydrationSetup>
+          <I18nProvider>
+            <ErrorBoundary>
+              <Suspense
+                fallback={
+                  <div className="fixed bottom-0 left-0 right-0 h-[88px] bg-background border-t" />
+                }
+              >
+                <BottomNavigationWithParams />
+              </Suspense>
+              <div className="pb-[88px]">{children}</div>
+              <PWAInstallPrompt />
+            </ErrorBoundary>
+          </I18nProvider>
+        </ClientHydrationSetup>
+      </body>
     </html>
   );
 }

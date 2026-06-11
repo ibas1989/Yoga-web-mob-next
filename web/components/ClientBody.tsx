@@ -3,17 +3,15 @@
 import { useEffect } from 'react';
 import { suppressHydrationWarnings } from '@/lib/hydrationUtils';
 
-interface ClientBodyProps {
+interface ClientHydrationSetupProps {
   children: React.ReactNode;
-  className?: string;
 }
 
-export function ClientBody({ children, className }: ClientBodyProps) {
+/** Client-only side effects (hydration warnings, RSC fetch errors). */
+export function ClientHydrationSetup({ children }: ClientHydrationSetupProps) {
   useEffect(() => {
-    // Suppress hydration warnings for browser extension attributes
     const cleanup = suppressHydrationWarnings();
 
-    // Handle unhandled promise rejections (like RSC fetch errors)
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
       if (
         event.reason &&
@@ -37,9 +35,7 @@ export function ClientBody({ children, className }: ClientBodyProps) {
     };
   }, []);
 
-  return (
-    <body className={className} suppressHydrationWarning>
-      {children}
-    </body>
-  );
+  return <>{children}</>;
 }
+
+export const ClientBody = ClientHydrationSetup;

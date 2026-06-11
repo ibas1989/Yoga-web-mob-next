@@ -2,13 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Download, Smartphone } from 'lucide-react';
 import { usePWA } from '@/lib/hooks/usePWA';
 
@@ -19,8 +13,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 export function PWAInstallPrompt() {
   const { isInstalled, isIOS, isStandalone } = usePWA();
-  const [deferredPrompt, setDeferredPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
 
   useEffect(() => {
@@ -28,7 +21,7 @@ export function PWAInstallPrompt() {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-
+      
       // Show install prompt after a delay if not already installed
       if (!isInstalled) {
         setTimeout(() => {
@@ -47,10 +40,7 @@ export function PWAInstallPrompt() {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
-      window.removeEventListener(
-        'beforeinstallprompt',
-        handleBeforeInstallPrompt
-      );
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, [isInstalled]);
@@ -61,13 +51,13 @@ export function PWAInstallPrompt() {
     try {
       await deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-
+      
       if (outcome === 'accepted') {
         console.log('User accepted the install prompt');
       } else {
         console.log('User dismissed the install prompt');
       }
-
+      
       setDeferredPrompt(null);
       setShowInstallPrompt(false);
     } catch (error) {
@@ -82,11 +72,7 @@ export function PWAInstallPrompt() {
   };
 
   // Don't show if already installed or dismissed in this session
-  if (
-    isInstalled ||
-    !showInstallPrompt ||
-    sessionStorage.getItem('pwa-install-dismissed')
-  ) {
+  if (isInstalled || !showInstallPrompt || sessionStorage.getItem('pwa-install-dismissed')) {
     return null;
   }
 
@@ -101,15 +87,12 @@ export function PWAInstallPrompt() {
               Install Yoga Tracker
             </DialogTitle>
             <DialogDescription>
-              Add this app to your home screen for quick access and a better
-              experience.
+              Add this app to your home screen for quick access and a better experience.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <p className="text-sm font-medium">
-                To install this app on your iPhone or iPad:
-              </p>
+              <p className="text-sm font-medium">To install this app on your iPhone or iPad:</p>
               <ol className="text-sm space-y-1 list-decimal list-inside text-gray-600">
                 <li>Tap the Share button at the bottom of your screen</li>
                 <li>Scroll down and tap "Add to Home Screen"</li>
@@ -117,17 +100,10 @@ export function PWAInstallPrompt() {
               </ol>
             </div>
             <div className="flex gap-2">
-              <Button
-                onClick={handleDismiss}
-                variant="outline"
-                className="flex-1"
-              >
+              <Button onClick={handleDismiss} variant="outline" className="flex-1">
                 Maybe Later
               </Button>
-              <Button
-                onClick={() => setShowInstallPrompt(false)}
-                className="flex-1"
-              >
+              <Button onClick={() => setShowInstallPrompt(false)} className="flex-1">
                 Got it!
               </Button>
             </div>
@@ -148,23 +124,17 @@ export function PWAInstallPrompt() {
               Install Yoga Tracker
             </DialogTitle>
             <DialogDescription>
-              Install this app on your device for quick access, offline use, and
-              a better experience.
+              Install this app on your device for quick access, offline use, and a better experience.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
               <p className="text-sm text-gray-600">
-                Get the full app experience with offline access, push
-                notifications, and faster loading.
+                Get the full app experience with offline access, push notifications, and faster loading.
               </p>
             </div>
             <div className="flex gap-2">
-              <Button
-                onClick={handleDismiss}
-                variant="outline"
-                className="flex-1"
-              >
+              <Button onClick={handleDismiss} variant="outline" className="flex-1">
                 Not now
               </Button>
               <Button onClick={handleInstallClick} className="flex-1">

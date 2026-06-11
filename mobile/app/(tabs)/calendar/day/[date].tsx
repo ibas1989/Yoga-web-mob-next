@@ -10,10 +10,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { format, parseISO, isSameDay } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { ru, enUS } from 'date-fns/locale';
 import { Session, Student } from '@shared/types';
-import { getSessions, getStudents } from '../../../src/lib/storage';
+import { getSessions, getStudents } from '../../../../src/lib/storage';
 import { formatDateForUrl, parseDateFromUrl } from '@shared/utils/dateUtils';
 import { useTranslation } from 'react-i18next';
 
@@ -68,7 +68,9 @@ export default function DayViewScreen() {
   const timeSlots = Array.from({ length: 33 }, (_, i) => {
     const hours = Math.floor(i / 2) + 6;
     const minutes = (i % 2) * 30;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    return `${hours.toString().padStart(2, '0')}:${minutes
+      .toString()
+      .padStart(2, '0')}`;
   });
 
   // Precompute a map: time string -> slot index
@@ -251,7 +253,8 @@ export default function DayViewScreen() {
                 if (startIdx === undefined) return null;
                 const durationSlots = Math.max(1, endIdx - startIdx);
                 const top = startIdx * styles.timeSlot.minHeight + 8; // small inner padding
-                const height = durationSlots * styles.timeSlot.minHeight - 16; // account for padding
+                const height =
+                  durationSlots * styles.timeSlot.minHeight - 16; // account for padding
                 const sessionStudents = students.filter((s) =>
                   session.studentIds.includes(s.id)
                 );
@@ -418,59 +421,40 @@ const styles = StyleSheet.create({
   },
   timeSlotHour: {
     borderBottomWidth: 2,
-    borderBottomColor: '#4f46e520',
+    borderBottomColor: '#d1d5db',
   },
   timeLabel: {
     width: 70,
-    padding: 8,
-    backgroundColor: '#f9f9f9',
-    borderRightWidth: 1,
-    borderRightColor: '#e5e5e5',
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 4,
   },
   timeLabelHour: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f9fafb',
   },
   timeLabelText: {
     fontSize: 12,
-    color: '#999',
+    color: '#9ca3af',
   },
   timeLabelTextHour: {
-    fontSize: 13,
     fontWeight: '600',
-    color: '#333',
+    color: '#4b5563',
   },
   timeSlotContent: {
     flex: 1,
-    padding: 8,
+    paddingHorizontal: 8,
   },
   sessionBlock: {
     position: 'absolute',
     left: 0,
     right: 0,
-    padding: 12,
     borderRadius: 8,
-    borderLeftWidth: 4,
-    overflow: 'hidden',
-  },
-  sessionCard: {
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 8,
-    borderLeftWidth: 4,
-  },
-  sessionScheduled: {
-    backgroundColor: '#f3f4f6',
-    borderLeftColor: '#9ca3af',
-  },
-  sessionCompleted: {
-    backgroundColor: '#dcfce7',
-    borderLeftColor: '#22c55e',
-  },
-  sessionCancelled: {
-    backgroundColor: '#fff7ed',
-    borderLeftColor: '#f97316',
+    padding: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   sessionHeader: {
     flexDirection: 'row',
@@ -481,38 +465,53 @@ const styles = StyleSheet.create({
   sessionTime: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#333',
+    color: '#111827',
   },
   sessionStatusBadge: {
     paddingHorizontal: 8,
     paddingVertical: 2,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.5)',
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.9)',
   },
   sessionStatusText: {
     fontSize: 10,
-    fontWeight: '500',
-    color: '#666',
-    textTransform: 'capitalize',
-  },
-  sessionStatusTextCancelled: {
-    color: '#f97316',
-  },
-  sessionStatusTextScheduled: {
+    fontWeight: '600',
     color: '#6b7280',
   },
+  sessionStatusTextCancelled: {
+    color: '#b91c1c',
+  },
+  sessionStatusTextScheduled: {
+    color: '#1d4ed8',
+  },
   sessionType: {
-    fontSize: 11,
-    color: '#666',
+    fontSize: 12,
+    color: '#111827',
     marginBottom: 2,
   },
   sessionAttendees: {
     fontSize: 11,
-    color: '#666',
-    marginBottom: 2,
+    color: '#374151',
   },
   sessionStudentNames: {
     fontSize: 11,
-    color: '#999',
+    color: '#4b5563',
+    marginTop: 2,
+  },
+  sessionScheduled: {
+    backgroundColor: '#dbeafe',
+    borderColor: '#60a5fa',
+    borderWidth: 1,
+  },
+  sessionCompleted: {
+    backgroundColor: '#dcfce7',
+    borderColor: '#4ade80',
+    borderWidth: 1,
+  },
+  sessionCancelled: {
+    backgroundColor: '#fee2e2',
+    borderColor: '#fca5a5',
+    borderWidth: 1,
   },
 });
+

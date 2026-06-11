@@ -118,7 +118,7 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="calendar"
         options={{
           title: t('navigation.calendar'),
           headerTitle: t('navigation.calendar'),

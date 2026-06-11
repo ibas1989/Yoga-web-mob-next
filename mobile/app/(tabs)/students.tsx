@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { useRouter, useNavigation, useFocusEffect } from 'expo-router';
+import { useRouter, useFocusEffect, useNavigation } from 'expo-router';
 import { Student } from '@shared/types';
 import { getStudents } from '../../src/lib/storage';
 import { formatBalanceForDisplay } from '@shared/utils/dateUtils';
@@ -24,13 +24,11 @@ export default function StudentsScreen() {
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortMode, setSortMode] = useState<'name' | 'date'>('name');
-  const [isLoading, setIsLoading] = useState(true);
 
-  useFocusEffect(
-    useCallback(() => {
-      loadStudents();
-    }, [])
-  );
+  useEffect(() => {
+    // Initial load when the Students tab screen is first mounted.
+    loadStudents();
+  }, []);
 
   useEffect(() => {
     // Disable swipe back gesture on this tab screen
@@ -65,8 +63,16 @@ export default function StudentsScreen() {
     }
   }, [searchQuery, students, sortMode]);
 
+  // Reload students whenever the screen comes into focus.
+  // This ensures that data restored from backup (or other tabs)
+  // is immediately reflected when navigating back to Students.
+  useFocusEffect(
+    useCallback(() => {
+      loadStudents();
+    }, [])
+  );
+
   const loadStudents = async () => {
-    setIsLoading(true);
     try {
       const studentsData = await getStudents();
       setStudents(studentsData);
@@ -75,7 +81,6 @@ export default function StudentsScreen() {
       console.error('Error loading students:', error);
       Alert.alert(t('students.errorLoading'), 'Failed to load students');
     } finally {
-      setIsLoading(false);
     }
   };
 
@@ -92,15 +97,6 @@ export default function StudentsScreen() {
     if (balance < 0) return '#dc2626'; // red for negative values
     return '#6b7280'; // grey for zero
   };
-
-  if (isLoading) {
-    return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#4f46e5" />
-        <Text style={styles.loadingText}>{t('students.loading')}</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -177,16 +173,16 @@ export default function StudentsScreen() {
           <View style={styles.emptyContainer}>
             <Ionicons name="people-outline" size={64} color="#9ca3af" />
             <Text style={styles.emptyTitle}>
-              {searchQuery.length >= 2
+              {searchQuery.length > 0
                 ? t('students.noStudentsFound')
                 : t('students.noStudents')}
             </Text>
             <Text style={styles.emptySubtitle}>
-              {searchQuery.length >= 2
+              {searchQuery.length > 0
                 ? t('students.noStudentsFoundDescription')
                 : t('students.noStudentsDescription')}
             </Text>
-            {searchQuery.length >= 2 ? (
+            {searchQuery.length > 0 ? (
               <TouchableOpacity
                 style={styles.clearButton}
                 onPress={() => setSearchQuery('')}

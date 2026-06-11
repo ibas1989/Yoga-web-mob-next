@@ -1,9 +1,5 @@
 import { useTranslation as useI18nTranslation } from 'react-i18next';
-import {
-  TranslationKeys,
-  SupportedLanguages,
-  TranslationParams,
-} from '@shared/i18n/types';
+import { TranslationKeys, SupportedLanguages, TranslationParams } from '@shared/i18n/types';
 
 export function useTranslation() {
   const { t, i18n, ready } = useI18nTranslation();
@@ -25,12 +21,7 @@ export function useTranslation() {
   };
 
   // Helper function for pluralization in Russian
-  const pluralize = (
-    count: number,
-    singular: string,
-    plural: string,
-    genitive?: string
-  ) => {
+  const pluralize = (count: number, singular: string, plural: string, genitive?: string) => {
     if (isRussian()) {
       if (count === 1) return singular;
       if (count >= 2 && count <= 4) return plural;

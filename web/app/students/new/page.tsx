@@ -23,7 +23,7 @@ function NewStudentContent() {
   const router = useRouter();
   const [availableGoals, setAvailableGoals] = useState<string[]>([]);
   const [goalsLoaded, setGoalsLoaded] = useState(false);
-
+  
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [balance, setBalance] = useState(0);
@@ -40,22 +40,21 @@ function NewStudentContent() {
 
   React.useEffect(() => {
     const settings = getSettings();
-
+    
     // Ensure we have goals, fallback to default if empty
-    const goals =
-      settings.availableGoals && settings.availableGoals.length > 0
-        ? settings.availableGoals
-        : [
-            'Гибкость',
-            'Сила',
-            'Баланс',
-            'Снятие стресса',
-            'Похудение',
-            'Медитация',
-            'Укрепление корпуса',
-            'Здоровая спина',
-          ];
-
+    const goals = settings.availableGoals && settings.availableGoals.length > 0 
+      ? settings.availableGoals 
+      : [
+          'Гибкость',
+          'Сила',
+          'Баланс',
+          'Снятие стресса',
+          'Похудение',
+          'Медитация',
+          'Укрепление корпуса',
+          'Здоровая спина'
+        ];
+    
     setAvailableGoals(goals);
     setGoalsLoaded(true);
   }, []);
@@ -86,7 +85,7 @@ function NewStudentContent() {
   const handleBalanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setBalanceInputValue(value);
-
+    
     // Update the actual balance value
     const numericValue = parseInt(value) || 0;
     setBalance(numericValue);
@@ -101,8 +100,10 @@ function NewStudentContent() {
   };
 
   const handleGoalToggle = (goal: string) => {
-    setSelectedGoals((prev) =>
-      prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
+    setSelectedGoals(prev =>
+      prev.includes(goal)
+        ? prev.filter(g => g !== goal)
+        : [...prev, goal]
     );
   };
 
@@ -129,7 +130,7 @@ function NewStudentContent() {
     };
 
     saveStudent(newStudent);
-
+    
     // Navigate to the student details page
     router.push(`/students/${newStudent.id}`);
   };
@@ -154,15 +155,16 @@ function NewStudentContent() {
     setShowBackConfirmation(false);
   };
 
+
   return (
     <div className="min-h-screen bg-background">
       {/* Contextual Bar */}
       <div className="fixed top-0 left-0 right-0 z-40 bg-background border-b safe-top-bar">
         <div className="container mx-auto px-4 pb-3">
           <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
+            <Button 
+              variant="ghost" 
+              size="sm" 
               onClick={handleBackClick}
               className="flex items-center gap-2"
             >
@@ -184,152 +186,134 @@ function NewStudentContent() {
       <div className="pt-20">
         {/* Main Content */}
         <main className="container mx-auto px-4 py-8">
-          <Card className="max-w-3xl mx-auto">
-            <CardContent className="space-y-6 pt-6">
-              {/* Personal Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">{t('studentForm.nameRequired')}</Label>
-                  <Input
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder={t('studentPages.enterStudentName')}
-                    autoComplete="name"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="phone">{t('studentForm.phone')}</Label>
-                  <Input
-                    id="phone"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder={t('studentPages.enterPhoneNumber')}
-                    autoComplete="tel"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="weight">{t('studentForm.weight')}</Label>
-                  <Input
-                    id="weight"
-                    type="number"
-                    step="0.1"
-                    value={weight || ''}
-                    onChange={(e) =>
-                      setWeight(parseFloat(e.target.value) || undefined)
-                    }
-                    placeholder={t('studentPages.enterWeight')}
-                    autoComplete="off"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="height">{t('studentForm.height')}</Label>
-                  <Input
-                    id="height"
-                    type="number"
-                    step="0.1"
-                    value={height || ''}
-                    onChange={(e) =>
-                      setHeight(parseFloat(e.target.value) || undefined)
-                    }
-                    placeholder={t('studentPages.enterHeight')}
-                    autoComplete="off"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="birthday">{t('studentForm.birthday')}</Label>
-                  <DatePicker
-                    date={birthday}
-                    onDateChange={setBirthday}
-                    placeholder={
-                      t('studentPages.selectBirthday') || 'Select birthday'
-                    }
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="memberSince">
-                    {t('studentPages.memberSince')}
-                  </Label>
-                  <DatePicker
-                    date={memberSince}
-                    onDateChange={setMemberSince}
-                    placeholder={
-                      t('studentPages.selectMemberSince') ||
-                      'Select member since date'
-                    }
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="balance">
-                    {t('studentForm.initialBalance')}
-                  </Label>
-                  <Input
-                    id="balance"
-                    type="number"
-                    step="1"
-                    value={balanceInputValue}
-                    onChange={handleBalanceChange}
-                    onFocus={handleBalanceFocus}
-                    onBlur={handleBalanceBlur}
-                    placeholder={t('studentPages.enterInitialBalance')}
-                    autoComplete="off"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {t('studentPages.balanceHelpText')}
-                  </p>
-                </div>
-              </div>
-
-              {/* Description */}
+        <Card className="max-w-3xl mx-auto">
+          <CardContent className="space-y-6 pt-6">
+            {/* Personal Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="description">
-                  {t('studentForm.description')}
-                </Label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder={t('studentForm.descriptionPlaceholder')}
-                  className="w-full min-h-[100px] px-3 py-2 border border-input bg-background rounded-md text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                <Label htmlFor="name">{t('studentForm.nameRequired')}</Label>
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={t('studentPages.enterStudentName')}
+                  autoComplete="name"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="phone">{t('studentForm.phone')}</Label>
+                <Input
+                  id="phone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder={t('studentPages.enterPhoneNumber')}
+                  autoComplete="tel"
                 />
               </div>
 
-              {/* Goals */}
-              <div className="space-y-3">
-                <Label>{t('studentPages.goalsAndFocusAreas')}</Label>
-                {!goalsLoaded ? (
-                  <p className="text-sm text-muted-foreground">
-                    {t('studentPages.loadingGoals')}
-                  </p>
-                ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {availableGoals.map((goal) => (
-                      <div key={goal} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`goal-${goal}`}
-                          checked={selectedGoals.includes(goal)}
-                          onCheckedChange={() => handleGoalToggle(goal)}
-                        />
-                        <Label
-                          htmlFor={`goal-${goal}`}
-                          className="text-sm cursor-pointer"
-                        >
-                          {goal}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                )}
+              <div className="space-y-2">
+                <Label htmlFor="weight">{t('studentForm.weight')}</Label>
+                <Input
+                  id="weight"
+                  type="number"
+                  step="0.1"
+                  value={weight || ''}
+                  onChange={(e) => setWeight(parseFloat(e.target.value) || undefined)}
+                  placeholder={t('studentPages.enterWeight')}
+                  autoComplete="off"
+                />
               </div>
-            </CardContent>
-          </Card>
+
+              <div className="space-y-2">
+                <Label htmlFor="height">{t('studentForm.height')}</Label>
+                <Input
+                  id="height"
+                  type="number"
+                  step="0.1"
+                  value={height || ''}
+                  onChange={(e) => setHeight(parseFloat(e.target.value) || undefined)}
+                  placeholder={t('studentPages.enterHeight')}
+                  autoComplete="off"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="birthday">{t('studentForm.birthday')}</Label>
+                <DatePicker
+                  date={birthday}
+                  onDateChange={setBirthday}
+                  placeholder={t('studentPages.selectBirthday') || 'Select birthday'}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="memberSince">{t('studentPages.memberSince')}</Label>
+                <DatePicker
+                  date={memberSince}
+                  onDateChange={setMemberSince}
+                  placeholder={t('studentPages.selectMemberSince') || 'Select member since date'}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="balance">{t('studentForm.initialBalance')}</Label>
+                <Input
+                  id="balance"
+                  type="number"
+                  step="1"
+                  value={balanceInputValue}
+                  onChange={handleBalanceChange}
+                  onFocus={handleBalanceFocus}
+                  onBlur={handleBalanceBlur}
+                  placeholder={t('studentPages.enterInitialBalance')}
+                  autoComplete="off"
+                />
+                <p className="text-xs text-muted-foreground">
+                  {t('studentPages.balanceHelpText')}
+                </p>
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="space-y-2">
+              <Label htmlFor="description">{t('studentForm.description')}</Label>
+              <textarea
+                id="description"
+                name="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder={t('studentForm.descriptionPlaceholder')}
+                className="w-full min-h-[100px] px-3 py-2 border border-input bg-background rounded-md text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
+
+            {/* Goals */}
+            <div className="space-y-3">
+              <Label>{t('studentPages.goalsAndFocusAreas')}</Label>
+              {!goalsLoaded ? (
+                <p className="text-sm text-muted-foreground">
+                  {t('studentPages.loadingGoals')}
+                </p>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {availableGoals.map((goal) => (
+                    <div key={goal} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`goal-${goal}`}
+                        checked={selectedGoals.includes(goal)}
+                        onCheckedChange={() => handleGoalToggle(goal)}
+                      />
+                      <Label htmlFor={`goal-${goal}`} className="text-sm cursor-pointer">
+                        {goal}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
         </main>
       </div>
 
@@ -355,3 +339,4 @@ export default function NewStudentPage() {
     </Suspense>
   );
 }
+

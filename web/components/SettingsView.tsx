@@ -5,13 +5,7 @@ import { Save, Plus, X, Shield, Globe } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from './ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { AppSettings } from '@shared/types';
 import { getSettings, saveSettings } from '@/lib/storage';
 import { BackupManager } from './BackupManager';
@@ -33,9 +27,7 @@ export function SettingsView() {
   const loadSettings = () => {
     const settings = getSettings();
     setDefaultTeamCharge((settings.defaultTeamSessionCharge ?? 1).toString());
-    setDefaultIndividualCharge(
-      (settings.defaultIndividualSessionCharge ?? 2).toString()
-    );
+    setDefaultIndividualCharge((settings.defaultIndividualSessionCharge ?? 2).toString());
     setGoals(settings.availableGoals);
   };
 
@@ -43,17 +35,17 @@ export function SettingsView() {
     // Validate numeric inputs
     const teamCharge = parseInt(defaultTeamCharge);
     const individualCharge = parseInt(defaultIndividualCharge);
-
+    
     if (isNaN(teamCharge) || teamCharge < 1) {
       alert(t('settings.teamChargeValidation'));
       return;
     }
-
+    
     if (isNaN(individualCharge) || individualCharge < 1) {
       alert(t('settings.individualChargeValidation'));
       return;
     }
-
+    
     const settings: AppSettings = {
       defaultTeamSessionCharge: teamCharge,
       defaultIndividualSessionCharge: individualCharge,
@@ -68,18 +60,18 @@ export function SettingsView() {
       alert(t('settings.enterGoalName'));
       return;
     }
-
+    
     if (goals.includes(newGoal.trim())) {
       alert(t('settings.goalExists'));
       return;
     }
-
+    
     setGoals([...goals, newGoal.trim()]);
     setNewGoal('');
   };
 
   const handleRemoveGoal = (goalToRemove: string) => {
-    setGoals(goals.filter((g) => g !== goalToRemove));
+    setGoals(goals.filter(g => g !== goalToRemove));
   };
 
   return (
@@ -121,17 +113,7 @@ export function SettingsView() {
                 <LanguageSwitcher variant="select" />
               </div>
               <div className="flex justify-end pt-2 border-t border-gray-100">
-                <Button
-                  onClick={handleSave}
-                  className="px-6 py-2 text-white"
-                  style={{ backgroundColor: '#4C7D2D' }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor = '#3D6324')
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.backgroundColor = '#4C7D2D')
-                  }
-                >
+                <Button onClick={handleSave} className="px-6 py-2 text-white" style={{ backgroundColor: '#4C7D2D' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3D6324'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4C7D2D'}>
                   <Save className="h-4 w-4 mr-2" />
                   {t('settings.saveSettings')}
                 </Button>
@@ -143,112 +125,110 @@ export function SettingsView() {
 
       {/* Content Area */}
       <div className="space-y-6 px-4 pt-6">
-        {activeTab === 'settings' && (
-          <>
-            <div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t('settings.teamSessions')}</CardTitle>
-                    <CardDescription>
-                      {t('settings.defaultSessionChargeTeam')}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <Label htmlFor="team-charge">
-                        {t('settings.sessionCharge')}
-                      </Label>
-                      <Input
-                        id="team-charge"
-                        type="number"
-                        min="1"
-                        value={defaultTeamCharge}
-                        onChange={(e) => setDefaultTeamCharge(e.target.value)}
-                        placeholder="1"
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{t('settings.individualSessions')}</CardTitle>
-                    <CardDescription>
-                      {t('settings.defaultSessionChargeIndividual')}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <Label htmlFor="individual-charge">
-                        {t('settings.sessionCharge')}
-                      </Label>
-                      <Input
-                        id="individual-charge"
-                        type="number"
-                        min="1"
-                        value={defaultIndividualCharge}
-                        onChange={(e) =>
-                          setDefaultIndividualCharge(e.target.value)
-                        }
-                        placeholder="2"
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-
+      {activeTab === 'settings' && (
+        <>
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>{t('settings.sessionGoalsTags')}</CardTitle>
+                <CardTitle>{t('settings.teamSessions')}</CardTitle>
                 <CardDescription>
-                  {t('settings.manageGoalsDescription')}
+                  {t('settings.defaultSessionChargeTeam')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="flex gap-2">
-                    <Input
-                      value={newGoal}
-                      onChange={(e) => setNewGoal(e.target.value)}
-                      placeholder={t('settings.enterNewGoal')}
-                      onKeyPress={(e) => e.key === 'Enter' && handleAddGoal()}
-                    />
-                    <Button onClick={handleAddGoal}>
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-
-                  {goals.length > 0 && (
-                    <div className="space-y-2">
-                      <Label>{t('settings.availableGoals')}</Label>
-                      <div className="flex flex-wrap gap-2">
-                        {goals.map((goal) => (
-                          <div
-                            key={goal}
-                            className="flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
-                          >
-                            <span>{goal}</span>
-                            <button
-                              onClick={() => handleRemoveGoal(goal)}
-                              className="hover:bg-primary/20 rounded-full p-1"
-                              aria-label={t('settings.removeGoal')}
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                <div className="space-y-2">
+                  <Label htmlFor="team-charge">{t('settings.sessionCharge')}</Label>
+                  <Input
+                    id="team-charge"
+                    type="number"
+                    min="1"
+                    value={defaultTeamCharge}
+                    onChange={(e) => setDefaultTeamCharge(e.target.value)}
+                    placeholder="1"
+                  />
                 </div>
               </CardContent>
             </Card>
-          </>
-        )}
 
-        {activeTab === 'backup' && <BackupManager />}
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('settings.individualSessions')}</CardTitle>
+                <CardDescription>
+                  {t('settings.defaultSessionChargeIndividual')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <Label htmlFor="individual-charge">{t('settings.sessionCharge')}</Label>
+                  <Input
+                    id="individual-charge"
+                    type="number"
+                    min="1"
+                    value={defaultIndividualCharge}
+                    onChange={(e) => setDefaultIndividualCharge(e.target.value)}
+                    placeholder="2"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('settings.sessionGoalsTags')}</CardTitle>
+              <CardDescription>
+                {t('settings.manageGoalsDescription')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex gap-2">
+                  <Input
+                    value={newGoal}
+                    onChange={(e) => setNewGoal(e.target.value)}
+                    placeholder={t('settings.enterNewGoal')}
+                    onKeyPress={(e) => e.key === 'Enter' && handleAddGoal()}
+                  />
+                  <Button onClick={handleAddGoal}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                {goals.length > 0 && (
+                  <div className="space-y-2">
+                    <Label>{t('settings.availableGoals')}</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {goals.map((goal) => (
+                        <div
+                          key={goal}
+                          className="flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
+                        >
+                          <span>{goal}</span>
+                          <button
+                            onClick={() => handleRemoveGoal(goal)}
+                            className="hover:bg-primary/20 rounded-full p-1"
+                            aria-label={t('settings.removeGoal')}
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      )}
+
+      {activeTab === 'backup' && (
+        <BackupManager />
+      )}
+
       </div>
     </div>
   );

@@ -16,31 +16,21 @@ import { useNavigationSwipe } from '@/lib/hooks/useMobileSwipe';
 
 function HomeContentWithParams() {
   const searchParams = useSearchParams();
-
+  
   // Get view from URL parameters
   const viewParam = searchParams.get('view');
-  const initialView =
-    viewParam === 'students' ||
-    viewParam === 'tasks' ||
-    viewParam === 'settings' ||
-    viewParam === 'calendar'
-      ? (viewParam as 'calendar' | 'students' | 'tasks' | 'settings')
-      : 'calendar';
-
+  const initialView = (viewParam === 'students' || viewParam === 'tasks' || viewParam === 'settings' || viewParam === 'calendar') 
+    ? viewParam as 'calendar' | 'students' | 'tasks' | 'settings'
+    : 'calendar';
+  
   return <HomeContent initialView={initialView} />;
 }
 
-function HomeContent({
-  initialView,
-}: {
-  initialView: 'calendar' | 'students' | 'tasks' | 'settings';
-}) {
+function HomeContent({ initialView }: { initialView: 'calendar' | 'students' | 'tasks' | 'settings' }) {
   const router = useRouter();
-  const [view, setView] = useState<
-    'calendar' | 'students' | 'tasks' | 'settings'
-  >(initialView);
+  const [view, setView] = useState<'calendar' | 'students' | 'tasks' | 'settings'>(initialView);
   const [calendarRefresh, setCalendarRefresh] = useState(0);
-
+  
   // Mobile swipe navigation
   const { swipeRef } = useNavigationSwipe();
 
@@ -48,22 +38,14 @@ function HomeContent({
   useEffect(() => {
     const handleViewChange = (event: CustomEvent) => {
       const { view } = event.detail;
-      if (
-        view === 'students' ||
-        view === 'tasks' ||
-        view === 'settings' ||
-        view === 'calendar'
-      ) {
+      if (view === 'students' || view === 'tasks' || view === 'settings' || view === 'calendar') {
         setView(view as 'calendar' | 'students' | 'tasks' | 'settings');
       }
     };
 
     window.addEventListener('viewchange', handleViewChange as EventListener);
     return () => {
-      window.removeEventListener(
-        'viewchange',
-        handleViewChange as EventListener
-      );
+      window.removeEventListener('viewchange', handleViewChange as EventListener);
     };
   }, []);
 
@@ -74,26 +56,22 @@ function HomeContent({
     const sessionDate = new Date(session.date);
     const dateStr = sessionDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
     const returnTo = `/calendar/day/${dateStr}`;
-
+    
     // Navigate to session details with returnTo parameter
     window.location.href = `/sessions/${session.id}?returnTo=${encodeURIComponent(returnTo)}`;
   };
 
   const handleSessionCreated = () => {
-    setCalendarRefresh((prev) => prev + 1);
+    setCalendarRefresh(prev => prev + 1);
   };
 
   const handleAddSessionClick = () => {
     // Navigate to new session page with returnTo parameter to go back to calendar
-    window.location.href =
-      '/sessions/new?returnTo=' + encodeURIComponent('/?view=calendar');
+    window.location.href = '/sessions/new?returnTo=' + encodeURIComponent('/?view=calendar');
   };
 
   return (
-    <div
-      className="min-h-screen bg-background touch-manipulation"
-      ref={swipeRef}
-    >
+    <div className="min-h-screen bg-background touch-manipulation" ref={swipeRef}>
       {/* Main Content - No header here, it's in the layout */}
       <main className="container mx-auto px-4 py-8 smooth-scroll">
         {view === 'calendar' && (
@@ -102,11 +80,11 @@ function HomeContent({
             refreshTrigger={calendarRefresh}
           />
         )}
-
+        
         {view === 'students' && <StudentsView />}
-
+        
         {view === 'tasks' && <TasksView />}
-
+        
         {view === 'settings' && <SettingsView />}
       </main>
     </div>
@@ -120,3 +98,4 @@ export default function Home() {
     </Suspense>
   );
 }
+

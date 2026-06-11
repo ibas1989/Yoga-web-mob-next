@@ -33,7 +33,7 @@ export function useMobileSwipe(
   const {
     threshold = 50,
     velocity = 0.3,
-    preventDefaultTouchmoveEvent = false,
+    preventDefaultTouchmoveEvent = false
   } = config;
 
   const [touchStart, setTouchStart] = useState<TouchPosition | null>(null);
@@ -47,13 +47,13 @@ export function useMobileSwipe(
     if (preventDefaultTouchmoveEvent) {
       e.preventDefault();
     }
-
+    
     const touch = e.touches[0];
     setTouchEnd(null);
     setTouchStart({
       x: touch.clientX,
       y: touch.clientY,
-      time: Date.now(),
+      time: Date.now()
     });
   };
 
@@ -61,12 +61,12 @@ export function useMobileSwipe(
     if (preventDefaultTouchmoveEvent) {
       e.preventDefault();
     }
-
+    
     const touch = e.touches[0];
     setTouchEnd({
       x: touch.clientX,
       y: touch.clientY,
-      time: Date.now(),
+      time: Date.now()
     });
   };
 
@@ -107,12 +107,8 @@ export function useMobileSwipe(
     const element = elementRef.current;
     if (!element) return;
 
-    element.addEventListener('touchstart', onTouchStart, {
-      passive: !preventDefaultTouchmoveEvent,
-    });
-    element.addEventListener('touchmove', onTouchMove, {
-      passive: !preventDefaultTouchmoveEvent,
-    });
+    element.addEventListener('touchstart', onTouchStart, { passive: !preventDefaultTouchmoveEvent });
+    element.addEventListener('touchmove', onTouchMove, { passive: !preventDefaultTouchmoveEvent });
     element.addEventListener('touchend', onTouchEnd, { passive: true });
 
     return () => {
@@ -131,9 +127,7 @@ export function useMobileSwipe(
  */
 export function useNavigationSwipe() {
   const router = useRouter();
-  const [currentView, setCurrentView] = useState<
-    'calendar' | 'students' | 'settings'
-  >('calendar');
+  const [currentView, setCurrentView] = useState<'calendar' | 'students' | 'settings'>('calendar');
 
   const handleSwipeLeft = () => {
     // Swipe left: Calendar -> Students -> Settings
@@ -167,21 +161,14 @@ export function useNavigationSwipe() {
     velocity: 0.3,
   });
 
-  return {
-    swipeRef: swipeRef as React.RefObject<HTMLDivElement>,
-    currentView,
-    setCurrentView,
-  };
+  return { swipeRef: swipeRef as React.RefObject<HTMLDivElement>, currentView, setCurrentView };
 }
 
 /**
  * Hook for day navigation swipe gestures
  * Handles swiping between calendar days
  */
-export function useDayNavigationSwipe(
-  currentDate: Date,
-  onDateChange: (date: Date) => void
-) {
+export function useDayNavigationSwipe(currentDate: Date, onDateChange: (date: Date) => void) {
   const handleSwipeLeft = () => {
     // Swipe left: Next day
     const nextDay = new Date(currentDate);

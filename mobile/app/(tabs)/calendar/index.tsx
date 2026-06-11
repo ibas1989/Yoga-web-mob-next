@@ -1,5 +1,5 @@
 import { View, StyleSheet } from 'react-native';
-import { Calendar } from '../../src/components/Calendar';
+import { Calendar } from '../../../src/components/Calendar';
 import { useState, useEffect } from 'react';
 import { Session } from '@shared/types';
 import { useNavigation } from 'expo-router';
@@ -42,3 +42,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
 });
+

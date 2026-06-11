@@ -31,6 +31,8 @@ interface Task {
   scheduledTime: string;
   studentNames: string[];
   summary: string;
+  studentCount: number;
+  studentForm: string;
 }
 
 export default function TasksScreen() {
@@ -64,17 +66,19 @@ export default function TasksScreen() {
           session.studentIds.includes(student.id)
         );
 
+        const studentCount = sessionStudents.length;
+
         // Get the correct form for "student" based on count
         let studentForm = '';
         if (i18n.language === 'ru') {
           studentForm = pluralize(
-            sessionStudents.length,
+            studentCount,
             'студентом', // 1 student (instrumental singular)
             'студентами' // 2+ students (instrumental plural)
           );
         } else {
           studentForm = pluralize(
-            sessionStudents.length,
+            studentCount,
             'student', // 1 student
             'students' // 2+ students
           );
@@ -84,13 +88,15 @@ export default function TasksScreen() {
           id: `task-${session.id}`,
           sessionId: session.id,
           sessionName: t('tasks.sessionWithStudents', {
-            count: sessionStudents.length,
+            count: studentCount,
             studentForm: studentForm,
           }),
           scheduledDate: new Date(session.date),
           scheduledTime: session.startTime,
           studentNames: sessionStudents.map((s) => s.name),
           summary: t('tasks.conductSession'),
+          studentCount,
+          studentForm,
         };
       });
 
@@ -225,7 +231,11 @@ export default function TasksScreen() {
                   <Text style={styles.taskIcon}>⏰</Text>
                 </View>
                 <View style={styles.taskContent}>
-                  <Text style={styles.taskName}>{task.sessionName}</Text>
+                  <Text style={styles.taskName}>
+                    {(i18n.language === 'ru' ? 'Сессия с ' : 'Session with ') +
+                      task.studentCount}
+                  </Text>
+                  <Text style={styles.taskNameForm}>{task.studentForm}</Text>
                   <View style={styles.taskDetails}>
                     <View style={styles.taskDetailRow}>
                       <Text style={styles.taskDetailIcon}>📅</Text>
@@ -434,7 +444,7 @@ const styles = StyleSheet.create({
   },
   taskCard: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     backgroundColor: '#fff',
     borderRadius: 12,
     borderWidth: 1,
@@ -467,7 +477,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     color: '#111827',
-    marginBottom: 8,
+    marginBottom: 2,
+  },
+  taskNameForm: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#111827',
+    marginBottom: 6,
   },
   taskDetails: {
     gap: 4,
@@ -490,6 +506,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 4,
+    alignSelf: 'flex-start',
   },
   taskBadgeText: {
     fontSize: 11,
@@ -576,7 +593,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   modalButtonPrimary: {
-    backgroundColor: '#f97316',
+    backgroundColor: '#4f46e5',
     borderRadius: 8,
     padding: 14,
     alignItems: 'center',

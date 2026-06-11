@@ -7,7 +7,7 @@ const endpoints = [
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
-  '/sw.js',
+  '/sw.js'
 ];
 
 const checkEndpoint = (url) => {
@@ -16,26 +16,26 @@ const checkEndpoint = (url) => {
       resolve({
         url,
         status: res.statusCode,
-        success: res.statusCode === 200,
+        success: res.statusCode === 200
       });
     });
-
+    
     req.on('error', (err) => {
       resolve({
         url,
         status: 'ERROR',
         success: false,
-        error: err.message,
+        error: err.message
       });
     });
-
+    
     req.setTimeout(5000, () => {
       req.destroy();
       resolve({
         url,
         status: 'TIMEOUT',
         success: false,
-        error: 'Request timeout',
+        error: 'Request timeout'
       });
     });
   });
@@ -43,11 +43,13 @@ const checkEndpoint = (url) => {
 
 const runHealthCheck = async () => {
   console.log('🔍 Running health check on localhost:3000...\n');
-
-  const results = await Promise.all(endpoints.map(checkEndpoint));
-
+  
+  const results = await Promise.all(
+    endpoints.map(checkEndpoint)
+  );
+  
   let allPassed = true;
-
+  
   results.forEach((result) => {
     const status = result.success ? '✅' : '❌';
     console.log(`${status} ${result.url} - ${result.status}`);
@@ -58,11 +60,9 @@ const runHealthCheck = async () => {
       }
     }
   });
-
-  console.log(
-    `\n${allPassed ? '🎉 All endpoints are healthy!' : '⚠️  Some endpoints have issues.'}`
-  );
-
+  
+  console.log(`\n${allPassed ? '🎉 All endpoints are healthy!' : '⚠️  Some endpoints have issues.'}`);
+  
   if (!allPassed) {
     process.exit(1);
   }

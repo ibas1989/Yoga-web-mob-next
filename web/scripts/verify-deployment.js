@@ -2,7 +2,7 @@
 
 /**
  * Deployment Verification Script
- *
+ * 
  * This script verifies that the deployment is working correctly by:
  * 1. Checking that all routes are accessible
  * 2. Verifying that static assets are loading
@@ -13,10 +13,7 @@ const https = require('https');
 const http = require('http');
 
 // Configuration
-const BASE_URL =
-  process.env.VERCEL_URL ||
-  process.env.DEPLOYMENT_URL ||
-  'http://localhost:3000';
+const BASE_URL = process.env.VERCEL_URL || process.env.DEPLOYMENT_URL || 'http://localhost:3000';
 const USE_HTTPS = BASE_URL.startsWith('https://');
 
 const client = USE_HTTPS ? https : http;
@@ -33,7 +30,10 @@ const routesToTest = [
 ];
 
 // Static assets to test
-const staticAssets = ['/_next/static/css/', '/_next/static/js/'];
+const staticAssets = [
+  '/_next/static/css/',
+  '/_next/static/js/',
+];
 
 /**
  * Make HTTP request and return promise
@@ -41,21 +41,19 @@ const staticAssets = ['/_next/static/css/', '/_next/static/js/'];
 function makeRequest(url) {
   return new Promise((resolve, reject) => {
     const fullUrl = `${BASE_URL}${url}`;
-
-    client
-      .get(fullUrl, (res) => {
-        let data = '';
-        res.on('data', (chunk) => (data += chunk));
-        res.on('end', () => {
-          resolve({
-            url: fullUrl,
-            status: res.statusCode,
-            headers: res.headers,
-            data: data.substring(0, 200), // First 200 chars for debugging
-          });
+    
+    client.get(fullUrl, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        resolve({
+          url: fullUrl,
+          status: res.statusCode,
+          headers: res.headers,
+          data: data.substring(0, 200) // First 200 chars for debugging
         });
-      })
-      .on('error', reject);
+      });
+    }).on('error', reject);
   });
 }
 
@@ -65,7 +63,7 @@ function makeRequest(url) {
 async function testRoute(route) {
   try {
     const result = await makeRequest(route);
-
+    
     if (result.status === 200) {
       console.log(`✅ ${route} - OK (${result.status})`);
       return true;
@@ -87,14 +85,12 @@ async function testStaticAssets() {
   try {
     // Test that _next directory exists
     const result = await makeRequest('/_next');
-
+    
     if (result.status === 200 || result.status === 403) {
       console.log(`✅ Static assets directory accessible`);
       return true;
     } else {
-      console.log(
-        `❌ Static assets directory not accessible (${result.status})`
-      );
+      console.log(`❌ Static assets directory not accessible (${result.status})`);
       return false;
     }
   } catch (error) {
@@ -108,24 +104,24 @@ async function testStaticAssets() {
  */
 async function verifyDeployment() {
   console.log(`🔍 Verifying deployment at: ${BASE_URL}`);
-  console.log('='.repeat(50));
-
+  console.log('=' .repeat(50));
+  
   let allPassed = true;
-
+  
   // Test routes
   console.log('\n📄 Testing Routes:');
   for (const route of routesToTest) {
     const passed = await testRoute(route);
     if (!passed) allPassed = false;
   }
-
+  
   // Test static assets
   console.log('\n📦 Testing Static Assets:');
   const assetsPassed = await testStaticAssets();
   if (!assetsPassed) allPassed = false;
-
+  
   // Summary
-  console.log('\n' + '='.repeat(50));
+  console.log('\n' + '=' .repeat(50));
   if (allPassed) {
     console.log('🎉 Deployment verification PASSED!');
     process.exit(0);
@@ -141,7 +137,7 @@ async function verifyDeployment() {
 }
 
 // Run verification
-verifyDeployment().catch((error) => {
+verifyDeployment().catch(error => {
   console.error('Verification script failed:', error);
   process.exit(1);
 });

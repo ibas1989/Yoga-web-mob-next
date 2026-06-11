@@ -20,12 +20,7 @@ import { AddStudentDialog } from '@/components/AddStudentDialog';
 import { ContextualBar } from '@/components/ui/contextual-bar';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { Student, Session } from '@shared/types';
-import {
-  getStudents,
-  getSettings,
-  saveSession,
-  getSessions,
-} from '@/lib/storage';
+import { getStudents, getSettings, saveSession, getSessions } from '@/lib/storage';
 import { formatDateForUrl, parseDateFromUrl } from '@shared/utils/dateUtils';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
@@ -34,11 +29,9 @@ export default function EditSessionPage() {
   const params = useParams();
   const sessionId = params.id as string;
   const { t, getCurrentLanguage } = useTranslation();
-
+  
   // Get return URL from query parameters if provided
-  const searchParams = new URLSearchParams(
-    typeof window !== 'undefined' ? window.location.search : ''
-  );
+  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
   const returnTo = searchParams.get('returnTo');
 
   const [originalSession, setOriginalSession] = useState<Session | null>(null);
@@ -46,7 +39,7 @@ export default function EditSessionPage() {
   const [availableGoals, setAvailableGoals] = useState<string[]>([]);
   const [defaultTeamCharge, setDefaultTeamCharge] = useState(1);
   const [defaultIndividualCharge, setDefaultIndividualCharge] = useState(2);
-
+  
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [startTime, setStartTime] = useState('09:00');
   const [duration, setDuration] = useState('60'); // Duration in minutes
@@ -55,12 +48,10 @@ export default function EditSessionPage() {
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
   const [showAddStudentDialog, setShowAddStudentDialog] = useState(false);
-  const [lastAddedStudentId, setLastAddedStudentId] = useState<string | null>(
-    null
-  );
+  const [lastAddedStudentId, setLastAddedStudentId] = useState<string | null>(null);
   const notesTextareaRef = React.useRef<HTMLTextAreaElement>(null);
   const [isLoading, setIsLoading] = useState(true);
-
+  
   // State for unsaved changes confirmation
   const [showBackConfirmation, setShowBackConfirmation] = useState(false);
 
@@ -85,11 +76,8 @@ export default function EditSessionPage() {
 
   useEffect(() => {
     // Auto-select newly added student
-    if (
-      lastAddedStudentId &&
-      !selectedStudentIds.includes(lastAddedStudentId)
-    ) {
-      setSelectedStudentIds((prev) => [...prev, lastAddedStudentId]);
+    if (lastAddedStudentId && !selectedStudentIds.includes(lastAddedStudentId)) {
+      setSelectedStudentIds(prev => [...prev, lastAddedStudentId]);
       setLastAddedStudentId(null);
     }
   }, [lastAddedStudentId, students]);
@@ -99,7 +87,7 @@ export default function EditSessionPage() {
     const loadedStudents = getStudents();
     const settings = getSettings();
     const sessions = getSessions();
-    const session = sessions.find((s) => s.id === sessionId);
+    const session = sessions.find(s => s.id === sessionId);
 
     if (!session) {
       router.push('/');
@@ -116,33 +104,23 @@ export default function EditSessionPage() {
     // Ensure we use the session date as-is to avoid timezone conversion
     setSelectedDate(session.date);
     setStartTime(session.startTime);
-
+    
     // Calculate duration
     const startParts = session.startTime.split(':');
     const endParts = session.endTime.split(':');
     const startDateObj = new Date();
-    startDateObj.setHours(
-      parseInt(startParts[0] || '0'),
-      parseInt(startParts[1] || '0'),
-      0,
-      0
-    );
+    startDateObj.setHours(parseInt(startParts[0] || '0'), parseInt(startParts[1] || '0'), 0, 0);
     const endDateObj = new Date();
-    endDateObj.setHours(
-      parseInt(endParts[0] || '0'),
-      parseInt(endParts[1] || '0'),
-      0,
-      0
-    );
+    endDateObj.setHours(parseInt(endParts[0] || '0'), parseInt(endParts[1] || '0'), 0, 0);
     const diffMs = endDateObj.getTime() - startDateObj.getTime();
     const minutes = Math.max(30, Math.round(diffMs / 60000));
     setDuration(String(minutes));
-
+    
     setSessionType(session.sessionType);
     setSelectedStudentIds(session.studentIds);
     setSelectedGoals(session.goals || []);
     setNotes(session.notes || '');
-
+    
     setIsLoading(false);
   };
 
@@ -151,26 +129,28 @@ export default function EditSessionPage() {
     const [hours, minutes] = start.split(':').map(Number);
     const startDate = new Date();
     startDate.setHours(hours, minutes, 0, 0);
-
+    
     const endDate = new Date(startDate.getTime() + durationMinutes * 60000);
-
+    
     const endHours = endDate.getHours().toString().padStart(2, '0');
     const endMinutes = endDate.getMinutes().toString().padStart(2, '0');
-
+    
     return `${endHours}:${endMinutes}`;
   };
 
   const handleStudentToggle = (studentId: string) => {
-    setSelectedStudentIds((prev) =>
+    setSelectedStudentIds(prev =>
       prev.includes(studentId)
-        ? prev.filter((id) => id !== studentId)
+        ? prev.filter(id => id !== studentId)
         : [...prev, studentId]
     );
   };
 
   const handleGoalToggle = (goal: string) => {
-    setSelectedGoals((prev) =>
-      prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
+    setSelectedGoals(prev =>
+      prev.includes(goal)
+        ? prev.filter(g => g !== goal)
+        : [...prev, goal]
     );
   };
 
@@ -186,19 +166,17 @@ export default function EditSessionPage() {
   const handleStudentAdded = (studentId?: string) => {
     const loadedStudents = getStudents();
     setStudents(loadedStudents);
-
+    
     if (studentId) {
       // If a specific student ID is provided, add that student to the session
       if (!selectedStudentIds.includes(studentId)) {
-        setSelectedStudentIds((prev) => [...prev, studentId]);
+        setSelectedStudentIds(prev => [...prev, studentId]);
       }
     } else {
       // Get the most recently added student (by createdAt) - for newly created students
       if (loadedStudents.length > 0) {
-        const newest = loadedStudents.reduce((prev, current) =>
-          new Date(current.createdAt) > new Date(prev.createdAt)
-            ? current
-            : prev
+        const newest = loadedStudents.reduce((prev, current) => 
+          new Date(current.createdAt) > new Date(prev.createdAt) ? current : prev
         );
         setLastAddedStudentId(newest.id);
       }
@@ -208,30 +186,21 @@ export default function EditSessionPage() {
   // Check if user has made any changes
   const hasUnsavedChanges = () => {
     if (!originalSession) return false;
-
+    
     return (
       selectedDate.getTime() !== originalSession.date.getTime() ||
       startTime !== originalSession.startTime ||
-      duration !==
-        String(
-          Math.round(
-            (new Date(`2000-01-01T${originalSession.endTime}`).getTime() -
-              new Date(`2000-01-01T${originalSession.startTime}`).getTime()) /
-              60000
-          )
-        ) ||
+      duration !== String(Math.round((new Date(`2000-01-01T${originalSession.endTime}`).getTime() - new Date(`2000-01-01T${originalSession.startTime}`).getTime()) / 60000)) ||
       sessionType !== originalSession.sessionType ||
-      JSON.stringify(selectedStudentIds.sort()) !==
-        JSON.stringify(originalSession.studentIds.sort()) ||
-      JSON.stringify(selectedGoals.sort()) !==
-        JSON.stringify((originalSession.goals || []).sort()) ||
+      JSON.stringify(selectedStudentIds.sort()) !== JSON.stringify(originalSession.studentIds.sort()) ||
+      JSON.stringify(selectedGoals.sort()) !== JSON.stringify((originalSession.goals || []).sort()) ||
       notes.trim() !== (originalSession.notes || '').trim()
     );
   };
 
   const handleSave = () => {
     if (!originalSession) return;
-
+    
     if (selectedStudentIds.length === 0) {
       alert(t('sessions.pleaseSelectStudent'));
       return;
@@ -251,9 +220,9 @@ export default function EditSessionPage() {
     };
 
     saveSession(updatedSession);
-
+    
     // Navigate back to the session details page with returnTo parameter if provided
-    const url = returnTo
+    const url = returnTo 
       ? `/sessions/${sessionId}?returnTo=${encodeURIComponent(returnTo)}`
       : `/sessions/${sessionId}`;
     router.push(url);
@@ -279,21 +248,20 @@ export default function EditSessionPage() {
     setShowBackConfirmation(false);
   };
 
+
   // Helper function to format balance as session count
   const formatBalanceAsSessionCount = (balance: number): string => {
     const sessionCount = Math.round(balance);
-    const sessionText =
-      Math.abs(sessionCount) === 1 ? t('common.session') : t('common.sessions');
+    const sessionText = Math.abs(sessionCount) === 1 ? t('common.session') : t('common.sessions');
     return `${sessionCount} ${sessionText}`;
   };
+
 
   if (isLoading || !originalSession) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <p className="text-muted-foreground">
-            {t('sessions.loadingSession')}
-          </p>
+          <p className="text-muted-foreground">{t('sessions.loadingSession')}</p>
         </div>
       </div>
     );
@@ -305,9 +273,9 @@ export default function EditSessionPage() {
       <div className="fixed top-0 left-0 right-0 z-40 bg-background border-b safe-top-bar">
         <div className="container mx-auto px-4 pb-3">
           <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
+            <Button 
+              variant="ghost" 
+              size="sm" 
               onClick={handleBackClick}
               className="flex items-center gap-2"
             >
@@ -316,7 +284,9 @@ export default function EditSessionPage() {
             <h2 className="text-base font-medium text-muted-foreground">
               {t('sessions.editSession')}
             </h2>
-            <Button onClick={handleSave}>{t('sessions.save')}</Button>
+            <Button onClick={handleSave}>
+              {t('sessions.save')}
+            </Button>
           </div>
         </div>
       </div>
@@ -325,219 +295,194 @@ export default function EditSessionPage() {
       <div className="pt-20">
         {/* Main Content */}
         <main className="container mx-auto px-4 py-8">
-          <Card className="max-w-3xl mx-auto">
-            <CardHeader>
-              <CardTitle>{t('sessions.sessionDetails')}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Date Selection */}
-              <div className="space-y-2">
-                <Label htmlFor="sessionDate">{t('sessions.sessionDate')}</Label>
-                <Input
-                  id="sessionDate"
-                  type="date"
-                  value={formatDateForUrl(selectedDate)}
-                  onChange={(e) => {
-                    // Parse the date string as local date to avoid timezone issues
-                    setSelectedDate(parseDateFromUrl(e.target.value));
-                  }}
-                />
-              </div>
+        <Card className="max-w-3xl mx-auto">
+          <CardHeader>
+            <CardTitle>{t('sessions.sessionDetails')}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Date Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="sessionDate">{t('sessions.sessionDate')}</Label>
+              <Input
+                id="sessionDate"
+                type="date"
+                value={formatDateForUrl(selectedDate)}
+                onChange={(e) => {
+                  // Parse the date string as local date to avoid timezone issues
+                  setSelectedDate(parseDateFromUrl(e.target.value));
+                }}
+              />
+            </div>
 
-              {/* Time and Duration Selection */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="startTime">{t('sessions.startTime')}</Label>
-                  <Select value={startTime} onValueChange={setStartTime}>
-                    <SelectTrigger id="startTime">
-                      <SelectValue
-                        placeholder={t('sessions.selectStartTime')}
-                      />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-60">
-                      {timeOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="duration">
-                    {t('sessions.sessionLength')}
-                  </Label>
-                  <Select value={duration} onValueChange={setDuration}>
-                    <SelectTrigger id="duration">
-                      <SelectValue placeholder={t('sessions.selectDuration')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {durationOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">
-                    {t('sessions.endTime')}:{' '}
-                    {calculateEndTime(startTime, parseInt(duration))}
-                  </p>
-                </div>
-              </div>
-
-              {/* Session Type */}
+            {/* Time and Duration Selection */}
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="sessionType">{t('sessions.sessionType')}</Label>
-                <Select
-                  value={sessionType}
-                  onValueChange={(value) =>
-                    setSessionType(value as 'team' | 'individual')
-                  }
-                >
-                  <SelectTrigger id="sessionType">
-                    <SelectValue
-                      placeholder={t('sessions.selectSessionType')}
-                    />
+                <Label htmlFor="startTime">{t('sessions.startTime')}</Label>
+                <Select value={startTime} onValueChange={setStartTime}>
+                  <SelectTrigger id="startTime">
+                    <SelectValue placeholder={t('sessions.selectStartTime')} />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="team">{t('sessions.team')}</SelectItem>
-                    <SelectItem value="individual">
-                      {t('sessions.individual')}
-                    </SelectItem>
+                  <SelectContent className="max-h-60">
+                    {timeOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="duration">{t('sessions.sessionLength')}</Label>
+                <Select value={duration} onValueChange={setDuration}>
+                  <SelectTrigger id="duration">
+                    <SelectValue placeholder={t('sessions.selectDuration')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {durationOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  {t('sessions.endTime')}: {calculateEndTime(startTime, parseInt(duration))}
+                </p>
+              </div>
+            </div>
 
-              {/* Student Selection */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>{t('sessions.attendees')}</Label>
+            {/* Session Type */}
+            <div className="space-y-2">
+              <Label htmlFor="sessionType">{t('sessions.sessionType')}</Label>
+              <Select value={sessionType} onValueChange={(value) => setSessionType(value as 'team' | 'individual')}>
+                <SelectTrigger id="sessionType">
+                  <SelectValue placeholder={t('sessions.selectSessionType')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="team">{t('sessions.team')}</SelectItem>
+                  <SelectItem value="individual">{t('sessions.individual')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Student Selection */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label>{t('sessions.attendees')}</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAddStudentDialog(true)}
+                  className="h-8"
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  {t('sessions.addStudent')}
+                </Button>
+              </div>
+
+              {students.length === 0 ? (
+                <div className="border rounded-md p-6 text-center">
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {t('sessions.noStudentsAvailable')}
+                  </p>
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
                     onClick={() => setShowAddStudentDialog(true)}
-                    className="h-8"
                   >
-                    <Plus className="h-3 w-3 mr-1" />
-                    {t('sessions.addStudent')}
+                    <Plus className="h-4 w-4 mr-2" />
+                    {t('sessions.addYourFirstStudent')}
                   </Button>
                 </div>
-
-                {students.length === 0 ? (
-                  <div className="border rounded-md p-6 text-center">
-                    <p className="text-sm text-muted-foreground mb-3">
-                      {t('sessions.noStudentsAvailable')}
-                    </p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowAddStudentDialog(true)}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      {t('sessions.addYourFirstStudent')}
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {/* Selected Students */}
-                    {selectedStudentIds.length > 0 && (
+              ) : (
+                <div className="space-y-3">
+                  {/* Selected Students */}
+                  {selectedStudentIds.length > 0 && (
+                    <div className="space-y-2">
+                      <p className="text-xs font-medium text-muted-foreground">
+                        {t('sessions.selected')} ({selectedStudentIds.length})
+                      </p>
                       <div className="space-y-2">
-                        <p className="text-xs font-medium text-muted-foreground">
-                          {t('sessions.selected')} ({selectedStudentIds.length})
-                        </p>
-                        <div className="space-y-2">
-                          {selectedStudentIds.map((studentId) => {
-                            const student = students.find(
-                              (s) => s.id === studentId
-                            );
-                            if (!student) return null;
-                            return (
-                              <div
-                                key={student.id}
-                                className="flex items-center justify-between bg-primary/10 rounded-md px-3 py-2 border border-primary/20"
-                              >
-                                <div className="flex-1">
-                                  <p className="text-sm font-medium">
-                                    {student.name}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {t('sessions.balance')}:{' '}
-                                    {formatBalanceAsSessionCount(
-                                      student.balance
-                                    )}
-                                  </p>
-                                </div>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() =>
-                                    handleStudentToggle(student.id)
-                                  }
-                                  className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
-                                >
-                                  <Plus className="h-4 w-4 rotate-45" />
-                                  <span className="sr-only">
-                                    {t('sessions.removeStudent', {
-                                      studentName: student.name,
-                                    })}
-                                  </span>
-                                </Button>
+                        {selectedStudentIds.map((studentId) => {
+                          const student = students.find(s => s.id === studentId);
+                          if (!student) return null;
+                          return (
+                            <div
+                              key={student.id}
+                              className="flex items-center justify-between bg-primary/10 rounded-md px-3 py-2 border border-primary/20"
+                            >
+                              <div className="flex-1">
+                                <p className="text-sm font-medium">{student.name}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {t('sessions.balance')}: {formatBalanceAsSessionCount(student.balance)}
+                                </p>
                               </div>
-                            );
-                          })}
-                        </div>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleStudentToggle(student.id)}
+                                className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+                              >
+                                <Plus className="h-4 w-4 rotate-45" />
+                                <span className="sr-only">{t('sessions.removeStudent', { studentName: student.name })}</span>
+                              </Button>
+                            </div>
+                          );
+                        })}
                       </div>
-                    )}
-                  </div>
-                )}
-              </div>
+                    </div>
+                  )}
 
-              {/* Session Goals/Tags */}
-              <div className="space-y-2">
-                <Label className="flex items-center gap-2">
-                  <Target className="h-4 w-4" />
-                  {t('sessions.sessionGoals')}
-                </Label>
-                <div className="border rounded-md p-4 max-h-48 overflow-y-auto">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {availableGoals.map((goal) => (
-                      <div key={goal} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`goal-${goal}`}
-                          checked={selectedGoals.includes(goal)}
-                          onCheckedChange={() => handleGoalToggle(goal)}
-                        />
-                        <label
-                          htmlFor={`goal-${goal}`}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                        >
-                          {goal}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Session Goals/Tags */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Target className="h-4 w-4" />
+                {t('sessions.sessionGoals')}
+              </Label>
+              <div className="border rounded-md p-4 max-h-48 overflow-y-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {availableGoals.map((goal) => (
+                    <div key={goal} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`goal-${goal}`}
+                        checked={selectedGoals.includes(goal)}
+                        onCheckedChange={() => handleGoalToggle(goal)}
+                      />
+                      <label
+                        htmlFor={`goal-${goal}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                      >
+                        {goal}
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </div>
+            </div>
 
-              {/* Notes */}
-              <div className="space-y-2">
-                <Label htmlFor="notes">{t('sessions.notesOptional')}</Label>
-                <Textarea
-                  ref={notesTextareaRef}
-                  id="notes"
-                  value={notes}
-                  onChange={handleNotesChange}
-                  placeholder={t('sessions.addNotesPlaceholder')}
-                  className="min-h-[80px] resize-none overflow-hidden"
-                  rows={3}
-                />
-              </div>
-            </CardContent>
-          </Card>
+            {/* Notes */}
+            <div className="space-y-2">
+              <Label htmlFor="notes">{t('sessions.notesOptional')}</Label>
+              <Textarea
+                ref={notesTextareaRef}
+                id="notes"
+                value={notes}
+                onChange={handleNotesChange}
+                placeholder={t('sessions.addNotesPlaceholder')}
+                className="min-h-[80px] resize-none overflow-hidden"
+                rows={3}
+              />
+            </div>
+
+          </CardContent>
+        </Card>
         </main>
       </div>
 
@@ -562,3 +507,4 @@ export default function EditSessionPage() {
     </div>
   );
 }
+
